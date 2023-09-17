@@ -1,0 +1,6 @@
+# temp and external
+coverage/
+vendor/
+
+# test data
+corrupt.json
