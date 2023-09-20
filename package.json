@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run test && npm run check",
     "start": "node src/main.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --verbose",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "check": "prettier . --check && eslint src test",
     "format": "prettier . --write"
   },

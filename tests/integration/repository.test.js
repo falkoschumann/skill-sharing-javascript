@@ -4,7 +4,7 @@ describe("repository", () => {
   describe("load talks", () => {
     test("returns empty array, if file does not exist", () => {
       const talks = loadTalks({
-        fileName: "./test/data/non-existent.json",
+        fileName: "./tests/data/non-existent.json",
       });
 
       expect(talks).toEqual([]);
@@ -12,7 +12,7 @@ describe("repository", () => {
 
     test("returns JSON content", () => {
       const talks = loadTalks({
-        fileName: "./test/data/example.json",
+        fileName: "./tests/data/example.json",
       });
 
       expect(talks).toEqual([
@@ -25,7 +25,7 @@ describe("repository", () => {
 
     test("returns empty array, if file is corrupt", () => {
       const talks = loadTalks({
-        fileName: "./test/data/corrupt.json",
+        fileName: "./tests/data/corrupt.json",
       });
 
       expect(talks).toEqual([]);

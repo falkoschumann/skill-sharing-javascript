@@ -4,7 +4,7 @@ import { loadTalks } from "../../src/infrastructure/repository.js";
 import { queryTalks } from "../../src/application/services.js";
 
 const repository = {
-  loadTalks: () => loadTalks({ fileName: "./test/data/example.json" }),
+  loadTalks: () => loadTalks({ fileName: "./tests/data/example.json" }),
 };
 
 const services = {
