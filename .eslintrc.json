@@ -1,13 +1,14 @@
 {
   "env": {
-    "browser": true,
     "es2021": true,
-    "node": true
+    "browser": true,
+    "node": true,
+    "jest": true
   },
   "extends": ["eslint:recommended", "google"],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "rules": {}
+  "ignorePatterns": ["**/*.html", "**/coverage/*.js", "**/vendor/*.js"]
 }
