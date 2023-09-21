@@ -21,6 +21,7 @@ bin/
 .vscode/
 
 # Node
+coverage/
 node_modules/
 
 # Python

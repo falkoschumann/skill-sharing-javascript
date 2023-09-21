@@ -1,51 +1,53 @@
-import { getTalks } from "./api.js";
+import {getTalks} from './api.js';
+import {store} from './store.js';
+import {html, render} from './vendor/lit-html.js';
 
-function elt(type, props, ...children) {
-  const dom = document.createElement(type);
-  if (props) {
-    Object.assign(dom, props);
+/** Views a list of talks. */
+class Talks extends HTMLElement {
+  #talks = [];
+  #removeStoreListener;
+
+  /** Listen to store and update view. */
+  connectedCallback() {
+    this.#removeStoreListener = store.addListener(() => this.#updateView());
+    this.#updateView();
   }
-  for (const child of children) {
-    if (typeof child != "string") {
-      dom.appendChild(child);
-    } else {
-      dom.appendChild(document.createTextNode(child));
+
+  /** Remove store listener. */
+  disconnectedCallback() {
+    this.#removeStoreListener();
+  }
+
+  /** Sync view from state. */
+  #updateView() {
+    const talks = store.state.talks;
+    if (this.#talks === talks) {
+      return;
     }
-  }
-  return dom;
-}
 
-function renderTalk(talk) {
-  return elt(
-    "section",
-    { className: "talk" },
-    elt("h2", null, talk.title),
-    elt("p", null, talk.summary),
-  );
-}
-
-class SkillShareApp {
-  constructor(state) {
-    this.talkDom = elt("div", { className: "talks" });
-    this.dom = elt("div", null, this.talkDom);
-    this.syncState(state);
-  }
-
-  syncState(state) {
-    if (state.talks != this.talks) {
-      this.talkDom.textContent = "";
-      for (const talk of state.talks) {
-        this.talkDom.appendChild(renderTalk(talk));
-      }
-      this.talks = state.talks;
-    }
+    this.#talks = talks;
+    const template = html`
+      <div class="talks">
+        ${talks.map(
+      (talk) => html`
+            <section class="talk">
+              <h2>${talk.title}</h2>
+              <p>${talk.summary}</p>
+            </section>
+          `,
+  )}
+      </div>
+    `;
+    render(template, this);
   }
 }
 
+window.customElements.define('s-talks', Talks);
+
+/** Runs the app. */
 async function runApp() {
   const talks = await getTalks();
-  const app = new SkillShareApp({ talks });
-  document.body.appendChild(app.dom);
+  store.dispatch({type: 'setTalks', talks});
 }
 
 runApp();

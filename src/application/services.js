@@ -1,5 +1,9 @@
-import { loadTalks } from "../infrastructure/repository.js";
+import {loadTalks} from '../infrastructure/repository.js';
 
-export function queryTalks(repository = { loadTalks }) {
+/**
+ * @param {any} repository
+ * @return {Array<any>}
+ */
+export function queryTalks(repository = {loadTalks}) {
   return repository.loadTalks();
 }
