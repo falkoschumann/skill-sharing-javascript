@@ -7,7 +7,8 @@
     "start": "node src/main.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "check": "eslint public src tests",
-    "format": "prettier . --write && eslint public src tests --fix"
+    "format": "eslint public src tests --fix",
+    "format2": "prettier . --write && eslint public src tests --fix"
   },
   "dependencies": {
     "express": "4.18.2",

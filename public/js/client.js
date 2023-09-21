@@ -4,21 +4,28 @@ import {html, render} from './vendor/lit-html.js';
 
 /** Views a list of talks. */
 class Talks extends HTMLElement {
-  #talks = [];
-  #removeStoreListener;
+  #talks;
+  #stateChangedListener;
+
+  /** Initialize element. */
+  constructor() {
+    super();
+    this.#talks = [];
+    this.#stateChangedListener = () => this.#updateView();
+  }
 
   /** Listen to store and update view. */
   connectedCallback() {
-    this.#removeStoreListener = store.addListener(() => this.#updateView());
+    store.addEventListener('stateChanged', this.#stateChangedListener);
     this.#updateView();
   }
 
   /** Remove store listener. */
   disconnectedCallback() {
-    this.#removeStoreListener();
+    store.removeEventListener('stateChanged', this.#stateChangedListener);
   }
 
-  /** Sync view from state. */
+  /** Sync view from store state. */
   #updateView() {
     const talks = store.state.talks;
     if (this.#talks === talks) {
@@ -26,16 +33,15 @@ class Talks extends HTMLElement {
     }
 
     this.#talks = talks;
+
     const template = html`
       <div class="talks">
-        ${talks.map(
-      (talk) => html`
-            <section class="talk">
-              <h2>${talk.title}</h2>
-              <p>${talk.summary}</p>
-            </section>
-          `,
-  )}
+        ${talks.map((talk) => html`
+          <section class="talk">
+            <h2>${talk.title}</h2>
+            <p>${talk.summary}</p>
+          </section>
+        `)}
       </div>
     `;
     render(template, this);

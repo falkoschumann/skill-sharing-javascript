@@ -1,37 +1,20 @@
-/** Simple event emitter class. */
-class EventEmitter {
-  #listerns = [];
-
-  /**
-   * @param {Function} callback
-   * @return {Function}
-   */
-  addListener(callback) {
-    this.#listerns.push(callback);
-    return () => {
-      this.#listerns = this.#listerns.filter((l) => l != callback);
-    };
-  }
-
-  /** @param {any} event */
-  emit(event) {
-    this.#listerns.forEach((callback) => callback(event));
-  }
-}
-
-/** Stores and updates the application state. */
-class Store {
+/**
+ * Stores and updates the application state.
+ *
+ * @event stateChanged
+ */
+class Store extends EventTarget {
   #state;
   #reducer;
-  #onStateChanged = new EventEmitter();
 
   /**
-   * @param {any} initialState
    * @param {Function} reducer
+   * @param {any} initialState
    */
-  constructor(initialState, reducer) {
-    this.#state = initialState;
+  constructor(reducer, initialState) {
+    super();
     this.#reducer = reducer;
+    this.#state = initialState;
   }
 
   /** @return {any} */
@@ -39,18 +22,10 @@ class Store {
     return this.#state;
   }
 
-  /**
-   * @param {Function} callback
-   * @return {Function}
-   */
-  addListener(callback) {
-    return this.#onStateChanged.addListener(callback);
-  }
-
   /** @param {any} action */
   dispatch(action) {
     this.#state = this.#reducer(this.#state, action);
-    this.#onStateChanged.emit();
+    this.dispatchEvent(new CustomEvent('stateChanged'));
   }
 }
 
@@ -70,4 +45,4 @@ function reduce(state, action) {
   }
 }
 
-export const store = new Store({talks: []}, reduce);
+export const store = new Store(reduce, {talks: []});
