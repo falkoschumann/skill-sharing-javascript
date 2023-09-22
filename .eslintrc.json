@@ -9,5 +9,5 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns": ["**/coverage/*.js", "**/vendor/*.js"]
+  "ignorePatterns": ["**/*.html", "**/coverage/*.js", "**/vendor/*.js"]
 }
