@@ -1,3 +1,5 @@
+import {describe, expect, test} from '@jest/globals';
+
 import {loadTalks} from '../../src/infrastructure/repository.js';
 
 describe('repository', () => {
