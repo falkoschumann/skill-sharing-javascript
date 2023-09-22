@@ -6,7 +6,7 @@
     "build": "npm run test && npm run check",
     "start": "node src/main.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "check": "eslint --fix public src tests",
+    "check": "eslint public src tests",
     "format": "eslint --fix public src tests",
     "format2": "prettier . --write && eslint --fix public src tests"
   },
