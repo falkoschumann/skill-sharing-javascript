@@ -22,7 +22,9 @@ bin/
 
 # Node
 coverage/
+dist/
 node_modules/
+junit.xml
 
 # Python
 __pycache__/
