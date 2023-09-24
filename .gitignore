@@ -1,6 +1,7 @@
 # see also https://gitignore.io
 
 tmp/
+/data/*.json
 
 # Gradle
 .gradle/
