@@ -1,36 +1,72 @@
-import {describe, expect, test} from '@jest/globals';
+import { rmSync } from 'fs';
+import { beforeEach, describe, expect, test } from '@jest/globals';
 
-import {loadTalks} from '../../src/infrastructure/repository.js';
+import { Repository } from '../../src/infrastructure/repository.js';
+
+const fileName = './data/talks.test.json';
 
 describe('repository', () => {
-  describe('load talks', () => {
-    test('returns empty array, if file does not exist', () => {
-      const talks = loadTalks({
-        fileName: './tests/data/non-existent.json',
-      });
+  beforeEach(() => {
+    rmSync(fileName, { force: true });
+  });
 
-      expect(talks).toEqual([]);
-    });
-
-    test('returns JSON content', () => {
-      const talks = loadTalks({
+  describe('find all', () => {
+    test('returns list of talks', async () => {
+      const repository = new Repository({
         fileName: './tests/data/example.json',
       });
 
-      expect(talks).toEqual([
-        {
-          title: 'Foobar',
-          summary: 'Lorem ipsum',
-        },
-      ]);
+      const talks = await repository.findAll();
+
+      expect(talks).toEqual([{ title: 'Foobar', summary: 'Lorem ipsum' }]);
     });
 
-    test('returns empty array, if file is corrupt', () => {
-      const talks = loadTalks({
+    test('returns empty list, if file does not exist', async () => {
+      const repository = new Repository({
+        fileName: './tests/data/non-existent.json',
+      });
+
+      const talks = await repository.findAll();
+
+      expect(talks).toEqual([]);
+    });
+
+    test('returns empty list, if file is corrupt', async () => {
+      const repository = new Repository({
         fileName: './tests/data/corrupt.json',
       });
 
+      const talks = await repository.findAll();
+
       expect(talks).toEqual([]);
+    });
+  });
+
+  describe('add', () => {
+    test('creates file, if file does not exist', async () => {
+      const repository = new Repository({ fileName });
+      let talks = await repository.findAll();
+      expect(talks).toEqual([]);
+
+      await repository.add({ title: 'foobar', summary: 'lorem ipsum' });
+
+      talks = await repository.findAll();
+      expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
+    });
+
+    test('adds talk, if file exists', async () => {
+      const repository = new Repository({ fileName });
+      let talks = await repository.findAll();
+      expect(talks).toEqual([]);
+      await repository.add({ title: 'foo', summary: 'lorem' });
+
+      await repository.add({ title: 'bar', summary: 'ipsum' });
+
+      talks = await repository.findAll();
+      expect(talks).toEqual([
+        { title: 'foo', summary: 'lorem' },
+        { title: 'bar', summary: 'ipsum' },
+      ]);
     });
   });
 });

@@ -1,16 +1,33 @@
-import {readFileSync} from 'fs';
+import { readFile, writeFile } from 'fs/promises';
 
-const fileName =
-  process.env.SKILL_SHARING_TALKS_JSON_FILE || './data/talks.json';
+export class Repository {
+  #fileName;
 
-/**
- * @param {any} options
- * @return {Array<any>}
- */
-export function loadTalks(options = {fileName}) {
-  try {
-    return JSON.parse(readFileSync(options.fileName, 'utf8'));
-  } catch (e) {
-    return [];
+  constructor({ fileName = './data/talks.json' } = {}) {
+    this.#fileName = fileName;
+  }
+
+  async findAll() {
+    try {
+      const json = await readFile(this.#fileName, 'utf-8');
+      return JSON.parse(json);
+    } catch {
+      return [];
+    }
+  }
+
+  async add(talk) {
+    let json;
+    let talks = [];
+    try {
+      json = await readFile(this.#fileName, 'utf8');
+      talks = JSON.parse(json);
+    } catch {
+      talks = [];
+    }
+
+    talks.push(talk);
+    json = JSON.stringify(talks);
+    await writeFile(this.#fileName, json, 'utf-8');
   }
 }

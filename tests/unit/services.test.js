@@ -1,21 +1,44 @@
-import {describe, expect, test} from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
-import {queryTalks} from '../../src/application/services.js';
-
-const repository = {
-  loadTalks: () => [
-    {title: 'Unituning', summary: 'Modifying your cycle for extra style'},
-  ],
-};
+import { queryTalks, submitTalk } from '../../src/application/services.js';
 
 describe('services', () => {
-  describe('query talks', () => {
-    test('loads talks', () => {
-      const talks = queryTalks(repository);
+  describe('submit talk', () => {
+    test('add talk to list of talks', async () => {
+      const repository = new FakeRepository();
 
-      expect(talks).toEqual([
-        {title: 'Unituning', summary: 'Modifying your cycle for extra style'},
+      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
+
+      const talks = await repository.findAll();
+      expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
+    });
+  });
+
+  describe('query talks', () => {
+    test('returns list of talks', async () => {
+      const repository = new FakeRepository([
+        { title: 'foobar', summary: 'lorem ipsum' },
       ]);
+
+      const talks = await queryTalks(repository);
+
+      expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
     });
   });
 });
+
+class FakeRepository {
+  #talks;
+
+  constructor(talks = []) {
+    this.#talks = talks;
+  }
+
+  async findAll() {
+    return this.#talks;
+  }
+
+  async add(talk) {
+    this.#talks.push(talk);
+  }
+}
