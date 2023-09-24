@@ -28,7 +28,7 @@ describe('API', () => {
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
       expect(response.get('Cache-Control')).toEqual('no-store');
-      expect(response.get('ETag')).toEqual('1');
+      expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
         { title: 'foobar', summary: 'lorem ipsum' },
       ]);
@@ -45,12 +45,12 @@ describe('API', () => {
       const response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
-        .set('If-None-Match', '0');
+        .set('If-None-Match', '"0"');
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
       expect(response.get('Cache-Control')).toEqual('no-store');
-      expect(response.get('ETag')).toEqual('1');
+      expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
         { title: 'foobar', summary: 'lorem ipsum' },
       ]);
@@ -67,9 +67,58 @@ describe('API', () => {
       const response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
-        .set('If-None-Match', '1');
+        .set('If-None-Match', '"1"');
 
       expect(response.status).toEqual(304);
+    });
+
+    test('reports not modified, if long polling results in a timeout', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+
+      let responsePromise = request(app)
+        .get('/api/talks')
+        .set('Accept', 'application/json')
+        .set('Prefer', 'wait=1')
+        .set('If-None-Match', '"0"');
+      const submitHandler = setTimeout(
+        () =>
+          request(app)
+            .put('/api/talks/foobar')
+            .set('Content-Type', 'application/json')
+            .send({ summary: 'lorem ipsum' }),
+        2000,
+      );
+      const response = await responsePromise;
+      clearTimeout(submitHandler);
+
+      expect(response.status).toEqual(304);
+    });
+
+    test('replies talks, if a talk was submitted while long polling', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+
+      let responsePromise = request(app)
+        .get('/api/talks')
+        .set('Accept', 'application/json')
+        .set('Prefer', 'wait=1')
+        .set('If-None-Match', '"0"');
+      setTimeout(async () => {
+        await request(app)
+          .put('/api/talks/foobar')
+          .set('Content-Type', 'application/json')
+          .send({ summary: 'lorem ipsum' });
+      }, 500);
+      const response = await responsePromise;
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/application\/json/);
+      expect(response.get('Cache-Control')).toEqual('no-store');
+      expect(response.get('ETag')).toEqual('"1"');
+      expect(response.body).toEqual([
+        { title: 'foobar', summary: 'lorem ipsum' },
+      ]);
     });
   });
 

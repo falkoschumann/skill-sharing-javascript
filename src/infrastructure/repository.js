@@ -12,22 +12,15 @@ export class Repository {
       const json = await readFile(this.#fileName, 'utf-8');
       return JSON.parse(json);
     } catch {
+      // ignore error
       return [];
     }
   }
 
   async add(talk) {
-    let json;
-    let talks = [];
-    try {
-      json = await readFile(this.#fileName, 'utf8');
-      talks = JSON.parse(json);
-    } catch {
-      talks = [];
-    }
-
+    const talks = await this.findAll();
     talks.push(talk);
-    json = JSON.stringify(talks);
+    const json = JSON.stringify(talks);
     await writeFile(this.#fileName, json, 'utf-8');
   }
 }

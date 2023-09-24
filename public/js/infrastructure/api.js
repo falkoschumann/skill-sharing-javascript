@@ -5,9 +5,19 @@ export class Api {
     this.#baseUrl = baseUrl;
   }
 
-  async getTalks() {
-    const response = await fetch(`${this.#baseUrl}/talks`);
-    return response.json();
+  async getTalks(tag) {
+    const response = await fetch(`${this.#baseUrl}/talks`, {
+      headers: tag && {
+        'If-None-Match': tag,
+        Prefer: 'wait=90',
+      },
+    });
+    const talks = await response.json();
+    return {
+      notModified: response.status == 304,
+      tag: response.headers.get('ETag'),
+      talks,
+    };
   }
 
   async putTalk({ title, summary }) {

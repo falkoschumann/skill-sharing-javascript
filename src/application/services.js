@@ -1,5 +1,5 @@
 export async function submitTalk(talk, repository) {
-  repository.add(talk);
+  await repository.add(talk);
 }
 
 export async function queryTalks(repository) {
