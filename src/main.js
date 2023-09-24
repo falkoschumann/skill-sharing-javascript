@@ -1,4 +1,4 @@
 import { ExpressApp } from './ui/express-app.js';
 
 const app = new ExpressApp();
-app.run();
+app.start(3000);

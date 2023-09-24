@@ -5,23 +5,22 @@ import { Repository } from '../infrastructure/repository.js';
 
 export class ExpressApp {
   #app;
-  #port;
 
-  constructor({
-    port = 3000,
-    publicPath = './public',
-    repository = new Repository(),
-  } = {}) {
-    this.#port = port;
-
+  constructor({ publicPath = './public', repository = new Repository() } = {}) {
     this.#app = express();
     this.#app.set('x-powered-by', false);
     this.#app.use('/', express.static(publicPath));
     this.#app.use(express.json());
 
+    let version = 0;
+
     this.#app.get('/api/talks', async (_, res) => {
       const talks = await queryTalks(repository);
-      res.status(200).json(talks);
+      res
+        .status(200)
+        .set('ETag', String(version))
+        .set('Cache-Control', 'no-store')
+        .json(talks);
     });
 
     this.#app.put('/api/talks/:title', async (req, res) => {
@@ -33,6 +32,7 @@ export class ExpressApp {
 
       const title = req.params.title;
       submitTalk({ title, summary: talk.summary }, repository);
+      version++;
       res.status(204).send();
     });
   }
@@ -41,9 +41,9 @@ export class ExpressApp {
     return this.#app;
   }
 
-  run() {
-    this.#app.listen(this.#port, () => {
-      console.log(`Skill Sharing app listening on port ${this.#port}`);
+  start(port) {
+    this.#app.listen(port, () => {
+      console.log(`Skill Sharing app listening on port ${port}`);
     });
   }
 }

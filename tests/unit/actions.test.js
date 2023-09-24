@@ -8,7 +8,7 @@ import {
 import { Store } from '../../public/js/domain/store.js';
 
 describe('actions', () => {
-  test('poll talks', async () => {
+  test('polls talks', async () => {
     const store = new Store();
     const api = new FakeApi({
       talks: [{ title: 'foobar', summary: 'lorem ipsum' }],
@@ -22,7 +22,7 @@ describe('actions', () => {
     });
   });
 
-  test('talk updated', async () => {
+  test('talks updated', async () => {
     const store = new Store();
 
     await talkUpdated('title', 'foobar', store);
@@ -33,7 +33,7 @@ describe('actions', () => {
     });
   });
 
-  test('new talk', async () => {
+  test('submits talk', async () => {
     const store = new Store();
     await talkUpdated('title', 'foobar', store);
     await talkUpdated('summary', 'lorem ipsum', store);

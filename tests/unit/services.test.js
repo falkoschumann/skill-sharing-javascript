@@ -4,7 +4,7 @@ import { queryTalks, submitTalk } from '../../src/application/services.js';
 
 describe('services', () => {
   describe('submit talk', () => {
-    test('add talk to list of talks', async () => {
+    test('adds talk to list of talks', async () => {
       const repository = new FakeRepository();
 
       await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
