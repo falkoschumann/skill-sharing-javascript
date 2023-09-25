@@ -5,8 +5,8 @@ import {
   pollTalks,
   talkUpdated,
 } from '../../public/js/application/actions.js';
-import { Store } from '../../public/js/domain/store.js';
 import { ConfigurableResponses } from '../configurable-responses.js';
+import { Store } from '../../public/js/domain/store.js';
 
 describe('actions', () => {
   describe('poll talks', () => {

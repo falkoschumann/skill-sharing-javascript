@@ -1,6 +1,6 @@
 import { html, render } from '../vendor.js';
 
-import { store, api } from '../app.config.js';
+import { api, store } from '../app.config.js';
 import { newTalk, talkUpdated } from '../application/actions.js';
 
 class Talks extends HTMLElement {

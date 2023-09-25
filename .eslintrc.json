@@ -5,16 +5,25 @@
     "node": true
   },
   "extends": ["eslint:recommended"],
+  "ignorePatterns": ["**/*.html", "**/coverage/**", "**/vendor.js"],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns": ["**/*.html", "**/coverage/**", "**/vendor.js"],
+  "root": true,
   "rules": {
+    "eqeqeq": ["error", "smart"],
     "no-unused-vars": [
       "error",
       {
         "argsIgnorePattern": "^_"
+      }
+    ],
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "allowSeparatedGroups": true
       }
     ]
   }

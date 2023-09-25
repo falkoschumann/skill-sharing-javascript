@@ -17,7 +17,7 @@ export class Store {
   dispatch(action) {
     const oldState = this.#state;
     this.#state = this.#reduce(this.#state, action);
-    if (oldState != this.#state) {
+    if (oldState !== this.#state) {
       this.#emitChange();
     }
   }
@@ -46,6 +46,6 @@ export class Store {
   }
 
   #unsubscribe(listener) {
-    this.#listeners = this.#listeners.filter((l) => l != listener);
+    this.#listeners = this.#listeners.filter((l) => l !== listener);
   }
 }

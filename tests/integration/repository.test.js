@@ -1,4 +1,5 @@
-import { rmSync } from 'fs';
+import { rmSync } from 'node:fs';
+
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
 import { Repository } from '../../src/infrastructure/repository.js';

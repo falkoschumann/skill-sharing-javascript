@@ -21,7 +21,7 @@ export class ExpressApp {
       const tag = /"(.*)"/.exec(req.get('If-None-Match'));
       const wait = /\bwait=(\d+)/.exec(req.get('Prefer'));
 
-      if (!tag || tag[1] != String(this.#version)) {
+      if (!tag || tag[1] !== String(this.#version)) {
         const response = await this.#talkResponse(repository);
         this.#reply(res, response);
       } else if (!wait) {
@@ -74,7 +74,7 @@ export class ExpressApp {
           return;
         }
 
-        this.#waiting = this.#waiting.filter((r) => r != resolve);
+        this.#waiting = this.#waiting.filter((r) => r !== resolve);
         resolve({ status: 304 });
       }, time * 1000);
     });

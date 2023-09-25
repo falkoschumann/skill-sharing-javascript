@@ -14,7 +14,7 @@ export class Api {
     });
     const talks = await response.json();
     return {
-      notModified: response.status == 304,
+      notModified: response.status === 304,
       tag: response.headers.get('ETag'),
       talks,
     };
