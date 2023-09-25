@@ -1,7 +1,7 @@
 import { html, render } from '../vendor.js';
 
 import { api, store } from '../app.config.js';
-import { newTalk, talkUpdated } from '../application/actions.js';
+import { deleteTalk, newTalk, talkUpdated } from '../application/actions.js';
 
 class Talks extends HTMLElement {
   #talks;
@@ -34,7 +34,10 @@ class Talks extends HTMLElement {
         ${talks.map(
           (talk) => html`
             <section class="talk">
-              <h2>${talk.title}</h2>
+              <h2>
+                ${talk.title}
+                <button @click=${(_) => this.#deleteTalk(talk)}>Delete</button>
+              </h2>
               <p>${talk.summary}</p>
             </section>
           `,
@@ -42,6 +45,10 @@ class Talks extends HTMLElement {
       </div>
     `;
     render(template, this);
+  }
+
+  #deleteTalk(talk) {
+    deleteTalk(talk.title, api);
   }
 }
 

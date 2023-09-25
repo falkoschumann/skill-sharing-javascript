@@ -1,6 +1,10 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { queryTalks, submitTalk } from '../../src/application/services.js';
+import {
+  deleteTalk,
+  getTalks,
+  submitTalk,
+} from '../../src/application/services.js';
 
 describe('services', () => {
   describe('submit talk', () => {
@@ -20,9 +24,22 @@ describe('services', () => {
         { title: 'foobar', summary: 'lorem ipsum' },
       ]);
 
-      const talks = await queryTalks(repository);
+      const talks = await getTalks(repository);
 
       expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
+    });
+  });
+
+  describe('delete talk', () => {
+    test('removes talk from list', async () => {
+      const repository = new FakeRepository([
+        { title: 'foobar', summary: 'lorem ipsum' },
+      ]);
+
+      await deleteTalk('foobar', repository);
+
+      const talks = await repository.findAll();
+      expect(talks).toEqual([]);
     });
   });
 });
@@ -40,5 +57,9 @@ class FakeRepository {
 
   async add(talk) {
     this.#talks.push(talk);
+  }
+
+  async remove(title) {
+    this.#talks = this.#talks.filter((talk) => talk.title !== title);
   }
 }

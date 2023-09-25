@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { queryTalks, submitTalk } from '../application/services.js';
+import { deleteTalk, getTalks, submitTalk } from '../application/services.js';
 import { Repository } from '../infrastructure/repository.js';
 
 export class ExpressApp {
@@ -41,7 +41,14 @@ export class ExpressApp {
 
       const title = req.params.title;
       await submitTalk({ title, summary: talk.summary }, repository);
-      this.talkSubmitted(repository);
+      this.#talkSubmitted(repository);
+      res.status(204).send();
+    });
+
+    this.#app.delete('/api/talks/:title', async (req, res) => {
+      const title = req.params.title;
+      await deleteTalk(title, repository);
+      this.#talkDeleted(repository);
       res.status(204).send();
     });
   }
@@ -54,7 +61,7 @@ export class ExpressApp {
   }
 
   async #talkResponse(repository) {
-    const talks = await queryTalks(repository);
+    const talks = await getTalks(repository);
     return {
       status: 200,
       headers: {
@@ -80,7 +87,15 @@ export class ExpressApp {
     });
   }
 
-  async talkSubmitted(repository) {
+  async #talkSubmitted(repository) {
+    this.#updated(repository);
+  }
+
+  async #talkDeleted(repository) {
+    this.#updated(repository);
+  }
+
+  async #updated(repository) {
     this.#version++;
     const response = await this.#talkResponse(repository);
     this.#waiting.forEach((resolve) => resolve(response));

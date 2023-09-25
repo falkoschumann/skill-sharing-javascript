@@ -28,6 +28,10 @@ export class Api {
     });
   }
 
+  async deleteTalk(title) {
+    await fetch(this.#talkUrl(title), { method: 'DELETE' });
+  }
+
   #talkUrl(title) {
     return `${this.#baseUrl}/talks/` + encodeURIComponent(title);
   }

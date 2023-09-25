@@ -1,6 +1,6 @@
-[
-  {
+{
+  "Foobar": {
     "title": "Foobar",
     "summary": "Lorem ipsum"
   }
-]
+}

@@ -1,6 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
 
 import {
+  deleteTalk,
   newTalk,
   pollTalks,
   talkUpdated,
@@ -95,6 +96,16 @@ describe('actions', () => {
     });
   });
 
+  describe('delete talk', () => {
+    test('deletes talk', async () => {
+      const api = new FakeApi();
+
+      await deleteTalk('foobar', api);
+
+      expect(api.deleteTalk).nthCalledWith(1, 'foobar');
+    });
+  });
+
   describe('store', () => {
     test('does not emit event, if state is not changed', () => {
       const listener = jest.fn();
@@ -134,6 +145,7 @@ class FakeApi {
 
   constructor({ talks = new ConfigurableResponses() } = {}) {
     this.putTalk = jest.fn();
+    this.deleteTalk = jest.fn();
     this.#talks = talks;
   }
 

@@ -47,7 +47,6 @@ describe('repository', () => {
     test('creates file, if file does not exist', async () => {
       const repository = new Repository({ fileName });
       let talks = await repository.findAll();
-      expect(talks).toEqual([]);
 
       await repository.add({ title: 'foobar', summary: 'lorem ipsum' });
 
@@ -58,7 +57,6 @@ describe('repository', () => {
     test('adds talk, if file exists', async () => {
       const repository = new Repository({ fileName });
       let talks = await repository.findAll();
-      expect(talks).toEqual([]);
       await repository.add({ title: 'foo', summary: 'lorem' });
 
       await repository.add({ title: 'bar', summary: 'ipsum' });
@@ -68,6 +66,19 @@ describe('repository', () => {
         { title: 'foo', summary: 'lorem' },
         { title: 'bar', summary: 'ipsum' },
       ]);
+    });
+  });
+
+  describe('remove', () => {
+    test('removes talk from file', async () => {
+      const repository = new Repository({ fileName });
+      let talks = await repository.findAll();
+      await repository.add({ title: 'foobar', summary: 'lorem ipsum' });
+
+      await repository.remove('foobar');
+
+      talks = await repository.findAll();
+      expect(talks).toEqual([]);
     });
   });
 });

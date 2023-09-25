@@ -24,3 +24,7 @@ export async function talkUpdated(name, value, store) {
 export async function newTalk(store, api) {
   await api.putTalk(store.getState().talk);
 }
+
+export async function deleteTalk(title, api) {
+  await api.deleteTalk(title);
+}

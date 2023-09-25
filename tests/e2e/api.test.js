@@ -152,4 +152,22 @@ describe('API', () => {
       expect(talks).toEqual([]);
     });
   });
+
+  describe('DELETE talk', () => {
+    test('deletes an existing talk', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foobar')
+        .set('Content-Type', 'application/json')
+        .send({ summary: 'lorem ipsum' });
+
+      let response = await request(app).delete('/api/talks/foobar').send();
+
+      expect(response.status).toEqual(204);
+      response = await request(app).get('/api/talks').send();
+      expect(response.get('ETag')).toEqual('"2"');
+      expect(response.body).toEqual([]);
+    });
+  });
 });
