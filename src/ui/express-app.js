@@ -45,14 +45,14 @@ export class ExpressApp {
 
       const title = req.params.title;
       await submitTalk({ title, summary: talk.summary }, repository);
-      this.#talkSubmitted(repository);
+      this.#talksUpdated(repository);
       res.status(204).send();
     });
 
     this.#app.delete('/api/talks/:title', async (req, res) => {
       const title = req.params.title;
       await deleteTalk(title, repository);
-      this.#talkDeleted(repository);
+      this.#talksUpdated(repository);
       res.status(204).send();
     });
   }
@@ -77,7 +77,7 @@ export class ExpressApp {
     };
   }
 
-  #waitForChange(time) {
+  async #waitForChange(time) {
     return new Promise((resolve) => {
       this.#waiting.push(resolve);
       setTimeout(async () => {
@@ -91,15 +91,7 @@ export class ExpressApp {
     });
   }
 
-  async #talkSubmitted(repository) {
-    this.#updated(repository);
-  }
-
-  async #talkDeleted(repository) {
-    this.#updated(repository);
-  }
-
-  async #updated(repository) {
+  async #talksUpdated(repository) {
     this.#version++;
     const response = await this.#talkResponse(repository);
     this.#waiting.forEach((resolve) => resolve(response));

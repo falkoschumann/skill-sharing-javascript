@@ -2,15 +2,15 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import {
   deleteTalk,
-  newTalk,
+  newTalkUpdated,
   pollTalks,
-  talkUpdated,
+  submitTalk,
 } from '../../public/js/application/client-services.js';
 import { initialState, reducer } from '../../public/js/domain/reducer.js';
 import { ConfigurableResponses } from '../configurable-responses.js';
 import { Store } from '../../public/js/domain/store.js';
 
-describe('actions', () => {
+describe('client services', () => {
   let store;
 
   beforeEach(() => {
@@ -71,9 +71,9 @@ describe('actions', () => {
     });
   });
 
-  describe('talk updated', () => {
-    test('updates a talk property ', async () => {
-      await talkUpdated('title', 'foobar', store);
+  describe('new talk updated', () => {
+    test('updates a property of the new talk', async () => {
+      await newTalkUpdated('title', 'foobar', store);
 
       expect(store.getState()).toEqual({
         talks: [],
@@ -82,13 +82,13 @@ describe('actions', () => {
     });
   });
 
-  describe('new talk', () => {
+  describe('submit talk', () => {
     test('submits talk', async () => {
-      await talkUpdated('title', 'foobar', store);
-      await talkUpdated('summary', 'lorem ipsum', store);
+      await newTalkUpdated('title', 'foobar', store);
+      await newTalkUpdated('summary', 'lorem ipsum', store);
       const api = new FakeApi();
 
-      await newTalk(store, api);
+      await submitTalk(store, api);
 
       expect(api.putTalk).nthCalledWith(1, {
         title: 'foobar',
@@ -121,7 +121,11 @@ describe('actions', () => {
       const listener = jest.fn();
       store.subscribe(listener);
 
-      store.dispatch({ type: 'talk-updated', name: 'title', value: 'foobar' });
+      store.dispatch({
+        type: 'new-talk-updated',
+        name: 'title',
+        value: 'foobar',
+      });
 
       expect(listener).toBeCalledTimes(1);
     });

@@ -18,7 +18,7 @@ describe('services', () => {
     });
   });
 
-  describe('query talks', () => {
+  describe('get talks', () => {
     test('returns list of talks', async () => {
       const repository = new FakeRepository([
         { title: 'foobar', summary: 'lorem ipsum' },

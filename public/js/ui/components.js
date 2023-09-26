@@ -3,8 +3,8 @@ import { html, render } from '../vendor.js';
 import { api, store } from '../app.config.js';
 import {
   deleteTalk,
-  newTalk,
-  talkUpdated,
+  newTalkUpdated,
+  submitTalk,
 } from '../application/client-services.js';
 
 class Talks extends HTMLElement {
@@ -40,7 +40,9 @@ class Talks extends HTMLElement {
             <section class="talk">
               <h2>
                 ${talk.title}
-                <button @click=${(_) => this.#deleteTalk(talk)}>Delete</button>
+                <button @click=${(_) => this.#onClickDelete(talk)}>
+                  Delete
+                </button>
               </h2>
               <p>${talk.summary}</p>
             </section>
@@ -51,7 +53,7 @@ class Talks extends HTMLElement {
     render(template, this);
   }
 
-  #deleteTalk(talk) {
+  #onClickDelete(talk) {
     deleteTalk(talk.title, api);
   }
 }
@@ -61,7 +63,7 @@ window.customElements.define('s-talks', Talks);
 class TalkForm extends HTMLElement {
   connectedCallback() {
     const template = html`
-      <form @submit=${(e) => this.#newTalk(e)}>
+      <form @submit=${(e) => this.onSubmit(e)}>
         <h3>Submit a Talk</h3>
         <label
           >Title:
@@ -88,12 +90,12 @@ class TalkForm extends HTMLElement {
   }
 
   /** @param {Event} event  */
-  #newTalk(event) {
+  onSubmit(event) {
     event.preventDefault();
     const form = /** @type {HTMLFormElement} */ (event.target);
     form.reportValidity();
     if (form.checkValidity()) {
-      newTalk(store, api);
+      submitTalk(store, api);
       form.reset();
     }
   }
@@ -101,7 +103,7 @@ class TalkForm extends HTMLElement {
   /** @param {Event} event  */
   #onUserInput(event) {
     const { name, value } = /** @type {HTMLInputElement} */ (event.target);
-    talkUpdated(name, value, store);
+    newTalkUpdated(name, value, store);
   }
 }
 
