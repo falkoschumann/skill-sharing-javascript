@@ -1,7 +1,11 @@
 import { html, render } from '../vendor.js';
 
 import { api, store } from '../app.config.js';
-import { deleteTalk, newTalk, talkUpdated } from '../application/actions.js';
+import {
+  deleteTalk,
+  newTalk,
+  talkUpdated,
+} from '../application/client-services.js';
 
 class Talks extends HTMLElement {
   #talks;

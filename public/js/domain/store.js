@@ -1,12 +1,11 @@
 export class Store {
+  #reducer;
   #state;
   #listeners;
 
-  constructor() {
-    this.#state = {
-      talks: [],
-      talk: { title: '', summary: '' },
-    };
+  constructor(reducer, initialState) {
+    this.#reducer = reducer;
+    this.#state = initialState;
     this.#listeners = [];
   }
 
@@ -16,7 +15,7 @@ export class Store {
 
   dispatch(action) {
     const oldState = this.#state;
-    this.#state = this.#reduce(this.#state, action);
+    this.#state = this.#reducer(this.#state, action);
     if (oldState !== this.#state) {
       this.#emitChange();
     }
@@ -25,20 +24,6 @@ export class Store {
   subscribe(listener) {
     this.#listeners.push(listener);
     return () => this.#unsubscribe(listener);
-  }
-
-  #reduce(state, action) {
-    switch (action.type) {
-      case 'set-talks':
-        return { ...state, talks: action.talks };
-      case 'talk-updated':
-        return {
-          ...state,
-          talk: { ...state.talk, [action.name]: action.value },
-        };
-      default:
-        return state;
-    }
   }
 
   #emitChange() {

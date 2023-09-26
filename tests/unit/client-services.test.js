@@ -1,18 +1,24 @@
-import { describe, expect, jest, test } from '@jest/globals';
+import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import {
   deleteTalk,
   newTalk,
   pollTalks,
   talkUpdated,
-} from '../../public/js/application/actions.js';
+} from '../../public/js/application/client-services.js';
+import { initialState, reducer } from '../../public/js/domain/reducer.js';
 import { ConfigurableResponses } from '../configurable-responses.js';
 import { Store } from '../../public/js/domain/store.js';
 
 describe('actions', () => {
+  let store;
+
+  beforeEach(() => {
+    store = new Store(reducer, initialState);
+  });
+
   describe('poll talks', () => {
     test('sets talks', async () => {
-      const store = new Store();
       const api = new FakeApi({
         talks: new ConfigurableResponses([
           {
@@ -32,7 +38,6 @@ describe('actions', () => {
     });
 
     test('does not set talks, if not modified', async () => {
-      const store = new Store();
       const api = new FakeApi({
         talks: new ConfigurableResponses([{ notModified: true }]),
       });
@@ -46,7 +51,6 @@ describe('actions', () => {
     });
 
     test('recovers after error', async () => {
-      const store = new Store();
       const api = new FakeApi({
         talks: new ConfigurableResponses([
           new Error(),
@@ -69,8 +73,6 @@ describe('actions', () => {
 
   describe('talk updated', () => {
     test('updates a talk property ', async () => {
-      const store = new Store();
-
       await talkUpdated('title', 'foobar', store);
 
       expect(store.getState()).toEqual({
@@ -82,7 +84,6 @@ describe('actions', () => {
 
   describe('new talk', () => {
     test('submits talk', async () => {
-      const store = new Store();
       await talkUpdated('title', 'foobar', store);
       await talkUpdated('summary', 'lorem ipsum', store);
       const api = new FakeApi();
@@ -109,7 +110,6 @@ describe('actions', () => {
   describe('store', () => {
     test('does not emit event, if state is not changed', () => {
       const listener = jest.fn();
-      const store = new Store();
       store.subscribe(listener);
 
       store.dispatch({ type: 'foobar' });
@@ -119,7 +119,6 @@ describe('actions', () => {
 
     test('emits event, if state is changed', () => {
       const listener = jest.fn();
-      const store = new Store();
       store.subscribe(listener);
 
       store.dispatch({ type: 'talk-updated', name: 'title', value: 'foobar' });
@@ -129,7 +128,6 @@ describe('actions', () => {
 
     test('does not emit event, if listener is unsubscribed', () => {
       const listener = jest.fn();
-      const store = new Store();
       const unsubscribe = store.subscribe(listener);
 
       unsubscribe();

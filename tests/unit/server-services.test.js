@@ -4,7 +4,7 @@ import {
   deleteTalk,
   getTalks,
   submitTalk,
-} from '../../src/application/services.js';
+} from '../../src/application/server-services.js';
 
 describe('services', () => {
   describe('submit talk', () => {

@@ -1,6 +1,10 @@
 import express from 'express';
 
-import { deleteTalk, getTalks, submitTalk } from '../application/services.js';
+import {
+  deleteTalk,
+  getTalks,
+  submitTalk,
+} from '../application/server-services.js';
 import { Repository } from '../infrastructure/repository.js';
 
 export class ExpressApp {
