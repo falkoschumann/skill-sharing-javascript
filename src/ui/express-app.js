@@ -1,6 +1,7 @@
 import express from 'express';
 
 import {
+  addComment,
   deleteTalk,
   getTalks,
   submitTalk,
@@ -37,7 +38,7 @@ export class ExpressApp {
     });
 
     this.#app.put('/api/talks/:title', async (req, res) => {
-      let talk = req.body;
+      const talk = req.body;
       if (typeof talk.summary != 'string') {
         res.status(400).send();
         return;
@@ -52,6 +53,14 @@ export class ExpressApp {
     this.#app.delete('/api/talks/:title', async (req, res) => {
       const title = req.params.title;
       await deleteTalk(title, repository);
+      this.#talksUpdated(repository);
+      res.status(204).send();
+    });
+
+    this.#app.post('/api/talks/:title/comments', async (req, res) => {
+      const comment = req.body;
+      const title = req.params.title;
+      await addComment(title, { message: comment.message }, repository);
       this.#talksUpdated(repository);
       res.status(204).send();
     });

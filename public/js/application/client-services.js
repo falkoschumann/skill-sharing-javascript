@@ -1,5 +1,5 @@
-export async function submitTalk(store, api) {
-  await api.putTalk(store.getState().talk);
+export async function submitTalk(talk, api) {
+  await api.putTalk(talk);
 }
 
 export async function deleteTalk(title, api) {
@@ -25,6 +25,6 @@ export async function pollTalks(store, api, runs = -1) {
   }
 }
 
-export async function newTalkUpdated(name, value, store) {
-  store.dispatch({ type: 'new-talk-updated', name, value });
+export function addComment(title, comment, api) {
+  api.postComment(title, comment);
 }

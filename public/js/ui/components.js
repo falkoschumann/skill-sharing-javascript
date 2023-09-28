@@ -1,11 +1,12 @@
 import { html, render } from '../vendor.js';
 
-import { api, store } from '../app.config.js';
 import {
+  addComment,
   deleteTalk,
-  newTalkUpdated,
   submitTalk,
 } from '../application/client-services.js';
+import { api } from '../app.config.js';
+import { store } from '../store.js';
 
 class Talks extends HTMLElement {
   #talks;
@@ -45,6 +46,19 @@ class Talks extends HTMLElement {
                 </button>
               </h2>
               <p>${talk.summary}</p>
+              ${talk.comments.map(
+                (comment) => html` <p class="comment">${comment.message}</p> `,
+              )}
+              <form @submit=${(e) => this.#onSubmit(e)}>
+                <input
+                  type="text"
+                  hidden
+                  name="talkTitle"
+                  value="${talk.title}"
+                />
+                <input type="text" required name="comment" />
+                <button type="submit">Add comment</button>
+              </form>
             </section>
           `,
         )}
@@ -56,6 +70,22 @@ class Talks extends HTMLElement {
   #onClickDelete(talk) {
     deleteTalk(talk.title, api);
   }
+
+  /** @param {Event} event  */
+  #onSubmit(event) {
+    event.preventDefault();
+    const form = /** @type {HTMLFormElement} */ (event.target);
+    form.reportValidity();
+    if (form.checkValidity()) {
+      const formData = new FormData(form);
+      const title = formData.get('talkTitle');
+      const comment = {
+        message: formData.get('comment'),
+      };
+      addComment(title, comment, api);
+      form.reset();
+    }
+  }
 }
 
 window.customElements.define('s-talks', Talks);
@@ -63,25 +93,15 @@ window.customElements.define('s-talks', Talks);
 class TalkForm extends HTMLElement {
   connectedCallback() {
     const template = html`
-      <form @submit=${(e) => this.onSubmit(e)}>
+      <form @submit=${(e) => this.#onSubmit(e)}>
         <h3>Submit a Talk</h3>
         <label
           >Title:
-          <input
-            type="text"
-            required
-            name="title"
-            @keyup=${(e) => this.#onUserInput(e)}
-          />
+          <input type="text" required name="title" />
         </label>
         <label
           >Summary:
-          <input
-            type="text"
-            required
-            name="summary"
-            @keyup=${(e) => this.#onUserInput(e)}
-          />
+          <input type="text" required name="summary" />
         </label>
         <button type="submit">Submit</button>
       </form>
@@ -90,20 +110,19 @@ class TalkForm extends HTMLElement {
   }
 
   /** @param {Event} event  */
-  onSubmit(event) {
+  #onSubmit(event) {
     event.preventDefault();
     const form = /** @type {HTMLFormElement} */ (event.target);
     form.reportValidity();
     if (form.checkValidity()) {
-      submitTalk(store, api);
+      const formData = new FormData(form);
+      const talk = {
+        title: formData.get('title'),
+        summary: formData.get('summary'),
+      };
+      submitTalk(talk, api);
       form.reset();
     }
-  }
-
-  /** @param {Event} event  */
-  #onUserInput(event) {
-    const { name, value } = /** @type {HTMLInputElement} */ (event.target);
-    newTalkUpdated(name, value, store);
   }
 }
 

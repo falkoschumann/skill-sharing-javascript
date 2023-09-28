@@ -31,7 +31,7 @@ describe('API', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum' },
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
     });
 
@@ -53,7 +53,7 @@ describe('API', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum' },
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
     });
 
@@ -118,7 +118,7 @@ describe('API', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum' },
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
     });
   });
@@ -128,28 +128,30 @@ describe('API', () => {
       const repository = new Repository({ fileName });
       const app = new ExpressApp({ repository }).app;
 
-      const response = await request(app)
+      let response = await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
         .send({ summary: 'lorem ipsum' });
 
       expect(response.status).toEqual(204);
-      const talks = await repository.findAll();
-      expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
+      response = await request(app).get('/api/talks').send();
+      expect(response.body).toEqual([
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+      ]);
     });
 
     test('reports an error, if summary is missing', async () => {
       const repository = new Repository({ fileName });
       const app = new ExpressApp({ repository }).app;
 
-      const response = await request(app)
+      let response = await request(app)
         .put('/api/talks/foobar')
         .set('Accept', 'application/json')
         .send({});
 
       expect(response.status).toEqual(400);
-      const talks = await repository.findAll();
-      expect(talks).toEqual([]);
+      response = await request(app).get('/api/talks').send();
+      expect(response.body).toEqual([]);
     });
   });
 
@@ -168,6 +170,32 @@ describe('API', () => {
       response = await request(app).get('/api/talks').send();
       expect(response.get('ETag')).toEqual('"2"');
       expect(response.body).toEqual([]);
+    });
+  });
+
+  describe('POST comment', () => {
+    test('adds comment', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foobar')
+        .set('Content-Type', 'application/json')
+        .send({ summary: 'lorem ipsum' });
+
+      let response = await request(app)
+        .post('/api/talks/foobar/comments')
+        .set('Content-Type', 'application/json')
+        .send({ message: 'new comment' });
+
+      expect(response.status).toEqual(204);
+      response = await request(app).get('/api/talks').send();
+      expect(response.body).toEqual([
+        {
+          title: 'foobar',
+          summary: 'lorem ipsum',
+          comments: [{ message: 'new comment' }],
+        },
+      ]);
     });
   });
 });

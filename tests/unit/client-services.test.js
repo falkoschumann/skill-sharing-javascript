@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import {
+  addComment,
   deleteTalk,
-  newTalkUpdated,
   pollTalks,
   submitTalk,
 } from '../../public/js/application/client-services.js';
@@ -71,24 +71,11 @@ describe('client services', () => {
     });
   });
 
-  describe('new talk updated', () => {
-    test('updates a property of the new talk', async () => {
-      await newTalkUpdated('title', 'foobar', store);
-
-      expect(store.getState()).toEqual({
-        talks: [],
-        talk: { title: 'foobar', summary: '' },
-      });
-    });
-  });
-
   describe('submit talk', () => {
     test('submits talk', async () => {
-      await newTalkUpdated('title', 'foobar', store);
-      await newTalkUpdated('summary', 'lorem ipsum', store);
       const api = new FakeApi();
 
-      await submitTalk(store, api);
+      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, api);
 
       expect(api.putTalk).nthCalledWith(1, {
         title: 'foobar',
@@ -104,6 +91,18 @@ describe('client services', () => {
       await deleteTalk('foobar', api);
 
       expect(api.deleteTalk).nthCalledWith(1, 'foobar');
+    });
+  });
+
+  describe('add comment', () => {
+    test('posts comment', async () => {
+      const api = new FakeApi();
+
+      await addComment('foobar', { message: 'lorem ipsum' }, api);
+
+      expect(api.postComment).nthCalledWith(1, 'foobar', {
+        message: 'lorem ipsum',
+      });
     });
   });
 
@@ -146,9 +145,10 @@ class FakeApi {
   #talks;
 
   constructor({ talks = new ConfigurableResponses() } = {}) {
+    this.#talks = talks;
     this.putTalk = jest.fn();
     this.deleteTalk = jest.fn();
-    this.#talks = talks;
+    this.postComment = jest.fn();
   }
 
   async getTalks() {

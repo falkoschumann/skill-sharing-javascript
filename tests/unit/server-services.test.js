@@ -14,19 +14,23 @@ describe('services', () => {
       await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
 
       const talks = await repository.findAll();
-      expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
+      expect(talks).toEqual([
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+      ]);
     });
   });
 
   describe('get talks', () => {
     test('returns list of talks', async () => {
       const repository = new FakeRepository([
-        { title: 'foobar', summary: 'lorem ipsum' },
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
 
       const talks = await getTalks(repository);
 
-      expect(talks).toEqual([{ title: 'foobar', summary: 'lorem ipsum' }]);
+      expect(talks).toEqual([
+        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+      ]);
     });
   });
 

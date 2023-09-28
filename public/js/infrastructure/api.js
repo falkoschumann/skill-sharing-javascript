@@ -1,7 +1,7 @@
 export class Api {
   #baseUrl;
 
-  constructor(baseUrl = '/api') {
+  constructor({ baseUrl = '/api' } = {}) {
     this.#baseUrl = baseUrl;
   }
 
@@ -30,6 +30,14 @@ export class Api {
 
   async deleteTalk(title) {
     await fetch(this.#talkUrl(title), { method: 'DELETE' });
+  }
+
+  async postComment(title, comment) {
+    await fetch(this.#talkUrl(title) + '/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(comment),
+    });
   }
 
   #talkUrl(title) {

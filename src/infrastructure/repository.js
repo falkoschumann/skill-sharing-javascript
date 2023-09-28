@@ -16,6 +16,11 @@ export class Repository {
     return list;
   }
 
+  async findByTitle(title) {
+    const talks = await this.#load();
+    return talks[title];
+  }
+
   async add(talk) {
     const talks = await this.#load();
     talks[talk.title] = talk;
