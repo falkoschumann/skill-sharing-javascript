@@ -1,0 +1,120 @@
+openapi: 3.1.0
+info:
+  title: Skill Sharring
+  version: 0.1.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/talks:
+    get:
+      parameters:
+        - name: If-None-Match
+          in: header
+          schema:
+            type: string
+          example: 0
+        - name: Prefer
+          in: header
+          schema:
+            type: string
+          example: wait=90
+      responses:
+        "200":
+          description: OK
+          headers:
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/talk"
+        "304":
+          description: Not Modified
+  /api/talks/{title}:
+    get:
+      parameters:
+        - name: title
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/talk"
+        "404":
+          description: Not Found
+    put:
+      parameters:
+        - name: title
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newTalk"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+    delete:
+      parameters:
+        - name: title
+          in: path
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+  /api/talks/{title}/comments:
+    post:
+      parameters:
+        - name: title
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/comment"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+components:
+  schemas:
+    talk:
+      type: object
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        comments:
+          type: array
+          items:
+            $ref: "#/components/schemas/comment"
+    newTalk:
+      type: object
+      properties:
+        summary:
+          type: string
+    comment:
+      type: object
+      properties:
+        message:
+          type: string
