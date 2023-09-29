@@ -1,6 +1,7 @@
 # temp and external
 coverage/
 vendor/
+swagger-ui/
 
 # data
 /data/

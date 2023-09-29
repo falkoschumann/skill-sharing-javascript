@@ -20,11 +20,11 @@ export class Api {
     };
   }
 
-  async putTalk({ title, summary }) {
+  async putTalk({ title, presenter, summary }) {
     await fetch(this.#talkUrl(title), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ summary }),
+      body: JSON.stringify({ presenter, summary }),
     });
   }
 
@@ -32,8 +32,8 @@ export class Api {
     await fetch(this.#talkUrl(title), { method: 'DELETE' });
   }
 
-  async postComment(title, comment) {
-    await fetch(this.#talkUrl(title) + '/comments', {
+  async postComment(talkTitle, comment) {
+    await fetch(this.#talkUrl(talkTitle) + '/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(comment),

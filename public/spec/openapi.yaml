@@ -19,7 +19,7 @@ paths:
             type: string
           example: wait=90
       responses:
-        "200":
+        '200':
           description: OK
           headers:
             ETag:
@@ -30,8 +30,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/talk"
-        "304":
+                  $ref: '#/components/schemas/talk'
+        '304':
           description: Not Modified
   /api/talks/{title}:
     get:
@@ -41,13 +41,13 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/talk"
-        "404":
+                $ref: '#/components/schemas/talk'
+        '404':
           description: Not Found
     put:
       parameters:
@@ -60,11 +60,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/newTalk"
+              $ref: '#/components/schemas/newTalk'
       responses:
-        "204":
+        '204':
           description: No Content
-        "400":
+        '400':
           description: Bad Request
     delete:
       parameters:
@@ -73,7 +73,7 @@ paths:
           schema:
             type: string
       responses:
-        "204":
+        '204':
           description: No Content
   /api/talks/{title}/comments:
     post:
@@ -87,13 +87,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/comment"
+              $ref: '#/components/schemas/comment'
       responses:
-        "204":
+        '204':
           description: No Content
-        "400":
+        '400':
           description: Bad Request
-        "404":
+        '404':
           description: Not Found
 components:
   schemas:
@@ -102,19 +102,25 @@ components:
       properties:
         title:
           type: string
+        presenter:
+          type: string
         summary:
           type: string
         comments:
           type: array
           items:
-            $ref: "#/components/schemas/comment"
+            $ref: '#/components/schemas/comment'
     newTalk:
       type: object
       properties:
+        presenter:
+          type: string
         summary:
           type: string
     comment:
       type: object
       properties:
+        author:
+          type: string
         message:
           type: string

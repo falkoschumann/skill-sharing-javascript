@@ -78,39 +78,67 @@ describe('repository', () => {
 
       await repository.add({
         title: 'foobar',
+        author: 'Anon',
         summary: 'lorem ipsum',
         comments: [],
       });
 
       talks = await repository.findAll();
       expect(talks).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        {
+          title: 'foobar',
+          author: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
 
     test('adds talk, if file exists', async () => {
       const repository = new Repository({ fileName });
       let talks = await repository.findAll();
-      await repository.add({ title: 'foo', summary: 'lorem', comments: [] });
+      await repository.add({
+        title: 'foo',
+        author: 'Anon',
+        summary: 'lorem',
+        comments: [],
+      });
 
-      await repository.add({ title: 'bar', summary: 'ipsum', comments: [] });
+      await repository.add({
+        title: 'bar',
+        author: 'Bob',
+        summary: 'ipsum',
+        comments: [],
+      });
 
       talks = await repository.findAll();
       expect(talks).toEqual([
-        { title: 'foo', summary: 'lorem', comments: [] },
-        { title: 'bar', summary: 'ipsum', comments: [] },
+        { title: 'foo', author: 'Anon', summary: 'lorem', comments: [] },
+        { title: 'bar', author: 'Bob', summary: 'ipsum', comments: [] },
       ]);
     });
 
     test('updates talk, if talk exists', async () => {
       const repository = new Repository({ fileName });
       let talks = await repository.findAll();
-      await repository.add({ title: 'foo', summary: 'lorem', comments: [] });
+      await repository.add({
+        title: 'foo',
+        author: 'Anon',
+        summary: 'lorem',
+        comments: [],
+      });
 
-      await repository.add({ title: 'foo', summary: 'ipsum', comments: [] });
+      await repository.add({
+        title: 'foo',
+        author: 'Bob',
+        summary: 'ipsum',
+        comments: [],
+      });
 
       talks = await repository.findAll();
-      expect(talks).toEqual([{ title: 'foo', summary: 'ipsum', comments: [] }]);
+      expect(talks).toEqual([
+        { title: 'foo', author: 'Bob', summary: 'ipsum', comments: [] },
+      ]);
     });
   });
 
@@ -120,6 +148,7 @@ describe('repository', () => {
       let talks = await repository.findAll();
       await repository.add({
         title: 'foobar',
+        author: 'Anon',
         summary: 'lorem ipsum',
         comments: [],
       });

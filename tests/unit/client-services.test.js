@@ -1,13 +1,18 @@
+/** @jest-environment jsdom */
+
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import {
   addComment,
+  changeUser,
   deleteTalk,
+  getUser,
   pollTalks,
   submitTalk,
 } from '../../public/js/application/client-services.js';
 import { initialState, reducer } from '../../public/js/domain/reducer.js';
 import { ConfigurableResponses } from '../configurable-responses.js';
+import { Repository } from '../../public/js/infrastructure/repository.js';
 import { Store } from '../../public/js/domain/store.js';
 
 describe('client services', () => {
@@ -15,6 +20,37 @@ describe('client services', () => {
 
   beforeEach(() => {
     store = new Store(reducer, initialState);
+    localStorage.clear();
+  });
+
+  describe('change user', () => {
+    test('updates user name', async () => {
+      const repository = new Repository();
+
+      await changeUser({ name: 'Bob' }, store, repository);
+
+      expect(store.getState().user).toEqual('Bob');
+      expect(await repository.load()).toEqual('Bob');
+    });
+  });
+
+  describe('get user', () => {
+    test('gets user Anon if no user is stored', async () => {
+      const repository = new Repository();
+
+      await getUser(store, repository);
+
+      expect(store.getState().user).toEqual('Anon');
+    });
+
+    test('gets stored user', async () => {
+      const repository = new Repository();
+      await repository.store('Bob');
+
+      await getUser(store, repository);
+
+      expect(store.getState().user).toEqual('Bob');
+    });
   });
 
   describe('poll talks', () => {
@@ -24,17 +60,18 @@ describe('client services', () => {
           {
             notModified: false,
             tag: '1',
-            talks: [{ title: 'foobar', summary: 'lorem ipsum' }],
+            talks: [
+              { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+            ],
           },
         ]),
       });
 
       await pollTalks(store, api, 1);
 
-      expect(store.getState()).toEqual({
-        talks: [{ title: 'foobar', summary: 'lorem ipsum' }],
-        talk: { title: '', summary: '' },
-      });
+      expect(store.getState().talks).toEqual([
+        { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+      ]);
     });
 
     test('does not set talks, if not modified', async () => {
@@ -44,10 +81,7 @@ describe('client services', () => {
 
       await pollTalks(store, api, 1);
 
-      expect(store.getState()).toEqual({
-        talks: [],
-        talk: { title: '', summary: '' },
-      });
+      expect(store.getState().talks).toEqual([]);
     });
 
     test('recovers after error', async () => {
@@ -57,17 +91,18 @@ describe('client services', () => {
           {
             notModified: false,
             tag: '1',
-            talks: [{ title: 'foobar', summary: 'lorem ipsum' }],
+            talks: [
+              { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+            ],
           },
         ]),
       });
 
       await pollTalks(store, api, 2);
 
-      expect(store.getState()).toEqual({
-        talks: [{ title: 'foobar', summary: 'lorem ipsum' }],
-        talk: { title: '', summary: '' },
-      });
+      expect(store.getState().talks).toEqual([
+        { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+      ]);
     });
   });
 
@@ -75,10 +110,11 @@ describe('client services', () => {
     test('submits talk', async () => {
       const api = new FakeApi();
 
-      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, api);
+      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
 
       expect(api.putTalk).nthCalledWith(1, {
         title: 'foobar',
+        presenter: 'Anon',
         summary: 'lorem ipsum',
       });
     });
@@ -88,7 +124,7 @@ describe('client services', () => {
     test('deletes talk', async () => {
       const api = new FakeApi();
 
-      await deleteTalk('foobar', api);
+      await deleteTalk({ title: 'foobar' }, api);
 
       expect(api.deleteTalk).nthCalledWith(1, 'foobar');
     });
@@ -98,45 +134,16 @@ describe('client services', () => {
     test('posts comment', async () => {
       const api = new FakeApi();
 
-      await addComment('foobar', { message: 'lorem ipsum' }, api);
+      await addComment(
+        { talkTitle: 'foobar', comment: 'lorem ipsum' },
+        store,
+        api,
+      );
 
       expect(api.postComment).nthCalledWith(1, 'foobar', {
+        author: 'Anon',
         message: 'lorem ipsum',
       });
-    });
-  });
-
-  describe('store', () => {
-    test('does not emit event, if state is not changed', () => {
-      const listener = jest.fn();
-      store.subscribe(listener);
-
-      store.dispatch({ type: 'foobar' });
-
-      expect(listener).not.toBeCalled();
-    });
-
-    test('emits event, if state is changed', () => {
-      const listener = jest.fn();
-      store.subscribe(listener);
-
-      store.dispatch({
-        type: 'new-talk-updated',
-        name: 'title',
-        value: 'foobar',
-      });
-
-      expect(listener).toBeCalledTimes(1);
-    });
-
-    test('does not emit event, if listener is unsubscribed', () => {
-      const listener = jest.fn();
-      const unsubscribe = store.subscribe(listener);
-
-      unsubscribe();
-      store.dispatch({ type: 'talk-updated', name: 'title', value: 'foobar' });
-
-      expect(listener).not.toBeCalled();
     });
   });
 });

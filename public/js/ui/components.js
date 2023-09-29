@@ -2,11 +2,33 @@ import { html, render } from '../vendor.js';
 
 import {
   addComment,
+  changeUser,
   deleteTalk,
   submitTalk,
 } from '../application/client-services.js';
-import { api } from '../app.config.js';
+import { api, repository } from '../app.config.js';
 import { store } from '../store.js';
+
+class UserField extends HTMLElement {
+  connectedCallback() {
+    const name = 'Anon';
+    const template = html`
+      <label
+        >Your name:
+        <input type="text" value="${name}" @change=${(e) => this.#onChange(e)}
+      /></label>
+    `;
+    render(template, this);
+  }
+
+  /** @param {Event} event  */
+  #onChange(event) {
+    const input = /** @type {HTMLInputElement} */ (event.target);
+    changeUser({ name: input.value }, store, repository);
+  }
+}
+
+window.customElements.define('s-userfield', UserField);
 
 class Talks extends HTMLElement {
   #talks;
@@ -45,9 +67,14 @@ class Talks extends HTMLElement {
                   Delete
                 </button>
               </h2>
+              <div>by <strong>${talk.presenter}</strong></div>
               <p>${talk.summary}</p>
               ${talk.comments.map(
-                (comment) => html` <p class="comment">${comment.message}</p> `,
+                (comment) => html`
+                  <p class="comment">
+                    <strong>${comment.author}</strong>: ${comment.message}
+                  </p>
+                `,
               )}
               <form @submit=${(e) => this.#onSubmit(e)}>
                 <input
@@ -68,7 +95,7 @@ class Talks extends HTMLElement {
   }
 
   #onClickDelete(talk) {
-    deleteTalk(talk.title, api);
+    deleteTalk({ title: talk.title }, api);
   }
 
   /** @param {Event} event  */
@@ -78,11 +105,9 @@ class Talks extends HTMLElement {
     form.reportValidity();
     if (form.checkValidity()) {
       const formData = new FormData(form);
-      const title = formData.get('talkTitle');
-      const comment = {
-        message: formData.get('comment'),
-      };
-      addComment(title, comment, api);
+      const talkTitle = formData.get('talkTitle');
+      const comment = formData.get('comment');
+      addComment({ talkTitle, comment }, store, api);
       form.reset();
     }
   }
@@ -120,7 +145,7 @@ class TalkForm extends HTMLElement {
         title: formData.get('title'),
         summary: formData.get('summary'),
       };
-      submitTalk(talk, api);
+      submitTalk(talk, store, api);
       form.reset();
     }
   }

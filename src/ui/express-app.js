@@ -39,13 +39,19 @@ export class ExpressApp {
 
     this.#app.put('/api/talks/:title', async (req, res) => {
       const talk = req.body;
-      if (typeof talk.summary != 'string') {
+      if (
+        typeof talk.presenter != 'string' ||
+        typeof talk.summary != 'string'
+      ) {
         res.status(400).send();
         return;
       }
 
       const title = req.params.title;
-      await submitTalk({ title, summary: talk.summary }, repository);
+      await submitTalk(
+        { title, presenter: talk.presenter, summary: talk.summary },
+        repository,
+      );
       this.#talksUpdated(repository);
       res.status(204).send();
     });
@@ -59,8 +65,20 @@ export class ExpressApp {
 
     this.#app.post('/api/talks/:title/comments', async (req, res) => {
       const comment = req.body;
+      if (
+        typeof comment.author != 'string' ||
+        typeof comment.message != 'string'
+      ) {
+        res.status(400).send();
+        return;
+      }
+
       const title = req.params.title;
-      await addComment(title, { message: comment.message }, repository);
+      await addComment(
+        title,
+        { author: comment.author, message: comment.message },
+        repository,
+      );
       this.#talksUpdated(repository);
       res.status(204).send();
     });

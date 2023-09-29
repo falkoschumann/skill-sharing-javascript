@@ -1,8 +1,19 @@
-export async function submitTalk(talk, api) {
+export async function changeUser({ name }, store, repository) {
+  store.dispatch({ type: 'change-user', userName: name });
+  await repository.store(name);
+}
+
+export async function getUser(store, repository) {
+  const userName = (await repository.load()) || 'Anon';
+  store.dispatch({ type: 'change-user', userName });
+}
+
+export async function submitTalk({ title, summary }, store, api) {
+  const talk = { title, presenter: store.getState().user, summary };
   await api.putTalk(talk);
 }
 
-export async function deleteTalk(title, api) {
+export async function deleteTalk({ title }, api) {
   await api.deleteTalk(title);
 }
 
@@ -25,6 +36,9 @@ export async function pollTalks(store, api, runs = -1) {
   }
 }
 
-export function addComment(title, comment, api) {
-  api.postComment(title, comment);
+export async function addComment({ talkTitle, comment }, store, api) {
+  await api.postComment(talkTitle, {
+    author: store.getState().user,
+    message: comment,
+  });
 }

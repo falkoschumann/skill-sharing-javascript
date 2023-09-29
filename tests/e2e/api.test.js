@@ -20,7 +20,7 @@ describe('API', () => {
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
       const response = await request(app)
         .get('/api/talks')
@@ -31,7 +31,12 @@ describe('API', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        {
+          title: 'foobar',
+          presenter: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
 
@@ -41,7 +46,7 @@ describe('API', () => {
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
       const response = await request(app)
         .get('/api/talks')
@@ -53,7 +58,12 @@ describe('API', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        {
+          title: 'foobar',
+          presenter: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
 
@@ -63,7 +73,7 @@ describe('API', () => {
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
       const response = await request(app)
         .get('/api/talks')
@@ -87,7 +97,7 @@ describe('API', () => {
           request(app)
             .put('/api/talks/foobar')
             .set('Content-Type', 'application/json')
-            .send({ summary: 'lorem ipsum' }),
+            .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
         2000,
       );
       const response = await responsePromise;
@@ -109,7 +119,7 @@ describe('API', () => {
         await request(app)
           .put('/api/talks/foobar')
           .set('Content-Type', 'application/json')
-          .send({ summary: 'lorem ipsum' });
+          .send({ presenter: 'Anon', summary: 'lorem ipsum' });
       }, 500);
       const response = await responsePromise;
 
@@ -118,7 +128,12 @@ describe('API', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        {
+          title: 'foobar',
+          presenter: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
   });
@@ -131,23 +146,42 @@ describe('API', () => {
       let response = await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
       expect(response.status).toEqual(204);
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        {
+          title: 'foobar',
+          presenter: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
 
-    test('reports an error, if summary is missing', async () => {
+    test('reports an error if presenter is missing', async () => {
       const repository = new Repository({ fileName });
       const app = new ExpressApp({ repository }).app;
 
       let response = await request(app)
         .put('/api/talks/foobar')
         .set('Accept', 'application/json')
-        .send({});
+        .send({ summary: 'lorem ipsum' });
+
+      expect(response.status).toEqual(400);
+      response = await request(app).get('/api/talks').send();
+      expect(response.body).toEqual([]);
+    });
+
+    test('reports an error if summary is missing', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+
+      let response = await request(app)
+        .put('/api/talks/foobar')
+        .set('Accept', 'application/json')
+        .send({ presenter: 'Anon' });
 
       expect(response.status).toEqual(400);
       response = await request(app).get('/api/talks').send();
@@ -162,7 +196,7 @@ describe('API', () => {
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
       let response = await request(app).delete('/api/talks/foobar').send();
 
@@ -180,22 +214,55 @@ describe('API', () => {
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
       let response = await request(app)
         .post('/api/talks/foobar/comments')
         .set('Content-Type', 'application/json')
-        .send({ message: 'new comment' });
+        .send({ author: 'Bob', message: 'new comment' });
 
       expect(response.status).toEqual(204);
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([
         {
           title: 'foobar',
+          presenter: 'Anon',
           summary: 'lorem ipsum',
-          comments: [{ message: 'new comment' }],
+          comments: [{ author: 'Bob', message: 'new comment' }],
         },
       ]);
+    });
+
+    test('reports an error if author is missing', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foobar')
+        .set('Content-Type', 'application/json')
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+      let response = await request(app)
+        .post('/api/talks/foobar/comments')
+        .set('Content-Type', 'application/json')
+        .send({ message: 'new comment' });
+
+      expect(response.status).toEqual(400);
+    });
+
+    test('reports an error if message is missing', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foobar')
+        .set('Content-Type', 'application/json')
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+      let response = await request(app)
+        .post('/api/talks/foobar/comments')
+        .set('Content-Type', 'application/json')
+        .send({ author: 'Bob' });
+
+      expect(response.status).toEqual(400);
     });
   });
 });

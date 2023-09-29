@@ -1,17 +1,14 @@
 export const initialState = {
   talks: [],
-  talk: { title: '', summary: '' },
+  user: 'Anon',
 };
 
 export function reducer(state, action) {
   switch (action.type) {
+    case 'change-user':
+      return { ...state, user: action.userName };
     case 'talks-updated':
       return { ...state, talks: action.talks };
-    case 'new-talk-updated':
-      return {
-        ...state,
-        talk: { ...state.talk, [action.name]: action.value },
-      };
     default:
       return state;
   }
