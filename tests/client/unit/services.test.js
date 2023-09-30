@@ -9,7 +9,7 @@ import {
   getUser,
   pollTalks,
   submitTalk,
-} from '../../../public/js/application/client-services.js';
+} from '../../../public/js/application/services.js';
 import { initialState, reducer } from '../../../public/js/domain/reducer.js';
 import { ConfigurableResponses } from '../../configurable-responses.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';

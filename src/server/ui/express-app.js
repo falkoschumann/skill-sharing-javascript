@@ -5,7 +5,7 @@ import {
   deleteTalk,
   getTalks,
   submitTalk,
-} from '../application/server-services.js';
+} from '../application/services.js';
 import { Repository } from '../infrastructure/repository.js';
 
 export class ExpressApp {
@@ -129,7 +129,7 @@ export class ExpressApp {
     return this.#app;
   }
 
-  start(port) {
+  run({ port = 3000 } = {}) {
     this.#app.listen(port, () => {
       console.log(`Skill Sharing app listening on port ${port}`);
     });

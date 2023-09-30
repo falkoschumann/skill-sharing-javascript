@@ -5,9 +5,8 @@ import {
   changeUser,
   deleteTalk,
   submitTalk,
-} from '../application/client-services.js';
-import { api, repository } from '../app.config.js';
-import { store } from '../store.js';
+} from '../application/services.js';
+import { api, repository, store } from './app.config.js';
 
 class UserField extends HTMLElement {
   connectedCallback() {
