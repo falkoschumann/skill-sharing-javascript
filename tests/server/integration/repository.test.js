@@ -2,7 +2,7 @@ import { rmSync } from 'node:fs';
 
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
-import { Repository } from '../../src/infrastructure/repository.js';
+import { Repository } from '../../../src/infrastructure/repository.js';
 
 const fileName = './data/talks.test.json';
 
@@ -14,7 +14,7 @@ describe('repository', () => {
   describe('find all', () => {
     test('returns list of talks', async () => {
       const repository = new Repository({
-        fileName: './tests/data/example.json',
+        fileName: './tests/server/data/example.json',
       });
 
       const talks = await repository.findAll();
@@ -26,7 +26,7 @@ describe('repository', () => {
 
     test('returns empty list, if file does not exist', async () => {
       const repository = new Repository({
-        fileName: './tests/data/non-existent.json',
+        fileName: './tests/server/data/non-existent.json',
       });
 
       const talks = await repository.findAll();
@@ -36,7 +36,7 @@ describe('repository', () => {
 
     test('returns empty list, if file is corrupt', async () => {
       const repository = new Repository({
-        fileName: './tests/data/corrupt.json',
+        fileName: './tests/server/data/corrupt.json',
       });
 
       const talks = await repository.findAll();
@@ -48,7 +48,7 @@ describe('repository', () => {
   describe('find by title', () => {
     test('returns talk with title', async () => {
       const repository = new Repository({
-        fileName: './tests/data/example.json',
+        fileName: './tests/server/data/example.json',
       });
 
       const talk = await repository.findByTitle('Foobar');
@@ -62,7 +62,7 @@ describe('repository', () => {
 
     test('returns undefined if talk with title does not exist', async () => {
       const repository = new Repository({
-        fileName: './tests/data/example.json',
+        fileName: './tests/server/data/example.json',
       });
 
       const talk = await repository.findByTitle('not a talk');

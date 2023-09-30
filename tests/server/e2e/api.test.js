@@ -3,8 +3,8 @@ import { rmSync } from 'node:fs';
 import { beforeEach, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
 
-import { ExpressApp } from '../../src/ui/express-app.js';
-import { Repository } from '../../src/infrastructure/repository.js';
+import { ExpressApp } from '../../../src/ui/express-app.js';
+import { Repository } from '../../../src/infrastructure/repository.js';
 
 const fileName = './data/talks.test.json';
 
