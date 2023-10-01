@@ -138,6 +138,47 @@ describe('API', () => {
     });
   });
 
+  describe('GET talk', () => {
+    test('replies with talk', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foobar')
+        .set('Content-Type', 'application/json')
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+      const response = await request(app)
+        .get('/api/talks/foobar')
+        .set('Accept', 'application/json');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/application\/json/);
+      expect(response.body).toEqual({
+        title: 'foobar',
+        presenter: 'Anon',
+        summary: 'lorem ipsum',
+        comments: [],
+      });
+    });
+
+    test('reports an error if talk does not exists', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foo')
+        .set('Content-Type', 'application/json')
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+      const response = await request(app)
+        .get('/api/talks/bar')
+        .set('Accept', 'application/json');
+
+      expect(response.status).toEqual(404);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toEqual("No talk 'bar' found");
+    });
+  });
+
   describe('PUT talk', () => {
     test('creates a new talk', async () => {
       const repository = new Repository({ fileName });
@@ -170,6 +211,8 @@ describe('API', () => {
         .send({ summary: 'lorem ipsum' });
 
       expect(response.status).toEqual(400);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toEqual('Bad talk data');
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([]);
     });
@@ -184,6 +227,8 @@ describe('API', () => {
         .send({ presenter: 'Anon' });
 
       expect(response.status).toEqual(400);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toEqual('Bad talk data');
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([]);
     });
@@ -233,6 +278,24 @@ describe('API', () => {
       ]);
     });
 
+    test('reports an error if talk does not exists', async () => {
+      const repository = new Repository({ fileName });
+      const app = new ExpressApp({ repository }).app;
+      await request(app)
+        .put('/api/talks/foo')
+        .set('Content-Type', 'application/json')
+        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+      let response = await request(app)
+        .post('/api/talks/bar/comments')
+        .set('Content-Type', 'application/json')
+        .send({ author: 'Bob', message: 'new comment' });
+
+      expect(response.status).toEqual(404);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toEqual("No talk 'bar' found");
+    });
+
     test('reports an error if author is missing', async () => {
       const repository = new Repository({ fileName });
       const app = new ExpressApp({ repository }).app;
@@ -247,6 +310,8 @@ describe('API', () => {
         .send({ message: 'new comment' });
 
       expect(response.status).toEqual(400);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toEqual('Bad comment data');
     });
 
     test('reports an error if message is missing', async () => {
@@ -263,6 +328,8 @@ describe('API', () => {
         .send({ author: 'Bob' });
 
       expect(response.status).toEqual(400);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toEqual('Bad comment data');
     });
   });
 });

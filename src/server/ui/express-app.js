@@ -3,6 +3,7 @@ import express from 'express';
 import {
   addComment,
   deleteTalk,
+  getTalk,
   getTalks,
   submitTalk,
 } from '../application/services.js';
@@ -37,13 +38,28 @@ export class ExpressApp {
       }
     });
 
+    this.#app.get('/api/talks/:title', async (req, res) => {
+      const title = req.params.title;
+      const talk = await getTalk({ title }, repository);
+      if (talk == null) {
+        this.#reply(res, { status: 404, body: `No talk '${title}' found` });
+        return;
+      }
+
+      this.#reply(res, {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(talk),
+      });
+    });
+
     this.#app.put('/api/talks/:title', async (req, res) => {
       const talk = req.body;
       if (
         typeof talk.presenter != 'string' ||
         typeof talk.summary != 'string'
       ) {
-        res.status(400).send();
+        this.#reply(res, { status: 400, body: 'Bad talk data' });
         return;
       }
 
@@ -53,14 +69,14 @@ export class ExpressApp {
         repository,
       );
       this.#talksUpdated(repository);
-      res.status(204).send();
+      this.#reply(res, { status: 204 });
     });
 
     this.#app.delete('/api/talks/:title', async (req, res) => {
       const title = req.params.title;
-      await deleteTalk(title, repository);
+      await deleteTalk({ title }, repository);
       this.#talksUpdated(repository);
-      res.status(204).send();
+      this.#reply(res, { status: 204 });
     });
 
     this.#app.post('/api/talks/:title/comments', async (req, res) => {
@@ -69,26 +85,37 @@ export class ExpressApp {
         typeof comment.author != 'string' ||
         typeof comment.message != 'string'
       ) {
-        res.status(400).send();
+        this.#reply(res, { status: 400, body: 'Bad comment data' });
         return;
       }
 
       const title = req.params.title;
-      await addComment(
-        title,
-        { author: comment.author, message: comment.message },
+      const successful = await addComment(
+        {
+          title,
+          comment: { author: comment.author, message: comment.message },
+        },
         repository,
       );
+      if (!successful) {
+        this.#reply(res, { status: 404, body: `No talk '${title}' found` });
+        return;
+      }
+
       this.#talksUpdated(repository);
-      res.status(204).send();
+      this.#reply(res, { status: 204 });
     });
   }
 
   #reply(
     res,
-    { status = 200, headers = { 'Content-Type': 'text/plain' }, body = {} },
+    {
+      status = 200,
+      headers = { 'Content-Type': 'text/plain' },
+      body = '',
+    } = {},
   ) {
-    res.status(status).header(headers).json(body);
+    res.status(status).header(headers).send(body);
   }
 
   async #talkResponse(repository) {
@@ -100,7 +127,7 @@ export class ExpressApp {
         ETag: `"${this.#version}"`,
         'Cache-Control': 'no-store',
       },
-      body: talks,
+      body: JSON.stringify(talks),
     };
   }
 
