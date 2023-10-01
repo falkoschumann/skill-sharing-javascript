@@ -1,7 +1,9 @@
 # see also https://gitignore.io
 
-tmp/
 /data/*.json
+#/public/js/
+
+tmp/
 
 # Gradle
 .gradle/

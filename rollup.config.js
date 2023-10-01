@@ -1,8 +1,12 @@
-// run: rollup -c
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
+
 export default {
-  input: ['./node_modules/lit-html/lit-html.js'],
+  input: ['./src/client/app.js'],
   output: {
-    file: 'public/js/vendor.js',
+    file: 'public/js/skillsharing.js',
     format: 'esm',
+    compact: true,
   },
+  plugins: [nodeResolve(), terser()],
 };

@@ -9,11 +9,11 @@ import {
   getUser,
   pollTalks,
   submitTalk,
-} from '../../../public/js/application/services.js';
-import { initialState, reducer } from '../../../public/js/domain/reducer.js';
+} from '../../../src/client/application/services.js';
+import { initialState, reducer } from '../../../src/client/domain/reducer.js';
 import { ConfigurableResponses } from '../../configurable-responses.js';
-import { Repository } from '../../../public/js/infrastructure/repository.js';
-import { Store } from '../../../public/js/domain/store.js';
+import { Repository } from '../../../src/client/infrastructure/repository.js';
+import { Store } from '../../../src/client/domain/store.js';
 
 describe('client services', () => {
   let store;

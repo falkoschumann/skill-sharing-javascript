@@ -4,12 +4,6 @@
     "es2021": true
   },
   "extends": ["eslint:recommended"],
-  "ignorePatterns": [
-    "**/*.html",
-    "**/coverage/**",
-    "**/vendor/**",
-    "**/swagger-ui/**"
-  ],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"

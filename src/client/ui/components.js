@@ -1,4 +1,4 @@
-import { html, render } from '../vendor/lit-html/lit-html.js';
+import { html, render } from 'lit-html';
 
 import {
   addComment,
@@ -7,14 +7,16 @@ import {
   pollTalks,
   submitTalk,
 } from '../application/services.js';
+import { initialState, reducer } from '../domain/reducer.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
-import { store } from './store.js';
+import { Store } from '../domain/store.js';
 
+const store = new Store(reducer, initialState);
 const repository = globalThis.skillSharing?.repository ?? new Repository();
 const api = globalThis.skillSharing?.api ?? new Api();
 
-export class SkillSharingApp extends HTMLElement {
+class SkillSharingApp extends HTMLElement {
   connectedCallback() {
     const template = html`
       <h1>Skill Sharing</h1>
