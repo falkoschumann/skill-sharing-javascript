@@ -7,8 +7,12 @@ import {
   pollTalks,
   submitTalk,
 } from '../application/services.js';
-import { api, repository } from './app.config.js';
+import { Api } from '../infrastructure/api.js';
+import { Repository } from '../infrastructure/repository.js';
 import { store } from './store.js';
+
+const repository = globalThis.skillSharing?.repository ?? new Repository();
+const api = globalThis.skillSharing?.api ?? new Api();
 
 export class SkillSharingApp extends HTMLElement {
   connectedCallback() {
