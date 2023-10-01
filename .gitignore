@@ -1,7 +1,7 @@
 # see also https://gitignore.io
 
 /data/*.json
-#/public/js/
+/public/js/
 
 tmp/
 
