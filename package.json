@@ -8,8 +8,7 @@
     "devserver": "nodemon src/server/main.js",
     "dist": "rollup -c",
     "test": "node --no-warnings=ExperimentalWarning --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "check": "prettier . --check && eslint public src tests",
-    "check2": "tsc && prettier . --check && eslint src tests",
+    "check": "tsc && prettier . --check && eslint src tests",
     "format": "prettier . --write && eslint --fix src tests"
   },
   "dependencies": {
