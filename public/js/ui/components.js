@@ -6,7 +6,8 @@ import {
   deleteTalk,
   submitTalk,
 } from '../application/services.js';
-import { api, repository, store } from './app.config.js';
+import { api, repository } from './app.config.js';
+import { store } from './store.js';
 
 class UserField extends HTMLElement {
   connectedCallback() {
