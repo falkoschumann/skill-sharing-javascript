@@ -11,9 +11,8 @@ Start the server with `npm start` and open http://localhost:3000 in the browser.
 
 ## Contributing
 
-In addition to the standard tasks `start` and `test`, there are:
+The script `build.sh` runs the build as default task. Other tasks are
 
--   `build`: run `test` and `check`
 -   `start`: start the server
 -   `test`: run all tests,
 -   `check`: check code quality
