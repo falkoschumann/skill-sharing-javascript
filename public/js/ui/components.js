@@ -1,4 +1,4 @@
-import { html, render } from '../vendor.js';
+import { html, render } from '../vendor/lit-html/lit-html.js';
 
 import {
   addComment,
@@ -54,43 +54,37 @@ class Talks extends HTMLElement {
     }
 
     this.#talks = talks;
-
     const template = html`
-      <div class="talks">
-        ${talks.map(
-          (talk) => html`
-            <section class="talk">
-              <h2>
-                ${talk.title}
-                <button @click=${(_) => this.#onClickDelete(talk)}>
-                  Delete
-                </button>
-              </h2>
-              <div>by <strong>${talk.presenter}</strong></div>
-              <p>${talk.summary}</p>
-              ${talk.comments.map(
-                (comment) => html`
-                  <p class="comment">
-                    <strong>${comment.author}</strong>: ${comment.message}
-                  </p>
-                `,
-              )}
-              <form @submit=${(e) => this.#onSubmit(e)}>
-                <input
-                  type="text"
-                  hidden
-                  name="talkTitle"
-                  value="${talk.title}"
-                />
-                <input type="text" required name="comment" />
-                <button type="submit">Add comment</button>
-              </form>
-            </section>
-          `,
-        )}
-      </div>
+      <div class="talks">${talks.map((t) => this.#renderTalk(t))}</div>
     `;
     render(template, this);
+  }
+
+  #renderTalk(talk) {
+    return html`
+      <section class="talk">
+        <h2>
+          ${talk.title}
+          <button @click=${(_) => this.#onClickDelete(talk)}>Delete</button>
+        </h2>
+        <div>by <strong>${talk.presenter}</strong></div>
+        <p>${talk.summary}</p>
+        ${talk.comments.map((c) => this.#renderComment(c))}
+        <form @submit=${(e) => this.#onSubmit(e)}>
+          <input type="text" hidden name="talkTitle" value="${talk.title}" />
+          <input type="text" required name="comment" />
+          <button type="submit">Add comment</button>
+        </form>
+      </section>
+    `;
+  }
+
+  #renderComment(comment) {
+    return html`
+      <p class="comment">
+        <strong>${comment.author}</strong>: ${comment.message}
+      </p>
+    `;
   }
 
   #onClickDelete(talk) {
