@@ -4,11 +4,28 @@ import {
   addComment,
   changeUser,
   deleteTalk,
+  pollTalks,
   submitTalk,
 } from '../application/services.js';
 import { api, repository } from './app.config.js';
 import { store } from './store.js';
 
+export class SkillSharingApp extends HTMLElement {
+  connectedCallback() {
+    const template = html`
+      <h1>Skill Sharing</h1>
+      <div>
+        <s-userfield></s-userfield>
+        <s-talks></s-talks>
+        <s-talkform></s-talkform>
+      </div>
+    `;
+    render(template, this);
+    pollTalks(store, api);
+  }
+}
+
+window.customElements.define('s-skillsharingapp', SkillSharingApp);
 class UserField extends HTMLElement {
   connectedCallback() {
     const name = 'Anon';
