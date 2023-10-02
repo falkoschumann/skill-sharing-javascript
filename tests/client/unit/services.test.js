@@ -153,9 +153,9 @@ class FakeApi {
 
   constructor({ talks = new ConfigurableResponses() } = {}) {
     this.#talks = talks;
-    this.putTalk = jest.fn();
-    this.deleteTalk = jest.fn();
-    this.postComment = jest.fn();
+    this.putTalk = jest.fn(() => Promise.resolve());
+    this.deleteTalk = jest.fn(() => Promise.resolve());
+    this.postComment = jest.fn(() => Promise.resolve());
   }
 
   async getTalks() {
