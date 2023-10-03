@@ -3,20 +3,28 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import {
+  Action,
+  initialState,
+  reducer,
+  State,
+} from '../../../src/client/domain/reducer';
+import {
   addComment,
   changeUser,
   deleteTalk,
   getUser,
+  NewTalk,
   pollTalks,
   submitTalk,
-} from '../../../src/client/application/services.js';
-import { initialState, reducer } from '../../../src/client/domain/reducer.js';
-import { ConfigurableResponses } from '../../configurable-responses.js';
-import { Repository } from '../../../src/client/infrastructure/repository.js';
-import { Store } from '../../../src/client/domain/store.js';
+  TalksResponse,
+} from '../../../src/client/application/services';
+import { Comment } from '../../../src/client/domain/types';
+import { ConfigurableResponses } from '../../configurable-responses';
+import { Repository } from '../../../src/client/infrastructure/repository';
+import { Store } from '../../../src/client/domain/store';
 
 describe('client services', () => {
-  let store;
+  let store: Store<State, Action>;
 
   beforeEach(() => {
     store = new Store(reducer, initialState);
@@ -56,12 +64,17 @@ describe('client services', () => {
   describe('poll talks', () => {
     test('sets talks', async () => {
       const api = new FakeApi({
-        talks: new ConfigurableResponses([
+        talks: new ConfigurableResponses<TalksResponse>([
           {
             notModified: false,
             tag: '1',
             talks: [
-              { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+              {
+                title: 'foobar',
+                presenter: 'Anon',
+                summary: 'lorem ipsum',
+                comments: [],
+              },
             ],
           },
         ]),
@@ -70,13 +83,20 @@ describe('client services', () => {
       await pollTalks(store, api, 1);
 
       expect(store.getState().talks).toEqual([
-        { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+        {
+          title: 'foobar',
+          presenter: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
 
     test('does not set talks, if not modified', async () => {
       const api = new FakeApi({
-        talks: new ConfigurableResponses([{ notModified: true }]),
+        talks: new ConfigurableResponses<TalksResponse>([
+          { notModified: true, tag: '', talks: [] },
+        ]),
       });
 
       await pollTalks(store, api, 1);
@@ -86,13 +106,18 @@ describe('client services', () => {
 
     test('recovers after error', async () => {
       const api = new FakeApi({
-        talks: new ConfigurableResponses([
+        talks: new ConfigurableResponses<TalksResponse>([
           new Error(),
           {
             notModified: false,
             tag: '1',
             talks: [
-              { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+              {
+                title: 'foobar',
+                presenter: 'Anon',
+                summary: 'lorem ipsum',
+                comments: [],
+              },
             ],
           },
         ]),
@@ -101,7 +126,12 @@ describe('client services', () => {
       await pollTalks(store, api, 2);
 
       expect(store.getState().talks).toEqual([
-        { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+        {
+          title: 'foobar',
+          presenter: 'Anon',
+          summary: 'lorem ipsum',
+          comments: [],
+        },
       ]);
     });
   });
@@ -134,11 +164,7 @@ describe('client services', () => {
     test('posts comment', async () => {
       const api = new FakeApi();
 
-      await addComment(
-        { talkTitle: 'foobar', comment: 'lorem ipsum' },
-        store,
-        api,
-      );
+      await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
 
       expect(api.postComment).nthCalledWith(1, 'foobar', {
         author: 'Anon',
@@ -149,9 +175,13 @@ describe('client services', () => {
 });
 
 class FakeApi {
-  #talks;
+  #talks: ConfigurableResponses<TalksResponse>;
 
-  constructor({ talks = new ConfigurableResponses() } = {}) {
+  putTalk: (talk: NewTalk) => Promise<void>;
+  deleteTalk: (title: string) => Promise<void>;
+  postComment: (title: string, comment: Comment) => Promise<void>;
+
+  constructor({ talks = new ConfigurableResponses<TalksResponse>() } = {}) {
     this.#talks = talks;
     this.putTalk = jest.fn(() => Promise.resolve());
     this.deleteTalk = jest.fn(() => Promise.resolve());

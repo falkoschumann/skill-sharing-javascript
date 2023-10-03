@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Express, Response } from 'express';
 
 import {
   addComment,
@@ -6,13 +6,19 @@ import {
   getTalk,
   getTalks,
   submitTalk,
-} from '../application/services.js';
-import { Repository } from '../infrastructure/repository.js';
+} from '../application/services';
+import { Repository } from '../infrastructure/repository';
+
+type RestResponse = {
+  status?: number;
+  headers?: Record<string, string>;
+  body?: string;
+};
 
 export class ExpressApp {
-  #version;
-  #waiting;
-  #app;
+  #version: number;
+  #waiting: Array<(response: RestResponse) => void>;
+  #app: Express;
 
   constructor({ publicPath = './public', repository = new Repository() } = {}) {
     this.#version = 0;
@@ -24,8 +30,8 @@ export class ExpressApp {
     this.#app.use(express.json());
 
     this.#app.get('/api/talks', async (req, res) => {
-      const tag = /"(.*)"/.exec(req.get('If-None-Match'));
-      const wait = /\bwait=(\d+)/.exec(req.get('Prefer'));
+      const tag = /"(.*)"/.exec(req.get('If-None-Match') || '');
+      const wait = /\bwait=(\d+)/.exec(req.get('Prefer') || '');
 
       if (!tag || tag[1] !== String(this.#version)) {
         const response = await this.#talkResponse(repository);
@@ -108,17 +114,17 @@ export class ExpressApp {
   }
 
   #reply(
-    res,
+    res: Response,
     {
       status = 200,
       headers = { 'Content-Type': 'text/plain' },
       body = '',
-    } = {},
+    }: RestResponse = {},
   ) {
     res.status(status).header(headers).send(body);
   }
 
-  async #talkResponse(repository) {
+  async #talkResponse(repository: Repository) {
     const talks = await getTalks(repository);
     return {
       status: 200,
@@ -131,7 +137,7 @@ export class ExpressApp {
     };
   }
 
-  async #waitForChange(time) {
+  async #waitForChange(time: number): Promise<RestResponse> {
     return new Promise((resolve) => {
       this.#waiting.push(resolve);
       setTimeout(async () => {
@@ -145,7 +151,7 @@ export class ExpressApp {
     });
   }
 
-  async #talksUpdated(repository) {
+  async #talksUpdated(repository: Repository) {
     this.#version++;
     const response = await this.#talkResponse(repository);
     this.#waiting.forEach((resolve) => resolve(response));

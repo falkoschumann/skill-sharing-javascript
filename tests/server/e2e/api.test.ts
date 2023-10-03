@@ -3,8 +3,8 @@ import { rmSync } from 'node:fs';
 import { beforeEach, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
 
-import { ExpressApp } from '../../../src/server/ui/express-app.js';
-import { Repository } from '../../../src/server/infrastructure/repository.js';
+import { ExpressApp } from '../../../src/server/ui/express-app';
+import { Repository } from '../../../src/server/infrastructure/repository';
 
 const fileName = './data/talks.test.json';
 
@@ -87,7 +87,7 @@ describe('API', () => {
       const repository = new Repository({ fileName });
       const app = new ExpressApp({ repository }).app;
 
-      let responsePromise = request(app)
+      const responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
@@ -110,7 +110,7 @@ describe('API', () => {
       const repository = new Repository({ fileName });
       const app = new ExpressApp({ repository }).app;
 
-      let responsePromise = request(app)
+      const responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
@@ -286,7 +286,7 @@ describe('API', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .post('/api/talks/bar/comments')
         .set('Content-Type', 'application/json')
         .send({ author: 'Bob', message: 'new comment' });
@@ -304,7 +304,7 @@ describe('API', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .post('/api/talks/foobar/comments')
         .set('Content-Type', 'application/json')
         .send({ message: 'new comment' });
@@ -322,7 +322,7 @@ describe('API', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .post('/api/talks/foobar/comments')
         .set('Content-Type', 'application/json')
         .send({ author: 'Bob' });

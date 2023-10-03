@@ -2,7 +2,7 @@ import { rmSync } from 'node:fs';
 
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
-import { Repository } from '../../../src/server/infrastructure/repository.js';
+import { Repository } from '../../../src/server/infrastructure/repository';
 
 const fileName = './data/talks.test.json';
 
@@ -78,7 +78,7 @@ describe('repository', () => {
 
       await repository.add({
         title: 'foobar',
-        author: 'Anon',
+        presenter: 'Anon',
         summary: 'lorem ipsum',
         comments: [],
       });
@@ -87,7 +87,7 @@ describe('repository', () => {
       expect(talks).toEqual([
         {
           title: 'foobar',
-          author: 'Anon',
+          presenter: 'Anon',
           summary: 'lorem ipsum',
           comments: [],
         },
@@ -99,22 +99,22 @@ describe('repository', () => {
       let talks = await repository.findAll();
       await repository.add({
         title: 'foo',
-        author: 'Anon',
+        presenter: 'Anon',
         summary: 'lorem',
         comments: [],
       });
 
       await repository.add({
         title: 'bar',
-        author: 'Bob',
+        presenter: 'Bob',
         summary: 'ipsum',
         comments: [],
       });
 
       talks = await repository.findAll();
       expect(talks).toEqual([
-        { title: 'foo', author: 'Anon', summary: 'lorem', comments: [] },
-        { title: 'bar', author: 'Bob', summary: 'ipsum', comments: [] },
+        { title: 'foo', presenter: 'Anon', summary: 'lorem', comments: [] },
+        { title: 'bar', presenter: 'Bob', summary: 'ipsum', comments: [] },
       ]);
     });
 
@@ -123,21 +123,21 @@ describe('repository', () => {
       let talks = await repository.findAll();
       await repository.add({
         title: 'foo',
-        author: 'Anon',
+        presenter: 'Anon',
         summary: 'lorem',
         comments: [],
       });
 
       await repository.add({
         title: 'foo',
-        author: 'Bob',
+        presenter: 'Bob',
         summary: 'ipsum',
         comments: [],
       });
 
       talks = await repository.findAll();
       expect(talks).toEqual([
-        { title: 'foo', author: 'Bob', summary: 'ipsum', comments: [] },
+        { title: 'foo', presenter: 'Bob', summary: 'ipsum', comments: [] },
       ]);
     });
   });
@@ -148,7 +148,7 @@ describe('repository', () => {
       let talks = await repository.findAll();
       await repository.add({
         title: 'foobar',
-        author: 'Anon',
+        presenter: 'Anon',
         summary: 'lorem ipsum',
         comments: [],
       });

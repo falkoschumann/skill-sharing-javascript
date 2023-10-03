@@ -6,15 +6,26 @@ import {
   deleteTalk,
   pollTalks,
   submitTalk,
-} from '../application/services.js';
-import { initialState, reducer } from '../domain/reducer.js';
-import { Api } from '../infrastructure/api.js';
-import { Repository } from '../infrastructure/repository.js';
-import { Store } from '../domain/store.js';
+} from '../application/services';
+import { Comment, Talk } from '../domain/types';
+import { initialState, reducer } from '../domain/reducer';
+import { Store, Unsubscriber } from '../domain/store';
+import { Api } from '../infrastructure/api';
+import { Repository } from '../infrastructure/repository';
+
+type SkillSharingConfiguration = {
+  skillSharing?: {
+    repository?: Repository;
+    api?: Api;
+  };
+};
 
 const store = new Store(reducer, initialState);
-const repository = globalThis.skillSharing?.repository ?? new Repository();
-const api = globalThis.skillSharing?.api ?? new Api();
+const repository =
+  (globalThis as SkillSharingConfiguration).skillSharing?.repository ??
+  new Repository();
+const api =
+  (globalThis as SkillSharingConfiguration).skillSharing?.api ?? new Api();
 
 class SkillSharingApp extends HTMLElement {
   connectedCallback() {
@@ -38,15 +49,17 @@ class UserField extends HTMLElement {
     const template = html`
       <label
         >Your name:
-        <input type="text" value="${name}" @change=${(e) => this.#onChange(e)}
+        <input
+          type="text"
+          value="${name}"
+          @change=${(e: Event) => this.#onChange(e)}
       /></label>
     `;
     render(template, this);
   }
 
-  /** @param {Event} event  */
-  #onChange(event) {
-    const input = /** @type {HTMLInputElement} */ (event.target);
+  #onChange(event: Event) {
+    const input = event.target as HTMLInputElement;
     changeUser({ name: input.value }, store, repository);
   }
 }
@@ -54,8 +67,8 @@ class UserField extends HTMLElement {
 window.customElements.define('s-userfield', UserField);
 
 class Talks extends HTMLElement {
-  #talks;
-  #unsubscribe;
+  #talks: Array<Talk>;
+  #unsubscribe?: Unsubscriber;
 
   constructor() {
     super();
@@ -63,12 +76,12 @@ class Talks extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#unsubscribe = store.subscribe((_) => this.#updateView());
+    this.#unsubscribe = store.subscribe(() => this.#updateView());
     this.#updateView();
   }
 
   disconnectedCallback() {
-    this.#unsubscribe();
+    this.#unsubscribe?.();
   }
 
   #updateView() {
@@ -84,17 +97,19 @@ class Talks extends HTMLElement {
     render(template, this);
   }
 
-  #renderTalk(talk) {
+  #renderTalk(talk: Talk) {
     return html`
       <section class="talk">
         <h2>
           ${talk.title}
-          <button @click=${(_) => this.#onClickDelete(talk)}>Delete</button>
+          <button @click=${(_: Event) => this.#onClickDelete(talk)}>
+            Delete
+          </button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
         ${talk.comments.map((c) => this.#renderComment(c))}
-        <form @submit=${(e) => this.#onSubmit(e)}>
+        <form @submit=${(e: SubmitEvent) => this.#onSubmit(e)}>
           <input type="text" hidden name="talkTitle" value="${talk.title}" />
           <input type="text" required name="comment" />
           <button type="submit">Add comment</button>
@@ -103,7 +118,7 @@ class Talks extends HTMLElement {
     `;
   }
 
-  #renderComment(comment) {
+  #renderComment(comment: Comment) {
     return html`
       <p class="comment">
         <strong>${comment.author}</strong>: ${comment.message}
@@ -111,20 +126,19 @@ class Talks extends HTMLElement {
     `;
   }
 
-  #onClickDelete(talk) {
+  #onClickDelete(talk: Talk) {
     deleteTalk({ title: talk.title }, api);
   }
 
-  /** @param {Event} event  */
-  #onSubmit(event) {
+  #onSubmit(event: SubmitEvent) {
     event.preventDefault();
-    const form = /** @type {HTMLFormElement} */ (event.target);
+    const form = event.target as HTMLFormElement;
     form.reportValidity();
     if (form.checkValidity()) {
       const formData = new FormData(form);
-      const talkTitle = formData.get('talkTitle');
-      const comment = formData.get('comment');
-      addComment({ talkTitle, comment }, store, api);
+      const title = formData.get('talkTitle')?.toString() || '';
+      const comment = formData.get('comment')?.toString() || '';
+      addComment({ title, comment }, store, api);
       form.reset();
     }
   }
@@ -135,7 +149,7 @@ window.customElements.define('s-talks', Talks);
 class TalkForm extends HTMLElement {
   connectedCallback() {
     const template = html`
-      <form @submit=${(e) => this.#onSubmit(e)}>
+      <form @submit=${(e: SubmitEvent) => this.#onSubmit(e)}>
         <h3>Submit a Talk</h3>
         <label
           >Title:
@@ -151,16 +165,15 @@ class TalkForm extends HTMLElement {
     render(template, this);
   }
 
-  /** @param {Event} event  */
-  #onSubmit(event) {
+  #onSubmit(event: SubmitEvent) {
     event.preventDefault();
-    const form = /** @type {HTMLFormElement} */ (event.target);
+    const form = event.target as HTMLFormElement;
     form.reportValidity();
     if (form.checkValidity()) {
       const formData = new FormData(form);
       const talk = {
-        title: formData.get('title'),
-        summary: formData.get('summary'),
+        title: formData.get('title')?.toString() || '',
+        summary: formData.get('summary')?.toString() || '',
       };
       submitTalk(talk, store, api);
       form.reset();

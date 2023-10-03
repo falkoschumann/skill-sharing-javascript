@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { Store } from '../../../src/client/domain/store.js';
+import { Store } from '../../../src/client/domain/store';
+
+type State = Record<string, unknown>;
+type Action = { type: string } & Record<string, unknown>;
 
 describe('store', () => {
-  let store;
+  let store: Store<State, Action>;
 
   beforeEach(() => {
     store = new Store(reducer, { user: 'Alice' });
@@ -38,7 +41,7 @@ describe('store', () => {
   });
 });
 
-function reducer(state, action) {
+function reducer(state: State, action: Action) {
   switch (action.type) {
     case 'user-changed':
       return { ...state, user: action.name };

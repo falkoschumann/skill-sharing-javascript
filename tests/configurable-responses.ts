@@ -1,7 +1,7 @@
-export class ConfigurableResponses {
-  #responses;
+export class ConfigurableResponses<T> {
+  #responses: T | Array<T | Error> | Error;
 
-  constructor(responses) {
+  constructor(responses: T | Array<T | Error> | Error = []) {
     this.#responses = Array.isArray(responses) ? [...responses] : responses;
   }
 
