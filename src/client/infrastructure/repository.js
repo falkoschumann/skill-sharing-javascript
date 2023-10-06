@@ -1,15 +1,17 @@
 export class Repository {
   #key;
 
-  constructor({ key = 'userName' } = {}) {
+  constructor({ key = 'skillSharing' } = {}) {
     this.#key = key;
   }
 
   async load() {
-    return localStorage.getItem(this.#key);
+    let json = localStorage.getItem(this.#key);
+    return JSON.parse(json) || {};
   }
 
-  async store(userName) {
-    localStorage.setItem(this.#key, userName);
+  async store(state) {
+    let json = JSON.stringify(state);
+    localStorage.setItem(this.#key, json);
   }
 }

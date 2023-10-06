@@ -10,30 +10,33 @@ describe('store', () => {
   });
 
   test('does not emit event, if state is not changed', () => {
-    const listener = jest.fn();
+    let listener = jest.fn();
     store.subscribe(listener);
 
     store.dispatch({ type: 'unknown-action' });
 
+    expect(store.getState()).toEqual({ user: 'Alice' });
     expect(listener).not.toBeCalled();
   });
 
   test('emits event, if state is changed', () => {
-    const listener = jest.fn();
+    let listener = jest.fn();
     store.subscribe(listener);
 
     store.dispatch({ type: 'user-changed', name: 'Bob' });
 
+    expect(store.getState()).toEqual({ user: 'Bob' });
     expect(listener).toBeCalledTimes(1);
   });
 
   test('does not emit event, if listener is unsubscribed', () => {
-    const listener = jest.fn();
-    const unsubscribe = store.subscribe(listener);
+    let listener = jest.fn();
+    let unsubscribe = store.subscribe(listener);
 
     unsubscribe();
     store.dispatch({ type: 'user-changed', name: 'Bob' });
 
+    expect(store.getState()).toEqual({ user: 'Bob' });
     expect(listener).not.toBeCalled();
   });
 });

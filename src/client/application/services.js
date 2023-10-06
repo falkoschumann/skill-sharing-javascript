@@ -1,111 +1,50 @@
-/**
- * @typedef {object} Talk
- * @property {string} title
- * @property {string} presenter
- * @property {string} summary
- * @property {Array<Comment>} comments
- */
-
-/**
- * @typedef {object} Comment
- * @property {string} author
- * @property {string} message
- */
-
-/**
- * @typedef {object} NewTalk
- * @property {string} title
- * @property {string} summary
- */
-
-/**
- * @typedef {object} Store
- * @property {(action:any) => void} dispatch
- * @property {() => any} getState
- * @property {() => () => void} subscribe returns a function to unsubscribe
- */
-
-/**
- * @typedef {object} Repository
- * @property {() => Promise<string>} load returns stored user name
- * @property {(userName: string) => Promise<void>} store
- */
-
-/**
- * @typedef {object} Api
- * @property {(tag: string) => Promise<{notModified: boolean, tag: string, talks: Talk[]}>} getTalks
- * @property {(talk: NewTalk) => Promise<void>} putTalk
- * @property {(title: string) => Promise<void>} deleteTalk
- * @property {(talkTitle: string, comment: Comment) => Promise<void>} postComment
- */
-
-/**
- * @param {object} command
- * @param {Store} store
- * @param {Repository} repository
- */
-export async function changeUser({ name }, store, repository) {
-  store.dispatch({ type: 'change-user', userName: name });
-  await repository.store(name);
+export async function changeUser({ userName }, store, repository) {
+  store.dispatch({ type: 'change-user', userName });
+  await repository.store({ userName });
 }
 
-/**
- * @param {Store} store
- * @param {Repository} repository
- */
 export async function getUser(store, repository) {
-  const userName = (await repository.load()) || 'Anon';
+  let { userName = 'Anon' } = await repository.load();
   store.dispatch({ type: 'change-user', userName });
 }
 
-/**
- * @param {object} command
- * @param {Store} store
- * @param {Api} api
- */
 export async function submitTalk({ title, summary }, store, api) {
-  const talk = { title, presenter: store.getState().user, summary };
+  let talk = { title, presenter: store.getState().user, summary };
   await api.putTalk(talk);
 }
 
-/**
- * @param {object} command
- * @param {Api} api
- */
 export async function deleteTalk({ title }, api) {
   await api.deleteTalk(title);
 }
 
-/**
- * @param {Store} store
- * @param {Api} api
- */
 export async function pollTalks(store, api, runs = -1) {
   let tag;
   for (let i = 0; runs === -1 || i < runs; runs === -1 ? 0 : i++) {
-    let response;
-    try {
-      response = await api.getTalks(tag);
-    } catch (e) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      continue;
-    }
-    if (response.notModified) {
-      continue;
-    }
-
-    tag = response.tag;
-    store.dispatch({ type: 'talks-updated', talks: response.talks });
+    let response = await tryGetTalks(tag, api);
+    tag = handleGetTalksResponse(response, tag, store);
   }
 }
 
-/**
- * @param {object} command
- * @param {Store} store
- * @param {Api} api
- */
-export async function addComment({ talkTitle, comment }, store, api) {
-  await api.postComment(talkTitle, {
+async function tryGetTalks(tag, api) {
+  try {
+    return await api.getTalks(tag);
+  } catch (e) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return { isNotModified: true };
+  }
+}
+
+function handleGetTalksResponse({ isNotModified, tag, talks }, oldTag, store) {
+  if (isNotModified) {
+    return oldTag;
+  }
+
+  store.dispatch({ type: 'talks-updated', talks });
+  return tag;
+}
+
+export async function addComment({ title, comment }, store, api) {
+  await api.postComment(title, {
     author: store.getState().user,
     message: comment,
   });

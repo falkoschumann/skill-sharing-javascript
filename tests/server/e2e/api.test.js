@@ -6,23 +6,26 @@ import request from 'supertest';
 import { ExpressApp } from '../../../src/server/ui/express-app.js';
 import { Repository } from '../../../src/server/infrastructure/repository.js';
 
-const fileName = './data/talks.test.json';
+let fileName = './data/talks.test.json';
 
 describe('API', () => {
+  let repository;
+  let app;
+
   beforeEach(() => {
     rmSync(fileName, { force: true });
+    repository = new Repository({ fileName });
+    app = new ExpressApp({ repository }).app;
   });
 
   describe('GET talks', () => {
     test('replies with talks, if client asks for the first time', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      const response = await request(app)
+      let response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json');
 
@@ -41,14 +44,12 @@ describe('API', () => {
     });
 
     test('replies with talks, if client is not up to date', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      const response = await request(app)
+      let response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('If-None-Match', '"0"');
@@ -68,14 +69,12 @@ describe('API', () => {
     });
 
     test('reports not modified, if client is up to date', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      const response = await request(app)
+      let response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('If-None-Match', '"1"');
@@ -84,15 +83,12 @@ describe('API', () => {
     });
 
     test('reports not modified, if long polling results in a timeout', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
-
       let responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
         .set('If-None-Match', '"0"');
-      const submitHandler = setTimeout(
+      let submitHandler = setTimeout(
         () =>
           request(app)
             .put('/api/talks/foobar')
@@ -100,16 +96,13 @@ describe('API', () => {
             .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
         2000,
       );
-      const response = await responsePromise;
+      let response = await responsePromise;
       clearTimeout(submitHandler);
 
       expect(response.status).toEqual(304);
     });
 
     test('replies talks, if a talk was submitted while long polling', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
-
       let responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
@@ -121,7 +114,7 @@ describe('API', () => {
           .set('Content-Type', 'application/json')
           .send({ presenter: 'Anon', summary: 'lorem ipsum' });
       }, 500);
-      const response = await responsePromise;
+      let response = await responsePromise;
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
@@ -140,14 +133,12 @@ describe('API', () => {
 
   describe('GET talk', () => {
     test('replies with talk', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      const response = await request(app)
+      let response = await request(app)
         .get('/api/talks/foobar')
         .set('Accept', 'application/json');
 
@@ -162,14 +153,12 @@ describe('API', () => {
     });
 
     test('reports an error if talk does not exists', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foo')
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      const response = await request(app)
+      let response = await request(app)
         .get('/api/talks/bar')
         .set('Accept', 'application/json');
 
@@ -181,9 +170,6 @@ describe('API', () => {
 
   describe('PUT talk', () => {
     test('creates a new talk', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
-
       let response = await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
@@ -202,9 +188,6 @@ describe('API', () => {
     });
 
     test('reports an error if presenter is missing', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
-
       let response = await request(app)
         .put('/api/talks/foobar')
         .set('Accept', 'application/json')
@@ -218,9 +201,6 @@ describe('API', () => {
     });
 
     test('reports an error if summary is missing', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
-
       let response = await request(app)
         .put('/api/talks/foobar')
         .set('Accept', 'application/json')
@@ -236,8 +216,6 @@ describe('API', () => {
 
   describe('DELETE talk', () => {
     test('deletes an existing talk', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
@@ -254,8 +232,6 @@ describe('API', () => {
 
   describe('POST comment', () => {
     test('adds comment', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
@@ -279,8 +255,6 @@ describe('API', () => {
     });
 
     test('reports an error if talk does not exists', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foo')
         .set('Content-Type', 'application/json')
@@ -297,8 +271,6 @@ describe('API', () => {
     });
 
     test('reports an error if author is missing', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
@@ -315,8 +287,6 @@ describe('API', () => {
     });
 
     test('reports an error if message is missing', async () => {
-      const repository = new Repository({ fileName });
-      const app = new ExpressApp({ repository }).app;
       await request(app)
         .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')

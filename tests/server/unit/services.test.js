@@ -11,11 +11,11 @@ import {
 describe('services', () => {
   describe('get talks', () => {
     test('returns list of talks', async () => {
-      const repository = new FakeRepository([
+      let repository = new FakeRepository([
         { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
 
-      const talks = await getTalks(repository);
+      let talks = await getTalks(repository);
 
       expect(talks).toEqual([
         { title: 'foobar', summary: 'lorem ipsum', comments: [] },
@@ -25,11 +25,11 @@ describe('services', () => {
 
   describe('get talk', () => {
     test('returns a talk', async () => {
-      const repository = new FakeRepository([
+      let repository = new FakeRepository([
         { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
 
-      const talk = await getTalk({ title: 'foobar' }, repository);
+      let talk = await getTalk({ title: 'foobar' }, repository);
 
       expect(talk).toEqual({
         title: 'foobar',
@@ -39,11 +39,11 @@ describe('services', () => {
     });
 
     test('returns nothing if talk does not exist', async () => {
-      const repository = new FakeRepository([
+      let repository = new FakeRepository([
         { title: 'foo', summary: 'lorem ipsum', comments: [] },
       ]);
 
-      const talk = await getTalk({ title: 'bar' }, repository);
+      let talk = await getTalk({ title: 'bar' }, repository);
 
       expect(talk).toBeUndefined();
     });
@@ -51,11 +51,11 @@ describe('services', () => {
 
   describe('submit talk', () => {
     test('adds talk to list of talks', async () => {
-      const repository = new FakeRepository();
+      let repository = new FakeRepository();
 
       await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
 
-      const talks = await repository.findAll();
+      let talks = await repository.findAll();
       expect(talks).toEqual([
         { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
@@ -64,30 +64,30 @@ describe('services', () => {
 
   describe('delete talk', () => {
     test('removes talk from list', async () => {
-      const repository = new FakeRepository([
+      let repository = new FakeRepository([
         { title: 'foobar', summary: 'lorem ipsum' },
       ]);
 
       await deleteTalk({ title: 'foobar' }, repository);
 
-      const talks = await repository.findAll();
+      let talks = await repository.findAll();
       expect(talks).toEqual([]);
     });
   });
 
   describe('add comment', () => {
     test('adds comment to an existing talk', async () => {
-      const repository = new FakeRepository([
+      let repository = new FakeRepository([
         { title: 'foobar', summary: 'lorem ipsum', comments: [] },
       ]);
 
-      const successful = await addComment(
+      let successful = await addComment(
         { title: 'foobar', comment: { author: 'Bob', message: 'new comment' } },
         repository,
       );
 
       expect(successful).toEqual(true);
-      const talk = await repository.findByTitle('foobar');
+      let talk = await repository.findByTitle('foobar');
       expect(talk).toEqual({
         title: 'foobar',
         summary: 'lorem ipsum',
@@ -96,17 +96,17 @@ describe('services', () => {
     });
 
     test('reports an error if talk does not exists', async () => {
-      const repository = new FakeRepository([
+      let repository = new FakeRepository([
         { title: 'foo', summary: 'lorem ipsum', comments: [] },
       ]);
 
-      const successful = await addComment(
+      let successful = await addComment(
         { title: 'bar', comment: { author: 'Bob', message: 'new comment' } },
         repository,
       );
 
       expect(successful).toEqual(false);
-      const talk = await repository.findByTitle('foo');
+      let talk = await repository.findByTitle('foo');
       expect(talk).toEqual({
         title: 'foo',
         summary: 'lorem ipsum',

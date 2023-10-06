@@ -4,6 +4,7 @@ import {
   addComment,
   changeUser,
   deleteTalk,
+  getUser,
   pollTalks,
   submitTalk,
 } from '../application/services.js';
@@ -18,7 +19,7 @@ const api = globalThis.skillSharing?.api ?? new Api();
 
 class SkillSharingApp extends HTMLElement {
   connectedCallback() {
-    const template = html`
+    let template = html`
       <h1>Skill Sharing</h1>
       <div>
         <s-userfield></s-userfield>
@@ -32,10 +33,23 @@ class SkillSharingApp extends HTMLElement {
 }
 
 window.customElements.define('s-skillsharingapp', SkillSharingApp);
+
 class UserField extends HTMLElement {
+  #unsubscribe;
+
   connectedCallback() {
-    const name = 'Anon';
-    const template = html`
+    this.#unsubscribe = store.subscribe((_) => this.#updateView());
+    this.#updateView();
+    getUser(store, repository);
+  }
+
+  disconnectedCallback() {
+    this.#unsubscribe();
+  }
+
+  #updateView() {
+    let name = store.getState().user;
+    let template = html`
       <label
         >Your name:
         <input type="text" value="${name}" @change=${(e) => this.#onChange(e)}
@@ -44,10 +58,8 @@ class UserField extends HTMLElement {
     render(template, this);
   }
 
-  /** @param {Event} event  */
   #onChange(event) {
-    const input = /** @type {HTMLInputElement} */ (event.target);
-    changeUser({ name: input.value }, store, repository);
+    changeUser({ userName: event.target.value }, store, repository);
   }
 }
 
@@ -72,13 +84,17 @@ class Talks extends HTMLElement {
   }
 
   #updateView() {
-    const talks = store.getState().talks;
+    let talks = store.getState().talks;
     if (this.#talks === talks) {
       return;
     }
 
     this.#talks = talks;
-    const template = html`
+    this.#renderTalks(this.#talks);
+  }
+
+  #renderTalks(talks) {
+    let template = html`
       <div class="talks">${talks.map((t) => this.#renderTalk(t))}</div>
     `;
     render(template, this);
@@ -115,18 +131,26 @@ class Talks extends HTMLElement {
     deleteTalk({ title: talk.title }, api);
   }
 
-  /** @param {Event} event  */
   #onSubmit(event) {
     event.preventDefault();
-    const form = /** @type {HTMLFormElement} */ (event.target);
-    form.reportValidity();
-    if (form.checkValidity()) {
-      const formData = new FormData(form);
-      const talkTitle = formData.get('talkTitle');
-      const comment = formData.get('comment');
-      addComment({ talkTitle, comment }, store, api);
-      form.reset();
+    if (this.#validateForm(event.target)) {
+      this.#addComment(event.target);
     }
+  }
+
+  #validateForm(form) {
+    form.reportValidity();
+    return form.checkValidity();
+  }
+
+  #addComment(form) {
+    let formData = new FormData(form);
+    let command = {
+      title: formData.get('talkTitle'),
+      comment: formData.get('comment'),
+    };
+    addComment(command, store, api);
+    form.reset();
   }
 }
 
@@ -134,7 +158,7 @@ window.customElements.define('s-talks', Talks);
 
 class TalkForm extends HTMLElement {
   connectedCallback() {
-    const template = html`
+    let template = html`
       <form @submit=${(e) => this.#onSubmit(e)}>
         <h3>Submit a Talk</h3>
         <label
@@ -151,20 +175,26 @@ class TalkForm extends HTMLElement {
     render(template, this);
   }
 
-  /** @param {Event} event  */
   #onSubmit(event) {
     event.preventDefault();
-    const form = /** @type {HTMLFormElement} */ (event.target);
-    form.reportValidity();
-    if (form.checkValidity()) {
-      const formData = new FormData(form);
-      const talk = {
-        title: formData.get('title'),
-        summary: formData.get('summary'),
-      };
-      submitTalk(talk, store, api);
-      form.reset();
+    if (this.#validateForm(event.target)) {
+      this.#submitTalk(event.target);
     }
+  }
+
+  #validateForm(form) {
+    form.reportValidity();
+    return form.checkValidity();
+  }
+
+  #submitTalk(form) {
+    let formData = new FormData(form);
+    let command = {
+      title: formData.get('title'),
+      summary: formData.get('summary'),
+    };
+    submitTalk(command, store, api);
+    form.reset();
   }
 }
 

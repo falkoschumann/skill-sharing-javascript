@@ -14,7 +14,7 @@ export class Store {
   }
 
   dispatch(action) {
-    const oldState = this.#state;
+    let oldState = this.#state;
     this.#state = this.#reducer(this.#state, action);
     if (oldState !== this.#state) {
       this.#emitChange();

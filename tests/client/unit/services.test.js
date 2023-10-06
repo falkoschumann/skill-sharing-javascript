@@ -25,18 +25,18 @@ describe('client services', () => {
 
   describe('change user', () => {
     test('updates user name', async () => {
-      const repository = new Repository();
+      let repository = new Repository();
 
-      await changeUser({ name: 'Bob' }, store, repository);
+      await changeUser({ userName: 'Bob' }, store, repository);
 
       expect(store.getState().user).toEqual('Bob');
-      expect(await repository.load()).toEqual('Bob');
+      expect(await repository.load()).toEqual({ userName: 'Bob' });
     });
   });
 
   describe('get user', () => {
     test('gets user Anon if no user is stored', async () => {
-      const repository = new Repository();
+      let repository = new Repository();
 
       await getUser(store, repository);
 
@@ -44,8 +44,8 @@ describe('client services', () => {
     });
 
     test('gets stored user', async () => {
-      const repository = new Repository();
-      await repository.store('Bob');
+      let repository = new Repository();
+      await repository.store({ userName: 'Bob' });
 
       await getUser(store, repository);
 
@@ -55,10 +55,10 @@ describe('client services', () => {
 
   describe('poll talks', () => {
     test('sets talks', async () => {
-      const api = new FakeApi({
+      let api = new FakeApi({
         talks: new ConfigurableResponses([
           {
-            notModified: false,
+            isNotModified: false,
             tag: '1',
             talks: [
               { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
@@ -75,8 +75,8 @@ describe('client services', () => {
     });
 
     test('does not set talks, if not modified', async () => {
-      const api = new FakeApi({
-        talks: new ConfigurableResponses([{ notModified: true }]),
+      let api = new FakeApi({
+        talks: new ConfigurableResponses([{ isNotModified: true }]),
       });
 
       await pollTalks(store, api, 1);
@@ -85,11 +85,11 @@ describe('client services', () => {
     });
 
     test('recovers after error', async () => {
-      const api = new FakeApi({
+      let api = new FakeApi({
         talks: new ConfigurableResponses([
           new Error(),
           {
-            notModified: false,
+            isNotModified: false,
             tag: '1',
             talks: [
               { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
@@ -108,7 +108,7 @@ describe('client services', () => {
 
   describe('submit talk', () => {
     test('submits talk', async () => {
-      const api = new FakeApi();
+      let api = new FakeApi();
 
       await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
 
@@ -122,7 +122,7 @@ describe('client services', () => {
 
   describe('delete talk', () => {
     test('deletes talk', async () => {
-      const api = new FakeApi();
+      let api = new FakeApi();
 
       await deleteTalk({ title: 'foobar' }, api);
 
@@ -132,13 +132,9 @@ describe('client services', () => {
 
   describe('add comment', () => {
     test('posts comment', async () => {
-      const api = new FakeApi();
+      let api = new FakeApi();
 
-      await addComment(
-        { talkTitle: 'foobar', comment: 'lorem ipsum' },
-        store,
-        api,
-      );
+      await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
 
       expect(api.postComment).nthCalledWith(1, 'foobar', {
         author: 'Anon',
