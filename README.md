@@ -1,3 +1,5 @@
+[![Build](https://github.com/falkoschumann/skill-sharing-javascript/actions/workflows/build.yml/badge.svg)](https://github.com/falkoschumann/skill-sharing-javascript/actions/workflows/build.yml)
+
 # Skill Sharing
 
 Implementation of the final example project from the book
