@@ -1,5 +1,6 @@
 import { html, render } from 'lit-html';
 
+import './style.css';
 import {
   addComment,
   changeUser,
@@ -20,11 +21,13 @@ const api = globalThis.skillSharing?.api ?? new Api();
 class SkillSharingApp extends HTMLElement {
   connectedCallback() {
     let template = html`
-      <h1>Skill Sharing</h1>
-      <div>
-        <s-userfield></s-userfield>
-        <s-talks></s-talks>
-        <s-talkform></s-talkform>
+      <div class="container p-12 mx-auto">
+        <h1 class="text-5xl font-extrabold">Skill Sharing</h1>
+        <div>
+          <s-userfield class="block my-6"></s-userfield>
+          <s-talks class="block my-6"></s-talks>
+          <s-talkform class="block my-6"></s-talkform>
+        </div>
       </div>
     `;
     render(template, this);
@@ -50,9 +53,13 @@ class UserField extends HTMLElement {
   #updateView() {
     let name = store.getState().user;
     let template = html`
-      <label
+      <label class="block mb-2 text-sm font-medium text-gray-900"
         >Your name:
-        <input type="text" value="${name}" @change=${(e) => this.#onChange(e)}
+        <input
+          type="text"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          value="${name}"
+          @change=${(e) => this.#onChange(e)}
       /></label>
     `;
     render(template, this);
@@ -102,18 +109,33 @@ class Talks extends HTMLElement {
 
   #renderTalk(talk) {
     return html`
-      <section class="talk">
-        <h2>
+      <section class="talk my-10">
+        <h2 class="text-4xl font-bold">
           ${talk.title}
-          <button @click=${(_) => this.#onClickDelete(talk)}>Delete</button>
+          <button
+            class="align-middle text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
+            @click=${(_) => this.#onClickDelete(talk)}
+          >
+            Delete
+          </button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
-        <p>${talk.summary}</p>
+        <p class="my-3">${talk.summary}</p>
         ${talk.comments.map((c) => this.#renderComment(c))}
-        <form @submit=${(e) => this.#onSubmit(e)}>
+        <form class="my-6" @submit=${(e) => this.#onSubmit(e)}>
           <input type="text" hidden name="talkTitle" value="${talk.title}" />
-          <input type="text" required name="comment" />
-          <button type="submit">Add comment</button>
+          <input
+            type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+            name="comment"
+          />
+          <button
+            type="submit"
+            class="my-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
+          >
+            Add comment
+          </button>
         </form>
       </section>
     `;
@@ -121,8 +143,9 @@ class Talks extends HTMLElement {
 
   #renderComment(comment) {
     return html`
-      <p class="comment">
-        <strong>${comment.author}</strong>: ${comment.message}
+      <p class="comment italic">
+        <strong class="not-italic">${comment.author}</strong>:
+        ${comment.message}
       </p>
     `;
   }
@@ -160,16 +183,31 @@ class TalkForm extends HTMLElement {
   connectedCallback() {
     let template = html`
       <form @submit=${(e) => this.#onSubmit(e)}>
-        <h3>Submit a Talk</h3>
-        <label
+        <h3 class="text-3xl font-bold">Submit a Talk</h3>
+        <label class="block mb-2 text-sm font-medium text-gray-900"
           >Title:
-          <input type="text" required name="title" />
+          <input
+            type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+            name="title"
+          />
         </label>
-        <label
+        <label class="block mb-2 text-sm font-medium text-gray-900"
           >Summary:
-          <input type="text" required name="summary" />
+          <input
+            type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            required
+            name="summary"
+          />
         </label>
-        <button type="submit">Submit</button>
+        <button
+          type="submit"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
+        >
+          Submit
+        </button>
       </form>
     `;
     render(template, this);

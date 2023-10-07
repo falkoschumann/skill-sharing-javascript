@@ -1,12 +1,22 @@
-import { nodeResolve } from '@rollup/plugin-node-resolve';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import postcss from 'rollup-plugin-postcss';
+import process from 'node:process';
 import terser from '@rollup/plugin-terser';
+
+const production = !process.env.ROLLUP_WATCH;
 
 export default {
   input: ['./src/client/app.js'],
   output: {
-    file: 'public/js/skillsharing.js',
+    file: 'public/skillsharing.js',
     format: 'esm',
-    compact: true,
   },
-  plugins: [nodeResolve(), terser()],
+  plugins: [
+    nodeResolve(),
+    postcss({
+      minimize: production,
+      extract: true,
+    }),
+    production && terser({ format: { comments: false } }),
+  ],
 };

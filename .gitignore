@@ -1,7 +1,8 @@
 # see also https://gitignore.io
 
 /data/*.json
-/public/js/
+/public/skillsharing.js
+/public/skillsharing.css
 
 tmp/
 
