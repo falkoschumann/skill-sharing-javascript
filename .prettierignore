@@ -1,7 +1,3 @@
-/coverage/
-/public/js/
-/public/spec/swagger-ui/
-
-# data
-/data/
-corrupt.json
+coverage/
+public/
+data/

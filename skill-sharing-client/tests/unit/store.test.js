@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { Store } from '../../../src/client/domain/store.js';
+import { Store } from '../../src/domain/store.js';
 
 describe('store', () => {
   let store;

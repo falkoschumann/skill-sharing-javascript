@@ -1,6 +1,5 @@
 {
-  "testEnvironment": "node",
   "transform": {},
-  "watchPathIgnorePatterns": ["<rootDir>/data/"],
+  "watchPathIgnorePatterns": ["<rootDir>/packages/server/data/"],
   "verbose": true
 }

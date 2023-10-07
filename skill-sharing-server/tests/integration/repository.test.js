@@ -1,10 +1,9 @@
+import { beforeEach, describe, expect, test } from '@jest/globals';
 import { rmSync } from 'node:fs';
 
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { Repository } from '../../src/infrastructure/repository.js';
 
-import { Repository } from '../../../src/server/infrastructure/repository.js';
-
-const fileName = './data/talks.test.json';
+const fileName = new URL('../data/talks.test.json', import.meta.url);
 
 describe('repository', () => {
   beforeEach(() => {
@@ -14,7 +13,7 @@ describe('repository', () => {
   describe('find all', () => {
     test('returns list of talks', async () => {
       let repository = new Repository({
-        fileName: './tests/server/data/example.json',
+        fileName: new URL('../data/example.json', import.meta.url),
       });
 
       let talks = await repository.findAll();
@@ -26,7 +25,7 @@ describe('repository', () => {
 
     test('returns empty list, if file does not exist', async () => {
       let repository = new Repository({
-        fileName: './tests/server/data/non-existent.json',
+        fileName: new URL('../data/non-existent.json', import.meta.url),
       });
 
       let talks = await repository.findAll();
@@ -36,7 +35,7 @@ describe('repository', () => {
 
     test('returns empty list, if file is corrupt', async () => {
       let repository = new Repository({
-        fileName: './tests/server/data/corrupt.json',
+        fileName: new URL('../data/corrupt.json', import.meta.url),
       });
 
       let talks = await repository.findAll();
@@ -48,7 +47,7 @@ describe('repository', () => {
   describe('find by title', () => {
     test('returns talk with title', async () => {
       let repository = new Repository({
-        fileName: './tests/server/data/example.json',
+        fileName: new URL('../data/example.json', import.meta.url),
       });
 
       let talk = await repository.findByTitle('Foobar');
@@ -62,7 +61,7 @@ describe('repository', () => {
 
     test('returns undefined if talk with title does not exist', async () => {
       let repository = new Repository({
-        fileName: './tests/server/data/example.json',
+        fileName: new URL('../data/example.json', import.meta.url),
       });
 
       let talk = await repository.findByTitle('not a talk');

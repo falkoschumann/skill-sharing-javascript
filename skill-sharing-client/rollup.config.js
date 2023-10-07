@@ -6,9 +6,9 @@ import terser from '@rollup/plugin-terser';
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: ['./src/client/app.js'],
+  input: ['./src/app.js'],
   output: {
-    file: 'public/skillsharing.js',
+    file: '../skill-sharing-server/public/skillsharing.js',
     format: 'esm',
   },
   plugins: [

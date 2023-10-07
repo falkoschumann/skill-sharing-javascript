@@ -2,7 +2,6 @@
 
 task=$1
 case $task in
-  start) npm run start ;;
   clean) npm run clean ;;
   format) npm run format ;;
   test) npm run test ;;

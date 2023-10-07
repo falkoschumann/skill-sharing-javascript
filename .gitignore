@@ -1,9 +1,5 @@
 # see also https://gitignore.io
 
-/data/*.json
-/public/skillsharing.js
-/public/skillsharing.css
-
 tmp/
 
 # Gradle

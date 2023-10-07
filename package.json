@@ -2,40 +2,25 @@
   "name": "skill-sharing",
   "version": "0.1.0",
   "type": "module",
-  "main": "src/server/main.js",
+  "workspaces": [
+    "skill-sharing-shared",
+    "skill-sharing-client",
+    "skill-sharing-server"
+  ],
   "scripts": {
-    "build": "npm run dist && npm run test && npm run check",
-    "clean": "rm public/skillsharing.js public/skillsharing.css",
-    "start": "node src/server/main.js",
-    "devclient": "rollup -c -w",
-    "devserver": "nodemon src/server/main.js",
-    "dist": "rollup -c",
+    "build": "npm run build --workspaces --if-present && npm run test && npm run check",
+    "clean": "npm run clean --workspaces --if-present",
     "test": "node --no-warnings=ExperimentalWarning --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "check": "prettier . --check && eslint src tests",
-    "format": "prettier . --write && eslint --fix src tests"
-  },
-  "dependencies": {
-    "express": "4.18.2",
-    "lit-html": "2.8.0"
+    "check": "prettier . --check && eslint */src */tests",
+    "format": "prettier . --write && eslint --fix */src */tests",
+    "devserver": "npm run dev --workspace=skill-sharing-server",
+    "devclient": "npm run dev --workspace=skill-sharing-client"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@rollup/plugin-node-resolve": "15.2.1",
-    "@rollup/plugin-terser": "0.4.3",
-    "@tailwindcss/forms": "0.5.6",
-    "@types/express": "4.17.18",
     "@types/jest": "29.5.5",
-    "@types/supertest": "2.0.14",
-    "autoprefixer": "10.4.16",
     "eslint": "8.50.0",
     "jest": "29.7.0",
-    "jest-environment-jsdom": "29.7.0",
-    "nodemon": "3.0.1",
-    "postcss": "8.4.31",
-    "prettier": "3.0.3",
-    "rollup": "3.29.4",
-    "rollup-plugin-postcss": "4.0.2",
-    "supertest": "6.3.3",
-    "tailwindcss": "3.3.3"
+    "prettier": "3.0.3"
   }
 }

@@ -2,6 +2,8 @@
 
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
+import { ConfigurableResponses } from 'skill-sharing-shared';
+
 import {
   addComment,
   changeUser,
@@ -9,11 +11,10 @@ import {
   getUser,
   pollTalks,
   submitTalk,
-} from '../../../src/client/application/services.js';
-import { initialState, reducer } from '../../../src/client/domain/reducer.js';
-import { ConfigurableResponses } from '../../configurable-responses.js';
-import { Repository } from '../../../src/client/infrastructure/repository.js';
-import { Store } from '../../../src/client/domain/store.js';
+} from '../../src/application/services.js';
+import { initialState, reducer } from '../../src/domain/reducer.js';
+import { Repository } from '../../src/infrastructure/repository.js';
+import { Store } from '../../src/domain/store.js';
 
 describe('client services', () => {
   let store;

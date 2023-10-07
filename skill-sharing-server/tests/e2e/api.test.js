@@ -1,12 +1,11 @@
-import { rmSync } from 'node:fs';
-
 import { beforeEach, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
+import { rmSync } from 'node:fs';
 
-import { ExpressApp } from '../../../src/server/ui/express-app.js';
-import { Repository } from '../../../src/server/infrastructure/repository.js';
+import { ExpressApp } from '../../src/ui/express-app.js';
+import { Repository } from '../../src/infrastructure/repository.js';
 
-let fileName = './data/talks.test.json';
+let fileName = new URL('../../data/talks.test.json', import.meta.url);
 
 describe('API', () => {
   let repository;

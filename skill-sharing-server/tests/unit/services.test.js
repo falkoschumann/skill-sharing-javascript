@@ -6,7 +6,7 @@ import {
   getTalk,
   getTalks,
   submitTalk,
-} from '../../../src/server/application/services.js';
+} from '../../src/application/services.js';
 
 describe('services', () => {
   describe('get talks', () => {
