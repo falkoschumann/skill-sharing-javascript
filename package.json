@@ -13,6 +13,7 @@
     "test": "node --no-warnings=ExperimentalWarning --experimental-vm-modules node_modules/jest/bin/jest.js",
     "check": "prettier . --check && eslint */src */tests",
     "format": "prettier . --write && eslint --fix */src */tests",
+    "start": "npm run start --workspace=skill-sharing-server",
     "devserver": "npm run dev --workspace=skill-sharing-server",
     "devclient": "npm run dev --workspace=skill-sharing-client"
   },
