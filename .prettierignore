@@ -1,3 +1,6 @@
 coverage/
-public/
 data/
+swagger-ui/
+skillsharing.css
+skillsharing.js
+
