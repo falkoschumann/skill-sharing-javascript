@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "npm run dist",
-    "dev": "rollup -c -w",
-    "dist": "rollup -c"
+    "dist": "rollup -c",
+    "dev": "rollup -c -w"
   },
   "dependencies": {
     "lit-html": "2.8.0"

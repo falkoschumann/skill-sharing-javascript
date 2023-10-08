@@ -8,7 +8,7 @@
     "skill-sharing-server"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present && npm run test && npm run check",
+    "build": "npm run dist --workspaces --if-present && npm run test && npm run check",
     "clean": "npm run clean --workspaces --if-present",
     "test": "node --no-warnings=ExperimentalWarning --experimental-vm-modules node_modules/jest/bin/jest.js",
     "check": "prettier . --check && eslint */src */tests",
@@ -19,7 +19,6 @@
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
-    "@types/jest": "29.5.5",
     "eslint": "8.50.0",
     "jest": "29.7.0",
     "prettier": "3.0.3"
