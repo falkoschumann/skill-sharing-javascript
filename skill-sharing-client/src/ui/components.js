@@ -41,7 +41,7 @@ class UserField extends HTMLElement {
   #unsubscribe;
 
   connectedCallback() {
-    this.#unsubscribe = store.subscribe((_) => this.#updateView());
+    this.#unsubscribe = store.subscribe(() => this.#updateView());
     this.#updateView();
     getUser(store, repository);
   }
@@ -82,7 +82,7 @@ class Talks extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#unsubscribe = store.subscribe((_) => this.#updateView());
+    this.#unsubscribe = store.subscribe(() => this.#updateView());
     this.#updateView();
   }
 
@@ -114,7 +114,7 @@ class Talks extends HTMLElement {
           ${talk.title}
           <button
             class="align-middle text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
-            @click=${(_) => this.#onClickDelete(talk)}
+            @click=${() => this.#onClickDelete(talk)}
           >
             Delete
           </button>
