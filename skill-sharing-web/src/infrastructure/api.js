@@ -1,7 +1,30 @@
-export class Api {
+export class AbstractApi {
+  // eslint-disable-next-line no-unused-vars
+  async getTalks(tag) {
+    return [];
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async putTalk({ title, presenter, summary }) {
+    return;
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteTalk(title) {
+    return;
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async postComment(title, { author, message }) {
+    return;
+  }
+}
+
+export class Api extends AbstractApi {
   #baseUrl;
 
   constructor({ baseUrl = '/api' } = {}) {
+    super();
     this.#baseUrl = baseUrl;
   }
 

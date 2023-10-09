@@ -1,9 +1,31 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-export class Repository {
+export class AbstractRepository {
+  async findAll() {
+    return [];
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async findByTitle(title) {
+    return undefined;
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async add({ title, presenter, summary, comments }) {
+    return;
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  async remove(title) {
+    return;
+  }
+}
+
+export class Repository extends AbstractRepository {
   #fileName;
 
   constructor({ fileName = './data/talks.json' } = {}) {
+    super();
     this.#fileName = fileName;
   }
 

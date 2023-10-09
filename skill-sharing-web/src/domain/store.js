@@ -1,9 +1,26 @@
-export class Store {
+export class AbstractStore {
+  getState() {
+    throw new Error('Not implemented');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  dispatch(action) {
+    throw new Error('Not implemented');
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  subscribe(listener) {
+    throw new Error('Not implemented');
+  }
+}
+
+export class Store extends AbstractStore {
   #reducer;
   #state;
   #listeners;
 
   constructor(reducer, initialState) {
+    super();
     this.#reducer = reducer;
     this.#state = initialState;
     this.#listeners = [];

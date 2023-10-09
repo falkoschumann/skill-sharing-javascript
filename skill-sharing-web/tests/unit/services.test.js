@@ -1,7 +1,6 @@
 /** @jest-environment jsdom */
 
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-
 import { ConfigurableResponses } from 'skill-sharing-shared';
 
 import {
@@ -13,8 +12,9 @@ import {
   submitTalk,
 } from '../../src/application/services.js';
 import { initialState, reducer } from '../../src/domain/reducer.js';
-import { Repository } from '../../src/infrastructure/repository.js';
 import { Store } from '../../src/domain/store.js';
+import { AbstractApi } from '../../src/infrastructure/api.js';
+import { Repository } from '../../src/infrastructure/repository.js';
 
 describe('client services', () => {
   let store;
@@ -145,10 +145,11 @@ describe('client services', () => {
   });
 });
 
-class FakeApi {
+class FakeApi extends AbstractApi {
   #talks;
 
   constructor({ talks = new ConfigurableResponses() } = {}) {
+    super();
     this.#talks = talks;
     this.putTalk = jest.fn(() => Promise.resolve());
     this.deleteTalk = jest.fn(() => Promise.resolve());

@@ -7,6 +7,7 @@ import {
   getTalks,
   submitTalk,
 } from '../../src/application/services.js';
+import { AbstractRepository } from '../../src/infrastructure/repository.js';
 
 describe('services', () => {
   describe('get talks', () => {
@@ -116,10 +117,11 @@ describe('services', () => {
   });
 });
 
-class FakeRepository {
+class FakeRepository extends AbstractRepository {
   #talks;
 
   constructor(talks = []) {
+    super();
     this.#talks = talks;
   }
 

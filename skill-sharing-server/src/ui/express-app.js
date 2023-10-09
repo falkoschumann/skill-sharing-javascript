@@ -146,7 +146,7 @@ export class ExpressApp {
           { title, presenter: talk.presenter, summary: talk.summary },
           repository,
         );
-        this.#talksUpdated(repository);
+        await this.#talksUpdated(repository);
         this.#reply(res, { status: 204 });
       }
     });
@@ -165,7 +165,7 @@ export class ExpressApp {
     this.#app.delete('/api/talks/:title', async (req, res) => {
       let { title } = this.#getTalkParameters(req);
       await deleteTalk({ title }, repository);
-      this.#talksUpdated(repository);
+      await this.#talksUpdated(repository);
       this.#reply(res, { status: 204 });
     });
   }

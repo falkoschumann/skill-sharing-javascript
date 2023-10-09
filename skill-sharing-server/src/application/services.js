@@ -1,26 +1,44 @@
-export async function getTalks(repository) {
+import { AbstractRepository } from '../infrastructure/repository.js';
+
+export async function getTalks(repository = new AbstractRepository()) {
   return await repository.findAll();
 }
 
-export async function getTalk({ title }, repository) {
+export async function getTalk(
+  { title },
+  repository = new AbstractRepository(),
+) {
   return await repository.findByTitle(title);
 }
 
-export async function submitTalk({ title, presenter, summary }, repository) {
+export async function submitTalk(
+  { title, presenter, summary },
+  repository = new AbstractRepository(),
+) {
   let talk = { title, presenter, summary, comments: [] };
   await repository.add(talk);
 }
 
-export async function deleteTalk({ title }, repository) {
+export async function deleteTalk(
+  { title },
+  repository = new AbstractRepository(),
+) {
   await repository.remove(title);
 }
 
-export async function addComment({ title, comment }, repository) {
+export async function addComment(
+  { title, comment: { author, message } },
+  repository = new AbstractRepository(),
+) {
   let talk = await repository.findByTitle(title);
-  return tryAddCommand(talk, comment, repository);
+  return tryAddCommand(talk, { author, message }, repository);
 }
 
-async function tryAddCommand(talk, comment, repository) {
+async function tryAddCommand(
+  talk,
+  comment,
+  repository = new AbstractRepository(),
+) {
   if (talk == null) {
     return false;
   }
