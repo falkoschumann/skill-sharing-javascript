@@ -4,7 +4,7 @@
   "type": "module",
   "workspaces": [
     "skill-sharing-shared",
-    "skill-sharing-client",
+    "skill-sharing-web",
     "skill-sharing-server"
   ],
   "scripts": {
@@ -15,7 +15,7 @@
     "format": "prettier . --write && eslint --fix */src */tests",
     "start": "npm run start --workspace=skill-sharing-server",
     "devserver": "npm run dev --workspace=skill-sharing-server",
-    "devclient": "npm run dev --workspace=skill-sharing-client"
+    "devweb": "npm run dev --workspace=skill-sharing-web"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
