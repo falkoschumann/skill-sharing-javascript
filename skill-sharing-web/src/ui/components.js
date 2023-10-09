@@ -2,21 +2,14 @@ import { html, render } from 'lit-html';
 
 import './style.css';
 import {
-  addComment,
-  changeUser,
-  deleteTalk,
-  getUser,
-  pollTalks,
-  submitTalk,
-} from '../application/services.js';
-import { initialState, reducer } from '../domain/reducer.js';
-import { Api } from '../infrastructure/api.js';
-import { Repository } from '../infrastructure/repository.js';
-import { Store } from '../domain/store.js';
-
-const store = new Store(reducer, initialState);
-const repository = globalThis.skillSharing?.repository ?? new Repository();
-const api = globalThis.skillSharing?.api ?? new Api();
+  addCommentAction,
+  changeUserAction,
+  deleteTalkAction,
+  getUserAction,
+  pollTalksAction,
+  submitTalkAction,
+} from './actions.js';
+import { store } from './store.js';
 
 class SkillSharingApp extends HTMLElement {
   connectedCallback() {
@@ -31,7 +24,7 @@ class SkillSharingApp extends HTMLElement {
       </div>
     `;
     render(template, this);
-    pollTalks(store, api);
+    pollTalksAction(store);
   }
 }
 
@@ -43,7 +36,7 @@ class UserField extends HTMLElement {
   connectedCallback() {
     this.#unsubscribe = store.subscribe(() => this.#updateView());
     this.#updateView();
-    getUser(store, repository);
+    getUserAction(store);
   }
 
   disconnectedCallback() {
@@ -66,7 +59,7 @@ class UserField extends HTMLElement {
   }
 
   #onChange(event) {
-    changeUser({ userName: event.target.value }, store, repository);
+    changeUserAction({ userName: event.target.value }, store);
   }
 }
 
@@ -151,7 +144,7 @@ class Talks extends HTMLElement {
   }
 
   #onClickDelete(talk) {
-    deleteTalk({ title: talk.title }, api);
+    deleteTalkAction({ title: talk.title });
   }
 
   #onSubmit(event) {
@@ -172,7 +165,7 @@ class Talks extends HTMLElement {
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
     };
-    addComment(command, store, api);
+    addCommentAction(command, store);
     form.reset();
   }
 }
@@ -231,7 +224,7 @@ class TalkForm extends HTMLElement {
       title: formData.get('title'),
       summary: formData.get('summary'),
     };
-    submitTalk(command, store, api);
+    submitTalkAction(command, store);
     form.reset();
   }
 }
