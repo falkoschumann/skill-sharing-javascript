@@ -59,8 +59,11 @@ export class Repository extends AbstractRepository {
     try {
       let json = await readFile(this.#fileName, 'utf-8');
       return JSON.parse(json);
-    } catch {
-      return {};
+    } catch (error) {
+      if (error.code === 'ENOENT' || error.name === 'SyntaxError') {
+        return {};
+      }
+      throw error;
     }
   }
 

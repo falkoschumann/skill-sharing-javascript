@@ -3,7 +3,7 @@ import { rmSync } from 'node:fs';
 
 import { Repository } from '../../src/infrastructure/repository.js';
 
-const fileName = new URL('../data/talks.test.json', import.meta.url);
+const fileName = new URL('../../data/talks.test.json', import.meta.url);
 
 describe('repository', () => {
   beforeEach(() => {
