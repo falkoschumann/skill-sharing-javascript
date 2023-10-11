@@ -33,14 +33,12 @@ describe('repository', () => {
       expect(talks).toEqual([]);
     });
 
-    test('returns empty list, if file is corrupt', async () => {
+    test('reports an error, if file is corrupt', async () => {
       let repository = new Repository({
         fileName: new URL('../data/corrupt.json', import.meta.url),
       });
 
-      let talks = await repository.findAll();
-
-      expect(talks).toEqual([]);
+      await expect(repository.findAll()).rejects.toThrow();
     });
   });
 
