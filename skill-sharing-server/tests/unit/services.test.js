@@ -9,110 +9,108 @@ import {
 } from '../../src/application/services.js';
 import { AbstractRepository } from '../../src/infrastructure/repository.js';
 
-describe('services', () => {
-  describe('get talks', () => {
-    test('returns list of talks', async () => {
-      let repository = new FakeRepository([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
-      ]);
+describe('get talks', () => {
+  test('returns list of talks', async () => {
+    let repository = new FakeRepository([
+      { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+    ]);
 
-      let talks = await getTalks(repository);
+    let talks = await getTalks(repository);
 
-      expect(talks).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
-      ]);
+    expect(talks).toEqual([
+      { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+    ]);
+  });
+});
+
+describe('get talk', () => {
+  test('returns a talk', async () => {
+    let repository = new FakeRepository([
+      { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+    ]);
+
+    let talk = await getTalk({ title: 'foobar' }, repository);
+
+    expect(talk).toEqual({
+      title: 'foobar',
+      summary: 'lorem ipsum',
+      comments: [],
     });
   });
 
-  describe('get talk', () => {
-    test('returns a talk', async () => {
-      let repository = new FakeRepository([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
-      ]);
+  test('returns nothing if talk does not exist', async () => {
+    let repository = new FakeRepository([
+      { title: 'foo', summary: 'lorem ipsum', comments: [] },
+    ]);
 
-      let talk = await getTalk({ title: 'foobar' }, repository);
+    let talk = await getTalk({ title: 'bar' }, repository);
 
-      expect(talk).toEqual({
-        title: 'foobar',
-        summary: 'lorem ipsum',
-        comments: [],
-      });
-    });
+    expect(talk).toBeUndefined();
+  });
+});
 
-    test('returns nothing if talk does not exist', async () => {
-      let repository = new FakeRepository([
-        { title: 'foo', summary: 'lorem ipsum', comments: [] },
-      ]);
+describe('submit talk', () => {
+  test('adds talk to list of talks', async () => {
+    let repository = new FakeRepository();
 
-      let talk = await getTalk({ title: 'bar' }, repository);
+    await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
 
-      expect(talk).toBeUndefined();
+    let talks = await repository.findAll();
+    expect(talks).toEqual([
+      { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+    ]);
+  });
+});
+
+describe('delete talk', () => {
+  test('removes talk from list', async () => {
+    let repository = new FakeRepository([
+      { title: 'foobar', summary: 'lorem ipsum' },
+    ]);
+
+    await deleteTalk({ title: 'foobar' }, repository);
+
+    let talks = await repository.findAll();
+    expect(talks).toEqual([]);
+  });
+});
+
+describe('add comment', () => {
+  test('adds comment to an existing talk', async () => {
+    let repository = new FakeRepository([
+      { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+    ]);
+
+    let successful = await addComment(
+      { title: 'foobar', comment: { author: 'Bob', message: 'new comment' } },
+      repository,
+    );
+
+    expect(successful).toEqual(true);
+    let talk = await repository.findByTitle('foobar');
+    expect(talk).toEqual({
+      title: 'foobar',
+      summary: 'lorem ipsum',
+      comments: [{ author: 'Bob', message: 'new comment' }],
     });
   });
 
-  describe('submit talk', () => {
-    test('adds talk to list of talks', async () => {
-      let repository = new FakeRepository();
+  test('reports an error if talk does not exists', async () => {
+    let repository = new FakeRepository([
+      { title: 'foo', summary: 'lorem ipsum', comments: [] },
+    ]);
 
-      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
+    let successful = await addComment(
+      { title: 'bar', comment: { author: 'Bob', message: 'new comment' } },
+      repository,
+    );
 
-      let talks = await repository.findAll();
-      expect(talks).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
-      ]);
-    });
-  });
-
-  describe('delete talk', () => {
-    test('removes talk from list', async () => {
-      let repository = new FakeRepository([
-        { title: 'foobar', summary: 'lorem ipsum' },
-      ]);
-
-      await deleteTalk({ title: 'foobar' }, repository);
-
-      let talks = await repository.findAll();
-      expect(talks).toEqual([]);
-    });
-  });
-
-  describe('add comment', () => {
-    test('adds comment to an existing talk', async () => {
-      let repository = new FakeRepository([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
-      ]);
-
-      let successful = await addComment(
-        { title: 'foobar', comment: { author: 'Bob', message: 'new comment' } },
-        repository,
-      );
-
-      expect(successful).toEqual(true);
-      let talk = await repository.findByTitle('foobar');
-      expect(talk).toEqual({
-        title: 'foobar',
-        summary: 'lorem ipsum',
-        comments: [{ author: 'Bob', message: 'new comment' }],
-      });
-    });
-
-    test('reports an error if talk does not exists', async () => {
-      let repository = new FakeRepository([
-        { title: 'foo', summary: 'lorem ipsum', comments: [] },
-      ]);
-
-      let successful = await addComment(
-        { title: 'bar', comment: { author: 'Bob', message: 'new comment' } },
-        repository,
-      );
-
-      expect(successful).toEqual(false);
-      let talk = await repository.findByTitle('foo');
-      expect(talk).toEqual({
-        title: 'foo',
-        summary: 'lorem ipsum',
-        comments: [],
-      });
+    expect(successful).toEqual(false);
+    let talk = await repository.findByTitle('foo');
+    expect(talk).toEqual({
+      title: 'foo',
+      summary: 'lorem ipsum',
+      comments: [],
     });
   });
 });

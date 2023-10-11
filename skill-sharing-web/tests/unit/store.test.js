@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import { Store } from '../../src/domain/store.js';
 
-describe('store', () => {
+describe('subscribe', () => {
   let store;
 
   beforeEach(() => {

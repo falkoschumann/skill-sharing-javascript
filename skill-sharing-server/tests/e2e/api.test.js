@@ -7,298 +7,296 @@ import { Repository } from '../../src/infrastructure/repository.js';
 
 let fileName = new URL('../../data/talks.test.json', import.meta.url);
 
-describe('API', () => {
-  let repository;
-  let app;
+let repository;
+let app;
 
-  beforeEach(() => {
-    rmSync(fileName, { force: true });
-    repository = new Repository({ fileName });
-    app = new ExpressApp({ repository }).app;
-  });
+beforeEach(() => {
+  rmSync(fileName, { force: true });
+  repository = new Repository({ fileName });
+  app = new ExpressApp({ repository }).app;
+});
 
-  describe('GET talks', () => {
-    test('replies with talks, if client asks for the first time', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+describe('GET talks', () => {
+  test('replies with talks, if client asks for the first time', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
-        .get('/api/talks')
-        .set('Accept', 'application/json');
+    let response = await request(app)
+      .get('/api/talks')
+      .set('Accept', 'application/json');
 
-      expect(response.status).toEqual(200);
-      expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.get('Cache-Control')).toEqual('no-store');
-      expect(response.get('ETag')).toEqual('"1"');
-      expect(response.body).toEqual([
-        {
-          title: 'foobar',
-          presenter: 'Anon',
-          summary: 'lorem ipsum',
-          comments: [],
-        },
-      ]);
-    });
-
-    test('replies with talks, if client is not up to date', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
-
-      let response = await request(app)
-        .get('/api/talks')
-        .set('Accept', 'application/json')
-        .set('If-None-Match', '"0"');
-
-      expect(response.status).toEqual(200);
-      expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.get('Cache-Control')).toEqual('no-store');
-      expect(response.get('ETag')).toEqual('"1"');
-      expect(response.body).toEqual([
-        {
-          title: 'foobar',
-          presenter: 'Anon',
-          summary: 'lorem ipsum',
-          comments: [],
-        },
-      ]);
-    });
-
-    test('reports not modified, if client is up to date', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
-
-      let response = await request(app)
-        .get('/api/talks')
-        .set('Accept', 'application/json')
-        .set('If-None-Match', '"1"');
-
-      expect(response.status).toEqual(304);
-    });
-
-    test('reports not modified, if long polling results in a timeout', async () => {
-      let responsePromise = request(app)
-        .get('/api/talks')
-        .set('Accept', 'application/json')
-        .set('Prefer', 'wait=1')
-        .set('If-None-Match', '"0"');
-      let submitHandler = setTimeout(
-        () =>
-          request(app)
-            .put('/api/talks/foobar')
-            .set('Content-Type', 'application/json')
-            .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
-        2000,
-      );
-      let response = await responsePromise;
-      clearTimeout(submitHandler);
-
-      expect(response.status).toEqual(304);
-    });
-
-    test('replies talks, if a talk was submitted while long polling', async () => {
-      let responsePromise = request(app)
-        .get('/api/talks')
-        .set('Accept', 'application/json')
-        .set('Prefer', 'wait=1')
-        .set('If-None-Match', '"0"');
-      setTimeout(async () => {
-        await request(app)
-          .put('/api/talks/foobar')
-          .set('Content-Type', 'application/json')
-          .send({ presenter: 'Anon', summary: 'lorem ipsum' });
-      }, 500);
-      let response = await responsePromise;
-
-      expect(response.status).toEqual(200);
-      expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.get('Cache-Control')).toEqual('no-store');
-      expect(response.get('ETag')).toEqual('"1"');
-      expect(response.body).toEqual([
-        {
-          title: 'foobar',
-          presenter: 'Anon',
-          summary: 'lorem ipsum',
-          comments: [],
-        },
-      ]);
-    });
-  });
-
-  describe('GET talk', () => {
-    test('replies with talk', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
-
-      let response = await request(app)
-        .get('/api/talks/foobar')
-        .set('Accept', 'application/json');
-
-      expect(response.status).toEqual(200);
-      expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.body).toEqual({
+    expect(response.status).toEqual(200);
+    expect(response.get('Content-Type')).toMatch(/application\/json/);
+    expect(response.get('Cache-Control')).toEqual('no-store');
+    expect(response.get('ETag')).toEqual('"1"');
+    expect(response.body).toEqual([
+      {
         title: 'foobar',
         presenter: 'Anon',
         summary: 'lorem ipsum',
         comments: [],
-      });
-    });
+      },
+    ]);
+  });
 
-    test('reports an error if talk does not exists', async () => {
+  test('replies with talks, if client is not up to date', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+    let response = await request(app)
+      .get('/api/talks')
+      .set('Accept', 'application/json')
+      .set('If-None-Match', '"0"');
+
+    expect(response.status).toEqual(200);
+    expect(response.get('Content-Type')).toMatch(/application\/json/);
+    expect(response.get('Cache-Control')).toEqual('no-store');
+    expect(response.get('ETag')).toEqual('"1"');
+    expect(response.body).toEqual([
+      {
+        title: 'foobar',
+        presenter: 'Anon',
+        summary: 'lorem ipsum',
+        comments: [],
+      },
+    ]);
+  });
+
+  test('reports not modified, if client is up to date', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+    let response = await request(app)
+      .get('/api/talks')
+      .set('Accept', 'application/json')
+      .set('If-None-Match', '"1"');
+
+    expect(response.status).toEqual(304);
+  });
+
+  test('reports not modified, if long polling results in a timeout', async () => {
+    let responsePromise = request(app)
+      .get('/api/talks')
+      .set('Accept', 'application/json')
+      .set('Prefer', 'wait=1')
+      .set('If-None-Match', '"0"');
+    let submitHandler = setTimeout(
+      () =>
+        request(app)
+          .put('/api/talks/foobar')
+          .set('Content-Type', 'application/json')
+          .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
+      2000,
+    );
+    let response = await responsePromise;
+    clearTimeout(submitHandler);
+
+    expect(response.status).toEqual(304);
+  });
+
+  test('replies talks, if a talk was submitted while long polling', async () => {
+    let responsePromise = request(app)
+      .get('/api/talks')
+      .set('Accept', 'application/json')
+      .set('Prefer', 'wait=1')
+      .set('If-None-Match', '"0"');
+    setTimeout(async () => {
       await request(app)
-        .put('/api/talks/foo')
+        .put('/api/talks/foobar')
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+    }, 500);
+    let response = await responsePromise;
 
-      let response = await request(app)
-        .get('/api/talks/bar')
-        .set('Accept', 'application/json');
+    expect(response.status).toEqual(200);
+    expect(response.get('Content-Type')).toMatch(/application\/json/);
+    expect(response.get('Cache-Control')).toEqual('no-store');
+    expect(response.get('ETag')).toEqual('"1"');
+    expect(response.body).toEqual([
+      {
+        title: 'foobar',
+        presenter: 'Anon',
+        summary: 'lorem ipsum',
+        comments: [],
+      },
+    ]);
+  });
+});
 
-      expect(response.status).toEqual(404);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual("No talk 'bar' found");
+describe('GET talk', () => {
+  test('replies with talk', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+    let response = await request(app)
+      .get('/api/talks/foobar')
+      .set('Accept', 'application/json');
+
+    expect(response.status).toEqual(200);
+    expect(response.get('Content-Type')).toMatch(/application\/json/);
+    expect(response.body).toEqual({
+      title: 'foobar',
+      presenter: 'Anon',
+      summary: 'lorem ipsum',
+      comments: [],
     });
   });
 
-  describe('PUT talk', () => {
-    test('creates a new talk', async () => {
-      let response = await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+  test('reports an error if talk does not exists', async () => {
+    await request(app)
+      .put('/api/talks/foo')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      expect(response.status).toEqual(204);
-      response = await request(app).get('/api/talks').send();
-      expect(response.body).toEqual([
-        {
-          title: 'foobar',
-          presenter: 'Anon',
-          summary: 'lorem ipsum',
-          comments: [],
-        },
-      ]);
-    });
+    let response = await request(app)
+      .get('/api/talks/bar')
+      .set('Accept', 'application/json');
 
-    test('reports an error if presenter is missing', async () => {
-      let response = await request(app)
-        .put('/api/talks/foobar')
-        .set('Accept', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+    expect(response.status).toEqual(404);
+    expect(response.get('Content-Type')).toMatch(/text\/plain/);
+    expect(response.text).toEqual("No talk 'bar' found");
+  });
+});
 
-      expect(response.status).toEqual(400);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual('Bad talk data');
-      response = await request(app).get('/api/talks').send();
-      expect(response.body).toEqual([]);
-    });
+describe('PUT talk', () => {
+  test('creates a new talk', async () => {
+    let response = await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-    test('reports an error if summary is missing', async () => {
-      let response = await request(app)
-        .put('/api/talks/foobar')
-        .set('Accept', 'application/json')
-        .send({ presenter: 'Anon' });
-
-      expect(response.status).toEqual(400);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual('Bad talk data');
-      response = await request(app).get('/api/talks').send();
-      expect(response.body).toEqual([]);
-    });
+    expect(response.status).toEqual(204);
+    response = await request(app).get('/api/talks').send();
+    expect(response.body).toEqual([
+      {
+        title: 'foobar',
+        presenter: 'Anon',
+        summary: 'lorem ipsum',
+        comments: [],
+      },
+    ]);
   });
 
-  describe('DELETE talk', () => {
-    test('deletes an existing talk', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+  test('reports an error if presenter is missing', async () => {
+    let response = await request(app)
+      .put('/api/talks/foobar')
+      .set('Accept', 'application/json')
+      .send({ summary: 'lorem ipsum' });
 
-      let response = await request(app).delete('/api/talks/foobar').send();
-
-      expect(response.status).toEqual(204);
-      response = await request(app).get('/api/talks').send();
-      expect(response.get('ETag')).toEqual('"2"');
-      expect(response.body).toEqual([]);
-    });
+    expect(response.status).toEqual(400);
+    expect(response.get('Content-Type')).toMatch(/text\/plain/);
+    expect(response.text).toEqual('Bad talk data');
+    response = await request(app).get('/api/talks').send();
+    expect(response.body).toEqual([]);
   });
 
-  describe('POST comment', () => {
-    test('adds comment', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+  test('reports an error if summary is missing', async () => {
+    let response = await request(app)
+      .put('/api/talks/foobar')
+      .set('Accept', 'application/json')
+      .send({ presenter: 'Anon' });
 
-      let response = await request(app)
-        .post('/api/talks/foobar/comments')
-        .set('Content-Type', 'application/json')
-        .send({ author: 'Bob', message: 'new comment' });
+    expect(response.status).toEqual(400);
+    expect(response.get('Content-Type')).toMatch(/text\/plain/);
+    expect(response.text).toEqual('Bad talk data');
+    response = await request(app).get('/api/talks').send();
+    expect(response.body).toEqual([]);
+  });
+});
 
-      expect(response.status).toEqual(204);
-      response = await request(app).get('/api/talks').send();
-      expect(response.body).toEqual([
-        {
-          title: 'foobar',
-          presenter: 'Anon',
-          summary: 'lorem ipsum',
-          comments: [{ author: 'Bob', message: 'new comment' }],
-        },
-      ]);
-    });
+describe('DELETE talk', () => {
+  test('deletes an existing talk', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-    test('reports an error if talk does not exists', async () => {
-      await request(app)
-        .put('/api/talks/foo')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+    let response = await request(app).delete('/api/talks/foobar').send();
 
-      let response = await request(app)
-        .post('/api/talks/bar/comments')
-        .set('Content-Type', 'application/json')
-        .send({ author: 'Bob', message: 'new comment' });
+    expect(response.status).toEqual(204);
+    response = await request(app).get('/api/talks').send();
+    expect(response.get('ETag')).toEqual('"2"');
+    expect(response.body).toEqual([]);
+  });
+});
 
-      expect(response.status).toEqual(404);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual("No talk 'bar' found");
-    });
+describe('POST comment', () => {
+  test('adds comment', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-    test('reports an error if author is missing', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+    let response = await request(app)
+      .post('/api/talks/foobar/comments')
+      .set('Content-Type', 'application/json')
+      .send({ author: 'Bob', message: 'new comment' });
 
-      let response = await request(app)
-        .post('/api/talks/foobar/comments')
-        .set('Content-Type', 'application/json')
-        .send({ message: 'new comment' });
+    expect(response.status).toEqual(204);
+    response = await request(app).get('/api/talks').send();
+    expect(response.body).toEqual([
+      {
+        title: 'foobar',
+        presenter: 'Anon',
+        summary: 'lorem ipsum',
+        comments: [{ author: 'Bob', message: 'new comment' }],
+      },
+    ]);
+  });
 
-      expect(response.status).toEqual(400);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual('Bad comment data');
-    });
+  test('reports an error if talk does not exists', async () => {
+    await request(app)
+      .put('/api/talks/foo')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-    test('reports an error if message is missing', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+    let response = await request(app)
+      .post('/api/talks/bar/comments')
+      .set('Content-Type', 'application/json')
+      .send({ author: 'Bob', message: 'new comment' });
 
-      let response = await request(app)
-        .post('/api/talks/foobar/comments')
-        .set('Content-Type', 'application/json')
-        .send({ author: 'Bob' });
+    expect(response.status).toEqual(404);
+    expect(response.get('Content-Type')).toMatch(/text\/plain/);
+    expect(response.text).toEqual("No talk 'bar' found");
+  });
 
-      expect(response.status).toEqual(400);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual('Bad comment data');
-    });
+  test('reports an error if author is missing', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+    let response = await request(app)
+      .post('/api/talks/foobar/comments')
+      .set('Content-Type', 'application/json')
+      .send({ message: 'new comment' });
+
+    expect(response.status).toEqual(400);
+    expect(response.get('Content-Type')).toMatch(/text\/plain/);
+    expect(response.text).toEqual('Bad comment data');
+  });
+
+  test('reports an error if message is missing', async () => {
+    await request(app)
+      .put('/api/talks/foobar')
+      .set('Content-Type', 'application/json')
+      .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+
+    let response = await request(app)
+      .post('/api/talks/foobar/comments')
+      .set('Content-Type', 'application/json')
+      .send({ author: 'Bob' });
+
+    expect(response.status).toEqual(400);
+    expect(response.get('Content-Type')).toMatch(/text\/plain/);
+    expect(response.text).toEqual('Bad comment data');
   });
 });

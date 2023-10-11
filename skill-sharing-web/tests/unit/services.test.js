@@ -16,131 +16,129 @@ import { Store } from '../../src/domain/store.js';
 import { AbstractApi } from '../../src/infrastructure/api.js';
 import { Repository } from '../../src/infrastructure/repository.js';
 
-describe('client services', () => {
-  let store;
+let store;
 
-  beforeEach(() => {
-    store = new Store(reducer, initialState);
-    localStorage.clear();
+beforeEach(() => {
+  store = new Store(reducer, initialState);
+  localStorage.clear();
+});
+
+describe('change user', () => {
+  test('updates user name', async () => {
+    let repository = new Repository();
+
+    await changeUser({ userName: 'Bob' }, store, repository);
+
+    expect(store.getState().user).toEqual('Bob');
+    expect(await repository.load()).toEqual({ userName: 'Bob' });
+  });
+});
+
+describe('get user', () => {
+  test('gets user Anon if no user is stored', async () => {
+    let repository = new Repository();
+
+    await getUser(store, repository);
+
+    expect(store.getState().user).toEqual('Anon');
   });
 
-  describe('change user', () => {
-    test('updates user name', async () => {
-      let repository = new Repository();
+  test('gets stored user', async () => {
+    let repository = new Repository();
+    await repository.store({ userName: 'Bob' });
 
-      await changeUser({ userName: 'Bob' }, store, repository);
+    await getUser(store, repository);
 
-      expect(store.getState().user).toEqual('Bob');
-      expect(await repository.load()).toEqual({ userName: 'Bob' });
+    expect(store.getState().user).toEqual('Bob');
+  });
+});
+
+describe('poll talks', () => {
+  test('sets talks', async () => {
+    let api = new FakeApi({
+      talks: new ConfigurableResponses([
+        {
+          isNotModified: false,
+          tag: '1',
+          talks: [
+            { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+          ],
+        },
+      ]),
     });
+
+    await pollTalks(store, api, 1);
+
+    expect(store.getState().talks).toEqual([
+      { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+    ]);
   });
 
-  describe('get user', () => {
-    test('gets user Anon if no user is stored', async () => {
-      let repository = new Repository();
-
-      await getUser(store, repository);
-
-      expect(store.getState().user).toEqual('Anon');
+  test('does not set talks, if not modified', async () => {
+    let api = new FakeApi({
+      talks: new ConfigurableResponses([{ isNotModified: true }]),
     });
 
-    test('gets stored user', async () => {
-      let repository = new Repository();
-      await repository.store({ userName: 'Bob' });
+    await pollTalks(store, api, 1);
 
-      await getUser(store, repository);
-
-      expect(store.getState().user).toEqual('Bob');
-    });
+    expect(store.getState().talks).toEqual([]);
   });
 
-  describe('poll talks', () => {
-    test('sets talks', async () => {
-      let api = new FakeApi({
-        talks: new ConfigurableResponses([
-          {
-            isNotModified: false,
-            tag: '1',
-            talks: [
-              { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
-            ],
-          },
-        ]),
-      });
-
-      await pollTalks(store, api, 1);
-
-      expect(store.getState().talks).toEqual([
-        { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
-      ]);
+  test('recovers after error', async () => {
+    let api = new FakeApi({
+      talks: new ConfigurableResponses([
+        new Error(),
+        {
+          isNotModified: false,
+          tag: '1',
+          talks: [
+            { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+          ],
+        },
+      ]),
     });
 
-    test('does not set talks, if not modified', async () => {
-      let api = new FakeApi({
-        talks: new ConfigurableResponses([{ isNotModified: true }]),
-      });
+    await pollTalks(store, api, 2);
 
-      await pollTalks(store, api, 1);
+    expect(store.getState().talks).toEqual([
+      { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+    ]);
+  });
+});
 
-      expect(store.getState().talks).toEqual([]);
-    });
+describe('submit talk', () => {
+  test('submits talk', async () => {
+    let api = new FakeApi();
 
-    test('recovers after error', async () => {
-      let api = new FakeApi({
-        talks: new ConfigurableResponses([
-          new Error(),
-          {
-            isNotModified: false,
-            tag: '1',
-            talks: [
-              { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
-            ],
-          },
-        ]),
-      });
+    await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
 
-      await pollTalks(store, api, 2);
-
-      expect(store.getState().talks).toEqual([
-        { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
-      ]);
+    expect(api.putTalk).nthCalledWith(1, {
+      title: 'foobar',
+      presenter: 'Anon',
+      summary: 'lorem ipsum',
     });
   });
+});
 
-  describe('submit talk', () => {
-    test('submits talk', async () => {
-      let api = new FakeApi();
+describe('delete talk', () => {
+  test('deletes talk', async () => {
+    let api = new FakeApi();
 
-      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
+    await deleteTalk({ title: 'foobar' }, api);
 
-      expect(api.putTalk).nthCalledWith(1, {
-        title: 'foobar',
-        presenter: 'Anon',
-        summary: 'lorem ipsum',
-      });
-    });
+    expect(api.deleteTalk).nthCalledWith(1, 'foobar');
   });
+});
 
-  describe('delete talk', () => {
-    test('deletes talk', async () => {
-      let api = new FakeApi();
+describe('add comment', () => {
+  test('posts comment', async () => {
+    let api = new FakeApi();
 
-      await deleteTalk({ title: 'foobar' }, api);
+    await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
 
-      expect(api.deleteTalk).nthCalledWith(1, 'foobar');
-    });
-  });
-
-  describe('add comment', () => {
-    test('posts comment', async () => {
-      let api = new FakeApi();
-
-      await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
-
-      expect(api.postComment).nthCalledWith(1, 'foobar', {
-        author: 'Anon',
-        message: 'lorem ipsum',
-      });
+    expect(api.postComment).nthCalledWith(1, 'foobar', {
+      author: 'Anon',
+      message: 'lorem ipsum',
     });
   });
 });
