@@ -1,16 +1,14 @@
 export class AbstractStore {
   getState() {
-    throw new Error('Not implemented');
+    return {};
   }
 
   // eslint-disable-next-line no-unused-vars
-  dispatch(action) {
-    throw new Error('Not implemented');
-  }
+  dispatch(action) {}
 
   // eslint-disable-next-line no-unused-vars
   subscribe(listener) {
-    throw new Error('Not implemented');
+    return () => {};
   }
 }
 
