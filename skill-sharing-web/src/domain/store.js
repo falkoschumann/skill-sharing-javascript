@@ -15,13 +15,12 @@ export class AbstractStore {
 export class Store extends AbstractStore {
   #reducer;
   #state;
-  #listeners;
+  #listeners = [];
 
-  constructor(reducer, initialState) {
+  constructor(reducer, initialState = {}) {
     super();
     this.#reducer = reducer;
     this.#state = initialState;
-    this.#listeners = [];
   }
 
   getState() {
