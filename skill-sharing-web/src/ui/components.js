@@ -1,19 +1,24 @@
 import { html, render } from 'lit-html';
 
-import './style.css';
+import './components.css';
 import {
   addCommentAction,
   changeUserAction,
+  Component,
   deleteTalkAction,
   getUserAction,
   pollTalksAction,
   submitTalkAction,
 } from './actions.js';
-import { store } from './store.js';
 
-class SkillSharingApp extends HTMLElement {
+class SkillSharingApp extends Component {
   connectedCallback() {
-    let template = html`
+    super.connectedCallback();
+    pollTalksAction();
+  }
+
+  getView() {
+    return html`
       <div class="container p-12 mx-auto">
         <h1 class="text-5xl font-extrabold">Skill Sharing</h1>
         <div>
@@ -23,81 +28,50 @@ class SkillSharingApp extends HTMLElement {
         </div>
       </div>
     `;
-    render(template, this);
-    pollTalksAction(store);
   }
 }
 
 window.customElements.define('s-skillsharingapp', SkillSharingApp);
 
-class UserField extends HTMLElement {
-  #unsubscribe;
-
+class UserField extends Component {
   connectedCallback() {
-    this.#unsubscribe = store.subscribe(() => this.#updateView());
-    this.#updateView();
-    getUserAction(store);
+    super.connectedCallback();
+    getUserAction();
   }
 
-  disconnectedCallback() {
-    this.#unsubscribe();
+  extractState(state) {
+    return state.user;
   }
 
-  #updateView() {
-    let name = store.getState().user;
-    let template = html`
+  getView() {
+    return html`
       <label class="block mb-2 text-sm font-medium text-gray-900"
         >Your name:
         <input
           type="text"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          value="${name}"
+          value="${this.state}"
           @change=${(e) => this.#onChange(e)}
       /></label>
     `;
-    render(template, this);
   }
 
   #onChange(event) {
-    changeUserAction({ userName: event.target.value }, store);
+    changeUserAction({ userName: event.target.value });
   }
 }
 
 window.customElements.define('s-userfield', UserField);
 
-class Talks extends HTMLElement {
-  #talks;
-  #unsubscribe;
-
-  constructor() {
-    super();
-    this.#talks = [];
+class Talks extends Component {
+  extractState(state) {
+    return state.talks;
   }
 
-  connectedCallback() {
-    this.#unsubscribe = store.subscribe(() => this.#updateView());
-    this.#updateView();
-  }
-
-  disconnectedCallback() {
-    this.#unsubscribe();
-  }
-
-  #updateView() {
-    let talks = store.getState().talks;
-    if (this.#talks === talks) {
-      return;
-    }
-
-    this.#talks = talks;
-    this.#renderTalks(this.#talks);
-  }
-
-  #renderTalks(talks) {
-    let template = html`
-      <div class="talks">${talks.map((t) => this.#renderTalk(t))}</div>
+  getView() {
+    return html`
+      <div class="talks">${this.state.map((t) => this.#renderTalk(t))}</div>
     `;
-    render(template, this);
   }
 
   #renderTalk(talk) {
@@ -165,7 +139,7 @@ class Talks extends HTMLElement {
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
     };
-    addCommentAction(command, store);
+    addCommentAction(command);
     form.reset();
   }
 }
@@ -224,7 +198,7 @@ class TalkForm extends HTMLElement {
       title: formData.get('title'),
       summary: formData.get('summary'),
     };
-    submitTalkAction(command, store);
+    submitTalkAction(command);
     form.reset();
   }
 }
