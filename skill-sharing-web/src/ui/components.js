@@ -51,7 +51,7 @@ class UserField extends Component {
           type="text"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           value="${this.state}"
-          @change=${(e) => this.#onChange(e)}
+          @change="${(e) => this.#onChange(e)}"
       /></label>
     `;
   }
@@ -81,7 +81,7 @@ class Talks extends Component {
           ${talk.title}
           <button
             class="align-middle text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none"
-            @click=${() => this.#onClickDelete(talk)}
+            @click="${() => this.#onClickDelete(talk)}"
           >
             Delete
           </button>
@@ -89,7 +89,7 @@ class Talks extends Component {
         <div>by <strong>${talk.presenter}</strong></div>
         <p class="my-3">${talk.summary}</p>
         ${talk.comments.map((c) => this.#renderComment(c))}
-        <form class="my-6" @submit=${(e) => this.#onSubmit(e)}>
+        <form class="my-6" @submit="${(e) => this.#onSubmit(e)}">
           <input type="text" hidden name="talkTitle" value="${talk.title}" />
           <input
             type="text"
@@ -149,7 +149,7 @@ window.customElements.define('s-talks', Talks);
 class TalkForm extends HTMLElement {
   connectedCallback() {
     let template = html`
-      <form @submit=${(e) => this.#onSubmit(e)}>
+      <form @submit="${(e) => this.#onSubmit(e)}">
         <h3 class="text-3xl font-bold">Submit a Talk</h3>
         <label class="block mb-2 text-sm font-medium text-gray-900"
           >Title:
