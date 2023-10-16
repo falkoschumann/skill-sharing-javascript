@@ -7,7 +7,7 @@
     "dev": "rollup -c -w"
   },
   "dependencies": {
-    "lit-html": "2.8.0"
+    "lit-html": "3.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "15.2.3",
