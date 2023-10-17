@@ -70,7 +70,6 @@ describe('find by title', () => {
 describe('add', () => {
   test('creates file, if file does not exist', async () => {
     let repository = new Repository({ fileName });
-    let talks = await repository.findAll();
 
     await repository.add({
       title: 'foobar',
@@ -79,7 +78,7 @@ describe('add', () => {
       comments: [],
     });
 
-    talks = await repository.findAll();
+    let talks = await repository.findAll();
     expect(talks).toEqual([
       {
         title: 'foobar',

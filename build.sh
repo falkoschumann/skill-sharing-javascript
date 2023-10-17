@@ -9,12 +9,12 @@ fi
 
 task=$1
 case $task in
-  start) npm run start ;;
+  start) npm start ;;
   clean) npm run clean ;;
   format) npm run format ;;
-  test) npm run test ;;
-  unit-tests) npm run test -- --testPathPattern=".*\/unit\/.*" ;;
-  integration-tests) npm run test -- --testPathPattern=".*\/integration\/.*" ;;
-  e2e-tests) npm run test -- --testPathPattern=".*\/e2e\/.*" ;;
+  test) npm test ;;
+  unit-tests) npm test -- --testPathPattern=".*\/unit\/.*" ;;
+  integration-tests) npm test -- --testPathPattern=".*\/integration\/.*" ;;
+  e2e-tests) npm test -- --testPathPattern=".*\/e2e\/.*" ;;
   *) npm run build ;;
 esac
