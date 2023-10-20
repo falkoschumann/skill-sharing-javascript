@@ -1,0 +1,95 @@
+/* Inspired by UWP Type Ramp
+ *
+ * | Title     | Weight           | Size | Line Height | Ratio |
+ * |-----------|------------------|------|-------------|-------|
+ * | Header    | light (300)      | 46px | 56px        | 3.286 |
+ * | Subheader | light (300)      | 34px | 40px        | 2.429 |
+ * | Title     | semi-light (350) | 24px | 28px        | 1.714 |
+ * | Subtitle  | regular (400)    | 20px | 24px        | 1.429 |
+ * | Base      | semi-bold (600)  | 14px | 20px        | 1.000 |
+ * | Body      | regular (400)    | 14px | 20px        | 1.000 |
+ * | Caption   | regular (400)    | 12px | 14px        | 0.857 |
+ *
+ * All sizes should be divisible by 4: font-size, margin, padding, width,
+ * height, ...
+ *
+ * Group style properties by type and order them alphabetically like Chrome.
+ */
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Body */
+body {
+  font-family: OpenSans, Roboto, Verdana, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+input {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+/* Header */
+h1 {
+  margin: 0.4em 0;
+
+  font-size: 46px;
+  font-weight: 300;
+  line-height: 56px;
+}
+
+/* Subheader */
+h2 {
+  margin: 0.4em 0;
+
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 40px;
+}
+
+/* Title */
+h3 {
+  margin: 0.4em 0;
+
+  font-size: 24px;
+  font-weight: 350;
+  line-height: 28px;
+}
+
+/* Subtitle */
+h4 {
+  margin: 0.4em 0;
+
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+/* Base */
+strong {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+/* Caption */
+.caption {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+}
