@@ -1,7 +1,6 @@
 /** @jest-environment jsdom */
 
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { ConfigurableResponses } from 'skill-sharing-shared';
 
 import {
   addComment,
@@ -10,11 +9,13 @@ import {
   getUser,
   pollTalks,
   submitTalk,
-} from '../../src/application/services.js';
-import { initialState, reducer } from '../../src/domain/reducer.js';
-import { Store } from '../../src/domain/store.js';
-import { AbstractApi } from '../../src/infrastructure/api.js';
-import { Repository } from '../../src/infrastructure/repository.js';
+} from '../../../public/js/application/services.js';
+import { initialState, reducer } from '../../../public/js/domain/reducer.js';
+import { Store } from '../../../public/js/domain/store.js';
+import { AbstractApi } from '../../../public/js/infrastructure/api.js';
+import { Repository } from '../../../public/js/infrastructure/repository.js';
+
+import { ConfigurableResponses } from '../../configurable-responses.js';
 
 let store;
 

@@ -1,8 +1,5 @@
 {
   "transform": {},
-  "watchPathIgnorePatterns": [
-    "<rootDir>/skill-sharing-server/data/",
-    "<rootDir>/skill-sharing-server/public/"
-  ],
+  "watchPathIgnorePatterns": ["<rootDir>/data/"],
   "verbose": true
 }

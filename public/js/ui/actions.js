@@ -1,4 +1,4 @@
-import { html, render } from 'lit-html';
+import { html, render } from '../../vendor/lit-html.js';
 
 import {
   addComment,

@@ -1,9 +1,9 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 
 export default {
-  input: ['./src/main.js'],
+  input: ['./node_modules/lit-html/lit-html.js'],
   output: {
-    file: '../skill-sharing-server/public/js/app.js',
+    dir: 'public/vendor',
     format: 'esm',
   },
   plugins: [nodeResolve()],

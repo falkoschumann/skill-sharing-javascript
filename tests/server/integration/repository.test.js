@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test } from '@jest/globals';
 import { rmSync } from 'node:fs';
 
-import { Repository } from '../../src/infrastructure/repository.js';
+import { Repository } from '../../../src/infrastructure/repository.js';
 
-const fileName = new URL('../../data/talks.test.json', import.meta.url);
+const fileName = new URL('../../../data/talks.test.json', import.meta.url);
 
 beforeEach(() => {
   rmSync(fileName, { force: true });

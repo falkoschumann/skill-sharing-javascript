@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
 
-import { ExpressApp } from '../../src/ui/express-app.js';
-import { Repository } from '../../src/infrastructure/repository.js';
+import { ExpressApp } from '../../../src/ui/express-app.js';
+import { Repository } from '../../../src/infrastructure/repository.js';
 
-let fileName = new URL('../../data/talks.test.json', import.meta.url);
+let fileName = new URL('../../../data/talks.test.json', import.meta.url);
 
 let repository;
 let app;

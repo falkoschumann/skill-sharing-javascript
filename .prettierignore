@@ -1,6 +1,3 @@
 coverage/
 data/
-swagger-ui/
-skillsharing.css
-skillsharing.js
-
+public/vendor/

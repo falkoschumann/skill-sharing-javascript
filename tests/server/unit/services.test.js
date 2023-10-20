@@ -6,8 +6,8 @@ import {
   getTalk,
   getTalks,
   submitTalk,
-} from '../../src/application/services.js';
-import { AbstractRepository } from '../../src/infrastructure/repository.js';
+} from '../../../src/application/services.js';
+import { AbstractRepository } from '../../../src/infrastructure/repository.js';
 
 describe('get talks', () => {
   test('returns list of talks', async () => {

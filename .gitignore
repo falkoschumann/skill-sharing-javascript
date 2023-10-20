@@ -1,5 +1,8 @@
 # see also https://gitignore.io
 
+/data/*
+!/data/.gitkeep
+/public/vendor/
 tmp/
 
 # Gradle
