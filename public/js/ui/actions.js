@@ -1,13 +1,6 @@
 import { html, render } from '../../vendor/lit-html.js';
 
-import {
-  addComment,
-  changeUser,
-  deleteTalk,
-  getUser,
-  pollTalks,
-  submitTalk,
-} from '../application/services.js';
+import * as services from '../application/services.js';
 import { initialState, reducer } from '../domain/reducer.js';
 import { Store } from '../domain/store.js';
 import { Api } from '../infrastructure/api.js';
@@ -55,26 +48,26 @@ export class Component extends HTMLElement {
   }
 }
 
-export async function changeUserAction({ userName }) {
-  return changeUser({ userName }, store, repository);
+export async function changeUser({ userName }) {
+  return services.changeUser({ userName }, store, repository);
 }
 
-export async function getUserAction() {
-  return getUser(store, repository);
+export async function getUser() {
+  return services.getUser(store, repository);
 }
 
-export async function submitTalkAction({ title, summary }) {
-  return submitTalk({ title, summary }, store, api);
+export async function submitTalk({ title, summary }) {
+  return services.submitTalk({ title, summary }, store, api);
 }
 
-export async function deleteTalkAction({ title }) {
-  return deleteTalk({ title }, api);
+export async function deleteTalk({ title }) {
+  return services.deleteTalk({ title }, api);
 }
 
-export async function pollTalksAction() {
-  return pollTalks(store, api);
+export async function pollTalks() {
+  return services.pollTalks(store, api);
 }
 
-export async function addCommentAction({ title, comment }) {
-  return addComment({ title, comment }, store, api);
+export async function addComment({ title, comment }) {
+  return services.addComment({ title, comment }, store, api);
 }

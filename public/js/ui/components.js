@@ -1,19 +1,12 @@
 import { html, render } from '../../vendor/lit-html.js';
 
-import {
-  addCommentAction,
-  changeUserAction,
-  Component,
-  deleteTalkAction,
-  getUserAction,
-  pollTalksAction,
-  submitTalkAction,
-} from './actions.js';
+import * as actions from './actions.js';
+import { Component } from './actions.js';
 
 class SkillSharingApp extends Component {
   connectedCallback() {
     super.connectedCallback();
-    pollTalksAction();
+    actions.pollTalks();
   }
 
   getView() {
@@ -31,7 +24,7 @@ window.customElements.define('s-skillsharingapp', SkillSharingApp);
 class UserField extends Component {
   connectedCallback() {
     super.connectedCallback();
-    getUserAction();
+    actions.getUser();
   }
 
   extractState(state) {
@@ -51,7 +44,7 @@ class UserField extends Component {
   }
 
   #onChange(event) {
-    changeUserAction({ userName: event.target.value });
+    actions.changeUser({ userName: event.target.value });
   }
 }
 
@@ -94,7 +87,7 @@ class Talks extends Component {
   }
 
   #onClickDelete(talk) {
-    deleteTalkAction({ title: talk.title });
+    actions.deleteTalk({ title: talk.title });
   }
 
   #onSubmit(event) {
@@ -115,7 +108,7 @@ class Talks extends Component {
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
     };
-    addCommentAction(command);
+    actions.addComment(command);
     form.reset();
   }
 }
@@ -159,7 +152,7 @@ class TalkForm extends HTMLElement {
       title: formData.get('title'),
       summary: formData.get('summary'),
     };
-    submitTalkAction(command);
+    actions.submitTalk(command);
     form.reset();
   }
 }
