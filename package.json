@@ -29,5 +29,41 @@
     "prettier": "3.0.3",
     "rollup": "4.1.4",
     "supertest": "6.3.3"
+  },
+  "jest": {
+    "transform": {},
+    "verbose": true,
+    "watchPathIgnorePatterns": [
+      "<rootDir>/data/"
+    ]
+  },
+  "prettier": {
+    "proseWrap": "always",
+    "singleQuote": true
+  },
+  "eslintConfig": {
+    "env": {
+      "es2022": true,
+      "browser": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "ignorePatterns": [
+      "/coverage/",
+      "**/vendor/*.js"
+    ]
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "data/**",
+      "public/**",
+      "tests/**"
+    ]
   }
 }
