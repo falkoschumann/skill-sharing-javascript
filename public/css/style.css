@@ -23,7 +23,11 @@
 }
 
 /* Body */
-body, button, input, select, textarea {
+body,
+button,
+input,
+select,
+textarea {
   font-family: OpenSans, Roboto, Verdana, Arial, sans-serif;
   font-size: 14px;
   font-weight: 400;
