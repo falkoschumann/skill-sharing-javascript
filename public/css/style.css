@@ -23,22 +23,8 @@
 }
 
 /* Body */
-body {
+body, button, input, select, textarea {
   font-family: OpenSans, Roboto, Verdana, Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-input {
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-button {
-  font-family: inherit;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
