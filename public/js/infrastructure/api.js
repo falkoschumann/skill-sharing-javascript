@@ -1,7 +1,7 @@
 export class AbstractApi {
   // eslint-disable-next-line no-unused-vars
   async getTalks(tag) {
-    return [];
+    return { isNotModified: true };
   }
 
   // eslint-disable-next-line no-unused-vars
