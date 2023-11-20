@@ -1,12 +1,12 @@
 import { html, render } from '../../vendor/lit-html.js';
 
 import * as services from '../application/services.js';
-import { initialState, reducer } from '../domain/reducer.js';
-import { Store } from '../domain/store.js';
+import { reducer } from '../domain/reducer.js';
+import { createStore } from '../domain/store.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
 
-export const store = new Store(reducer, initialState);
+export const store = createStore(reducer);
 const repository = globalThis.skillSharing?.repository ?? new Repository();
 const api = globalThis.skillSharing?.api ?? new Api();
 

@@ -3,7 +3,7 @@ export const initialState = {
   user: 'Anon',
 };
 
-export function reducer(state, action) {
+export function reducer(state = initialState, action) {
   switch (action.type) {
     case 'change-user':
       return { ...state, user: action.userName };

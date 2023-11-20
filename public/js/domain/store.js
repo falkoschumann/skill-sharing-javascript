@@ -12,12 +12,16 @@ export class AbstractStore {
   }
 }
 
+export function createStore(reducer) {
+  return new Store(reducer);
+}
+
 export class Store extends AbstractStore {
   #reducer;
   #state;
   #listeners = [];
 
-  constructor(reducer, initialState = {}) {
+  constructor(reducer, initialState = reducer(undefined, { type: '' })) {
     super();
     this.#reducer = reducer;
     this.#state = initialState;
