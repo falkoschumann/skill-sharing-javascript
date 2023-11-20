@@ -13,11 +13,10 @@ Start the server with `npm start` and open http://localhost:3000 in the browser.
 
 ## Contributing
 
-The script `build.sh` runs the build as default task. Other tasks are
+The `Makefile` runs the build as default task. Other tasks are
 
 -   `start`: start the server
 -   `test`: run all tests,
--   `check`: check code quality
 -   `format`: format source code
 
 ## Credits
