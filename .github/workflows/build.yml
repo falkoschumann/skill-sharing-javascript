@@ -2,17 +2,14 @@ name: Build
 
 on:
   push:
-    branches: ['main']
   pull_request:
-    branches: ['main']
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [18.x, 20.x, 21.x]
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -21,4 +18,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Build
-        run: ./build.sh
+        run: make
