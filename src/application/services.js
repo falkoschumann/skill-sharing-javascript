@@ -31,10 +31,10 @@ export async function addComment(
   repository = new AbstractRepository(),
 ) {
   let talk = await repository.findByTitle(title);
-  return tryAddCommand(talk, { author, message }, repository);
+  return tryAddComment(talk, { author, message }, repository);
 }
 
-async function tryAddCommand(
+async function tryAddComment(
   talk,
   comment,
   repository = new AbstractRepository(),

@@ -114,7 +114,7 @@ export class TalksController {
   #createRouteSubmitTalk(app, repository) {
     app.put('/api/talks/:title', async (req, res) => {
       let { title } = this.#getTalkParameters(req);
-      let talk = this.#parseTalkBody(req);
+      let talk = parseTalk(req.body);
       if (talk == null) {
         this.#reply(res, { status: 400, body: 'Bad talk data' });
       } else {
@@ -128,15 +128,6 @@ export class TalksController {
     });
   }
 
-  #parseTalkBody(req) {
-    let talk = req.body;
-    if (typeof talk.presenter == 'string' && typeof talk.summary == 'string') {
-      return { presenter: talk.presenter, summary: talk.summary };
-    }
-
-    return null;
-  }
-
   #createRouteDeleteTalk(app, repository) {
     app.delete('/api/talks/:title', async (req, res) => {
       let { title } = this.#getTalkParameters(req);
@@ -148,7 +139,7 @@ export class TalksController {
 
   #createRouteAddComment(app, repository) {
     app.post('/api/talks/:title/comments', async (req, res) => {
-      let comment = this.#parseCommentBody(req);
+      let comment = parseComment(req.body);
       if (comment == null) {
         this.#reply(res, { status: 400, body: 'Bad comment data' });
       } else {
@@ -160,18 +151,6 @@ export class TalksController {
         this.#reply(res, response);
       }
     });
-  }
-
-  #parseCommentBody(req) {
-    let comment = req.body;
-    if (
-      typeof comment.author == 'string' &&
-      typeof comment.message == 'string'
-    ) {
-      return { author: comment.author, message: comment.message };
-    }
-
-    return null;
   }
 
   async #tryAddComment({ title, comment }, repository) {
@@ -190,4 +169,20 @@ export class TalksController {
     this.#waiting.forEach((resolve) => resolve(response));
     this.#waiting = [];
   }
+}
+
+function parseTalk({ presenter, summary }) {
+  if (typeof presenter == 'string' && typeof summary == 'string') {
+    return { presenter, summary };
+  }
+
+  return null;
+}
+
+function parseComment({ author, message }) {
+  if (typeof author == 'string' && typeof message == 'string') {
+    return { author, message };
+  }
+
+  return null;
 }
