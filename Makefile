@@ -1,4 +1,5 @@
 export NODE_OPTIONS=--experimental-vm-modules --no-warnings=ExperimentalWarning
+export NPM_CONFIG_YES=true
 
 all: dist test check
 
