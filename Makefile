@@ -57,6 +57,7 @@ prepare:
 	clean \
 	start \
 	dev \
+	e2e \
 	dist \
 	test \
 	unit-tests \
