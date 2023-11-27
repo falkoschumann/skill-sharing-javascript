@@ -1,7 +1,7 @@
 export NODE_OPTIONS=--experimental-vm-modules --no-warnings=ExperimentalWarning
 export NPM_CONFIG_YES=true
 
-all: dist test check
+all: dist test e2e check
 
 clean:
 	@rm -rf coverage public/vendor
@@ -11,6 +11,11 @@ start: prepare
 
 dev: prepare
 	@npx nodemon src/main.js
+
+e2e: prepare
+	@node src/main.js &
+	@npx cypress run
+	@kill `lsof -t -i:3000`
 
 dist: prepare
 	@npx rollup -c
