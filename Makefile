@@ -1,7 +1,7 @@
 export NODE_OPTIONS=--experimental-vm-modules --no-warnings=ExperimentalWarning
 export NPM_CONFIG_YES=true
 
-all: dist test e2e check
+all: dist test check
 
 clean:
 	@rm -rf coverage public/vendor
@@ -12,16 +12,16 @@ start: prepare
 dev: prepare
 	@npx nodemon src/main.js
 
+dist: prepare
+	@npx rollup -c
+
+test: prepare e2e
+	@npx jest
+
 e2e: prepare
 	@node src/main.js &
 	@npx cypress run
 	@kill `lsof -t -i:3000`
-
-dist: prepare
-	@npx rollup -c
-
-test: prepare
-	@npx jest
 
 unit-tests: prepare
 	@npx jest --testPathPattern=".*\/unit\/.*"
@@ -29,7 +29,7 @@ unit-tests: prepare
 integration-tests: prepare
 	@npx jest --testPathPattern=".*\/integration\/.*"
 
-e2e-tests: prepare
+e2e-tests: prepare e2e
 	@npx jest --testPathPattern=".*\/e2e\/.*"
 
 watch: prepare
@@ -57,9 +57,9 @@ prepare:
 	clean \
 	start \
 	dev \
-	e2e \
 	dist \
 	test \
+	e2e \
 	unit-tests \
 	integration-tests \
 	e2e-tests \

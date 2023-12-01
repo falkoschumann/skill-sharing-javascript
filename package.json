@@ -17,6 +17,7 @@
     "supertest": "6.3.3"
   },
   "jest": {
+    "verbose": true,
     "transform": {},
     "watchPathIgnorePatterns": [
       "<rootDir>/data/"
@@ -29,8 +30,7 @@
   "eslintConfig": {
     "env": {
       "es2022": true,
-      "browser": true,
-      "node": true
+      "browser": true
     },
     "extends": [
       "eslint:recommended"
