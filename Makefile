@@ -10,7 +10,7 @@ start: prepare
 	@node src/main.js
 
 dev: prepare
-	@npx nodemon src/main.js
+	@npx concurrently "npx nodemon src/main.js" "npx browser-sync 'http://localhost:3000' public -w --port 8080"
 
 dist: prepare
 	@npx rollup -c
