@@ -17,7 +17,7 @@ beforeEach(() => {
 });
 
 describe('GET talks', () => {
-  test('replies with talks, if client asks for the first time', async () => {
+  test('Replies with talks, if client asks for the first time', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -41,7 +41,7 @@ describe('GET talks', () => {
     ]);
   });
 
-  test('replies with talks, if client is not up to date', async () => {
+  test('Replies with talks, if client is not up to date', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -66,7 +66,7 @@ describe('GET talks', () => {
     ]);
   });
 
-  test('reports not modified, if client is up to date', async () => {
+  test('Reports not modified, if client is up to date', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -80,7 +80,7 @@ describe('GET talks', () => {
     expect(response.status).toEqual(304);
   });
 
-  test('reports not modified, if long polling results in a timeout', async () => {
+  test('Reports not modified, if long polling results in a timeout', async () => {
     let responsePromise = request(app)
       .get('/api/talks')
       .set('Accept', 'application/json')
@@ -100,7 +100,7 @@ describe('GET talks', () => {
     expect(response.status).toEqual(304);
   });
 
-  test('replies talks, if a talk was submitted while long polling', async () => {
+  test('Replies talks, if a talk was submitted while long polling', async () => {
     let responsePromise = request(app)
       .get('/api/talks')
       .set('Accept', 'application/json')
@@ -130,7 +130,7 @@ describe('GET talks', () => {
 });
 
 describe('GET talk', () => {
-  test('replies with talk', async () => {
+  test('Replies with talk', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -150,7 +150,7 @@ describe('GET talk', () => {
     });
   });
 
-  test('reports an error if talk does not exists', async () => {
+  test('Reports an error if talk does not exists', async () => {
     await request(app)
       .put('/api/talks/foo')
       .set('Content-Type', 'application/json')
@@ -167,7 +167,7 @@ describe('GET talk', () => {
 });
 
 describe('PUT talk', () => {
-  test('creates a new talk', async () => {
+  test('Creates a new talk', async () => {
     let response = await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -185,7 +185,7 @@ describe('PUT talk', () => {
     ]);
   });
 
-  test('reports an error if presenter is missing', async () => {
+  test('Reports an error if presenter is missing', async () => {
     let response = await request(app)
       .put('/api/talks/foobar')
       .set('Accept', 'application/json')
@@ -198,7 +198,7 @@ describe('PUT talk', () => {
     expect(response.body).toEqual([]);
   });
 
-  test('reports an error if summary is missing', async () => {
+  test('Reports an error if summary is missing', async () => {
     let response = await request(app)
       .put('/api/talks/foobar')
       .set('Accept', 'application/json')
@@ -213,7 +213,7 @@ describe('PUT talk', () => {
 });
 
 describe('DELETE talk', () => {
-  test('deletes an existing talk', async () => {
+  test('Deletes an existing talk', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -229,7 +229,7 @@ describe('DELETE talk', () => {
 });
 
 describe('POST comment', () => {
-  test('adds comment', async () => {
+  test('Adds comment', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -252,7 +252,7 @@ describe('POST comment', () => {
     ]);
   });
 
-  test('reports an error if talk does not exists', async () => {
+  test('Reports an error if talk does not exists', async () => {
     await request(app)
       .put('/api/talks/foo')
       .set('Content-Type', 'application/json')
@@ -268,7 +268,7 @@ describe('POST comment', () => {
     expect(response.text).toEqual("No talk 'bar' found");
   });
 
-  test('reports an error if author is missing', async () => {
+  test('Reports an error if author is missing', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')
@@ -284,7 +284,7 @@ describe('POST comment', () => {
     expect(response.text).toEqual('Bad comment data');
   });
 
-  test('reports an error if message is missing', async () => {
+  test('Reports an error if message is missing', async () => {
     await request(app)
       .put('/api/talks/foobar')
       .set('Content-Type', 'application/json')

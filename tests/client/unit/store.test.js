@@ -2,14 +2,14 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
 import { Store } from '../../../public/js/domain/store.js';
 
-describe('subscribe', () => {
+describe('Subscribe', () => {
   let store;
 
   beforeEach(() => {
     store = new Store(reducer, { user: 'Alice' });
   });
 
-  test('does not emit event, if state is not changed', () => {
+  test('Does not emit event, if state is not changed', () => {
     let listener = jest.fn();
     store.subscribe(listener);
 
@@ -19,7 +19,7 @@ describe('subscribe', () => {
     expect(listener).not.toBeCalled();
   });
 
-  test('emits event, if state is changed', () => {
+  test('Emits event, if state is changed', () => {
     let listener = jest.fn();
     store.subscribe(listener);
 
@@ -29,7 +29,7 @@ describe('subscribe', () => {
     expect(listener).toBeCalledTimes(1);
   });
 
-  test('does not emit event, if listener is unsubscribed', () => {
+  test('Does not emit event, if listener is unsubscribed', () => {
     let listener = jest.fn();
     let unsubscribe = store.subscribe(listener);
 

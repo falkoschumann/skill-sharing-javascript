@@ -9,8 +9,8 @@ beforeEach(() => {
   rmSync(fileName, { force: true });
 });
 
-describe('find all', () => {
-  test('returns list of talks', async () => {
+describe('Find all', () => {
+  test('Returns list of talks', async () => {
     let repository = new Repository({
       fileName: new URL('../data/example.json', import.meta.url),
     });
@@ -22,7 +22,7 @@ describe('find all', () => {
     ]);
   });
 
-  test('returns empty list, if file does not exist', async () => {
+  test('Returns empty list, if file does not exist', async () => {
     let repository = new Repository({
       fileName: new URL('../data/non-existent.json', import.meta.url),
     });
@@ -32,7 +32,7 @@ describe('find all', () => {
     expect(talks).toEqual([]);
   });
 
-  test('reports an error, if file is corrupt', async () => {
+  test('Reports an error, if file is corrupt', async () => {
     let repository = new Repository({
       fileName: new URL('../data/corrupt.json', import.meta.url),
     });
@@ -41,8 +41,8 @@ describe('find all', () => {
   });
 });
 
-describe('find by title', () => {
-  test('returns talk with title', async () => {
+describe('Find by title', () => {
+  test('Returns talk with title', async () => {
     let repository = new Repository({
       fileName: new URL('../data/example.json', import.meta.url),
     });
@@ -56,7 +56,7 @@ describe('find by title', () => {
     });
   });
 
-  test('returns undefined if talk with title does not exist', async () => {
+  test('Returns undefined if talk with title does not exist', async () => {
     let repository = new Repository({
       fileName: new URL('../data/example.json', import.meta.url),
     });
@@ -67,8 +67,8 @@ describe('find by title', () => {
   });
 });
 
-describe('add', () => {
-  test('creates file, if file does not exist', async () => {
+describe('Add', () => {
+  test('Creates file, if file does not exist', async () => {
     let repository = new Repository({ fileName });
 
     await repository.add({
@@ -89,7 +89,7 @@ describe('add', () => {
     ]);
   });
 
-  test('adds talk, if file exists', async () => {
+  test('Adds talk, if file exists', async () => {
     let repository = new Repository({ fileName });
     await repository.add({
       title: 'foo',
@@ -112,7 +112,7 @@ describe('add', () => {
     ]);
   });
 
-  test('updates talk, if talk exists', async () => {
+  test('Updates talk, if talk exists', async () => {
     let repository = new Repository({ fileName });
     await repository.add({
       title: 'foo',
@@ -135,8 +135,8 @@ describe('add', () => {
   });
 });
 
-describe('remove', () => {
-  test('removes talk from file', async () => {
+describe('Remove', () => {
+  test('Removes talk from file', async () => {
     let repository = new Repository({ fileName });
     await repository.add({
       title: 'foobar',

@@ -24,8 +24,8 @@ beforeEach(() => {
   localStorage.clear();
 });
 
-describe('change user', () => {
-  test('updates user name', async () => {
+describe('Change user', () => {
+  test('Updates user name', async () => {
     let repository = new Repository();
 
     await changeUser({ userName: 'Bob' }, store, repository);
@@ -35,8 +35,8 @@ describe('change user', () => {
   });
 });
 
-describe('get user', () => {
-  test('gets user Anon if no user is stored', async () => {
+describe('User', () => {
+  test('Anon is the default user', async () => {
     let repository = new Repository();
 
     await getUser(store, repository);
@@ -44,7 +44,7 @@ describe('get user', () => {
     expect(store.getState().user).toEqual('Anon');
   });
 
-  test('gets stored user', async () => {
+  test('Is stored user', async () => {
     let repository = new Repository();
     await repository.store({ userName: 'Bob' });
 
@@ -54,8 +54,45 @@ describe('get user', () => {
   });
 });
 
-describe('poll talks', () => {
-  test('sets talks', async () => {
+describe('Submit talk', () => {
+  test('Submits talk', async () => {
+    let api = new FakeApi();
+
+    await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
+
+    expect(api.putTalk).nthCalledWith(1, {
+      title: 'foobar',
+      presenter: 'Anon',
+      summary: 'lorem ipsum',
+    });
+  });
+});
+
+describe('Post comment', () => {
+  test('Posts comment', async () => {
+    let api = new FakeApi();
+
+    await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
+
+    expect(api.postComment).nthCalledWith(1, 'foobar', {
+      author: 'Anon',
+      message: 'lorem ipsum',
+    });
+  });
+});
+
+describe('Delete talk', () => {
+  test('Deletes talk', async () => {
+    let api = new FakeApi();
+
+    await deleteTalk({ title: 'foobar' }, api);
+
+    expect(api.deleteTalk).nthCalledWith(1, 'foobar');
+  });
+});
+
+describe('Talks', () => {
+  test('Polls talks', async () => {
     let api = new FakeApi({
       talks: new ConfigurableResponses([
         {
@@ -75,7 +112,7 @@ describe('poll talks', () => {
     ]);
   });
 
-  test('does not set talks, if not modified', async () => {
+  test('Does not update talks, if not modified', async () => {
     let api = new FakeApi({
       talks: new ConfigurableResponses([{ isNotModified: true }]),
     });
@@ -85,7 +122,7 @@ describe('poll talks', () => {
     expect(store.getState().talks).toEqual([]);
   });
 
-  test('recovers after error', async () => {
+  test('Recovers after error', async () => {
     let api = new FakeApi({
       talks: new ConfigurableResponses([
         new Error(),
@@ -104,43 +141,6 @@ describe('poll talks', () => {
     expect(store.getState().talks).toEqual([
       { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
     ]);
-  });
-});
-
-describe('submit talk', () => {
-  test('submits talk', async () => {
-    let api = new FakeApi();
-
-    await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
-
-    expect(api.putTalk).nthCalledWith(1, {
-      title: 'foobar',
-      presenter: 'Anon',
-      summary: 'lorem ipsum',
-    });
-  });
-});
-
-describe('delete talk', () => {
-  test('deletes talk', async () => {
-    let api = new FakeApi();
-
-    await deleteTalk({ title: 'foobar' }, api);
-
-    expect(api.deleteTalk).nthCalledWith(1, 'foobar');
-  });
-});
-
-describe('add comment', () => {
-  test('posts comment', async () => {
-    let api = new FakeApi();
-
-    await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
-
-    expect(api.postComment).nthCalledWith(1, 'foobar', {
-      author: 'Anon',
-      message: 'lorem ipsum',
-    });
   });
 });
 
