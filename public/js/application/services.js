@@ -38,8 +38,18 @@ export async function pollTalks(
   runs = -1,
 ) {
   let tag;
+  let timeout = 0.5;
   for (let i = 0; runs === -1 || i < runs; runs === -1 ? 0 : i++) {
     let response = await tryGetTalks(tag, api);
+    if (response.error) {
+      timeout *= 2;
+      if (timeout > 30) {
+        timeout = 30;
+      }
+      await new Promise((resolve) => setTimeout(resolve, timeout * 1000));
+    } else {
+      timeout = 0.5;
+    }
     tag = handleGetTalksResponse(response, tag, store);
   }
 }
@@ -47,9 +57,8 @@ export async function pollTalks(
 async function tryGetTalks(tag, api = new AbstractApi()) {
   try {
     return await api.getTalks(tag);
-  } catch (e) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return { isNotModified: true };
+  } catch {
+    return { isNotModified: true, error: true };
   }
 }
 
