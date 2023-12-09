@@ -35,9 +35,11 @@ export class Api extends AbstractApi {
         Prefer: 'wait=90',
       },
     });
-    let talks = await response.json();
+    let isNotModified = response.status === 304;
+    tag = response.headers.get('ETag');
+    let talks = !isNotModified ? await response.json() : [];
     return {
-      isNotModified: response.status === 304,
+      isNotModified,
       tag: response.headers.get('ETag'),
       talks,
     };
