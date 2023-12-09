@@ -3,25 +3,25 @@ import express from 'express';
 import { Repository } from '../infrastructure/repository.js';
 import { TalksController } from './talks-controller.js';
 
-export class ExpressApp {
-  #app;
+export class SkillSharingApp {
+  #express;
 
   constructor({ publicPath = './public', repository = new Repository() } = {}) {
-    this.#app = this.#createApp(publicPath);
-    new TalksController({ app: this.#app, repository });
+    this.#express = this.#createExpress(publicPath);
+    new TalksController({ app: this.#express, repository });
   }
 
   get app() {
-    return this.#app;
+    return this.#express;
   }
 
   run({ port = 3000 } = {}) {
-    this.#app.listen(port, () => {
+    this.#express.listen(port, () => {
       console.log(`Skill Sharing app listening on port ${port}`);
     });
   }
 
-  #createApp(publicPath) {
+  #createExpress(publicPath) {
     let app = express();
     app.set('x-powered-by', false);
     app.use('/', express.static(publicPath));

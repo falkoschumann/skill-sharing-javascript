@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
 
-import { ExpressApp } from '../../../src/ui/express-app.js';
+import { SkillSharingApp } from '../../../src/ui/skill-sharing-app.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
 let fileName = new URL('../../../data/talks.test.json', import.meta.url);
@@ -13,7 +13,7 @@ let app;
 beforeEach(() => {
   rmSync(fileName, { force: true });
   repository = new Repository({ fileName });
-  app = new ExpressApp({ repository }).app;
+  app = new SkillSharingApp({ repository }).app;
 });
 
 describe('GET talks', () => {
