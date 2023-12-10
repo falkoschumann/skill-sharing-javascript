@@ -3,9 +3,9 @@ describe('Skill Sharing', () => {
     cy.exec('rm -f ./data/talks.json');
     cy.visit('/');
 
-    cy.get('s-talkform').find('input[name="title"]').type('Foobar');
-    cy.get('s-talkform').find('input[name="summary"]').type('Lorem ipsum');
-    cy.get('s-talkform').find('button[type="submit"]').click();
+    cy.get('s-talk-form').find('input[name="title"]').type('Foobar');
+    cy.get('s-talk-form').find('input[name="summary"]').type('Lorem ipsum');
+    cy.get('s-talk-form').find('button[type="submit"]').click();
 
     cy.get('s-talks')
       .find('section.talk')
@@ -18,7 +18,7 @@ describe('Skill Sharing', () => {
   it('changes user and comments a talk', () => {
     cy.visit('/');
 
-    cy.get('s-userfield')
+    cy.get('s-user-field')
       .find('input')
       .type('{backspace}{backspace}{backspace}{backspace}Bob');
     cy.get('s-talks').find('input[name="comment"]').type('Amazing!');

@@ -9,13 +9,13 @@ class SkillSharingApp extends HTMLElement {
   connectedCallback() {
     let view = html`
       <h1>Skill Sharing</h1>
-      <s-userfield></s-userfield>
+      <s-user-field></s-user-field>
       <s-talks></s-talks>
-      <s-talkform></s-talkform>
+      <s-talk-form></s-talk-form>
     `;
     render(view, this);
     actions.pollTalks();
   }
 }
 
-window.customElements.define('s-skillsharingapp', SkillSharingApp);
+window.customElements.define('s-skill-sharing-app', SkillSharingApp);

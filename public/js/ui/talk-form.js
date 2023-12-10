@@ -44,4 +44,4 @@ class TalkForm extends HTMLElement {
   }
 }
 
-window.customElements.define('s-talkform', TalkForm);
+window.customElements.define('s-talk-form', TalkForm);

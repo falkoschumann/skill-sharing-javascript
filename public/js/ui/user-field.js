@@ -30,4 +30,4 @@ class UserField extends Component {
   }
 }
 
-window.customElements.define('s-userfield', UserField);
+window.customElements.define('s-user-field', UserField);
