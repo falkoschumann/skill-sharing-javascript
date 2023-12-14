@@ -5,16 +5,16 @@ import { fileURLToPath } from 'node:url';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
 const testFile = fileURLToPath(
-  new URL('../../../data/talks.test.json', import.meta.url)
+  new URL('../../../data/talks.test.json', import.meta.url),
 );
 const exampleFile = fileURLToPath(
-  new URL('../data/example.json', import.meta.url)
+  new URL('../data/example.json', import.meta.url),
 );
 const nonExistingFile = fileURLToPath(
-  new URL('../data/non-existent.json', import.meta.url)
+  new URL('../data/non-existent.json', import.meta.url),
 );
 const corruptedFile = fileURLToPath(
-  new URL('../data/corrupt.json', import.meta.url)
+  new URL('../data/corrupt.json', import.meta.url),
 );
 
 beforeEach(() => {

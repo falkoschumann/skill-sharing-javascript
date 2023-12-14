@@ -7,7 +7,7 @@ import { SkillSharingApp } from '../../../src/ui/skill-sharing-app.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
 const testFile = fileURLToPath(
-  new URL('../../../data/talks.test.json', import.meta.url)
+  new URL('../../../data/talks.test.json', import.meta.url),
 );
 
 let repository;
@@ -95,7 +95,7 @@ describe('GET talks', () => {
           .put('/api/talks/foobar')
           .set('Content-Type', 'application/json')
           .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
-      2000
+      2000,
     );
     let response = await responsePromise;
     clearTimeout(submitHandler);
