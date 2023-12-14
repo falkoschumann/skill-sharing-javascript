@@ -2,6 +2,7 @@
 
 # Based on following Google Style Guides:
 # - C++: https://google.github.io/styleguide/cppguide.html
+# - C#: https://google.github.io/styleguide/csharp-style.html
 # - HTML/CSS: https://google.github.io/styleguide/htmlcssguide.html
 # - JavaScript: https://google.github.io/styleguide/jsguide.html
 # - Java: https://google.github.io/styleguide/javaguide.html
@@ -22,7 +23,7 @@ max_line_length = 80
 [*.{md,py}]
 indent_size = 4
 
-[*.{java,yaml}]
+[*.{cs,java,yaml}]
 max_line_length = 100
 
 [*.bat]

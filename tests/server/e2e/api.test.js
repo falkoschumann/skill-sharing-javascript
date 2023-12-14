@@ -1,18 +1,21 @@
 import { beforeEach, describe, expect, test } from '@jest/globals';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 import { SkillSharingApp } from '../../../src/ui/skill-sharing-app.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
-let fileName = new URL('../../../data/talks.test.json', import.meta.url);
+const testFile = fileURLToPath(
+  new URL('../../../data/talks.test.json', import.meta.url)
+);
 
 let repository;
 let app;
 
 beforeEach(() => {
-  rmSync(fileName, { force: true });
-  repository = new Repository({ fileName });
+  rmSync(testFile, { force: true });
+  repository = new Repository({ fileName: testFile });
   app = new SkillSharingApp({ repository }).app;
 });
 
@@ -92,7 +95,7 @@ describe('GET talks', () => {
           .put('/api/talks/foobar')
           .set('Content-Type', 'application/json')
           .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
-      2000,
+      2000
     );
     let response = await responsePromise;
     clearTimeout(submitHandler);

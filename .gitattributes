@@ -4,3 +4,5 @@
 *.sh            text eol=lf
 *.bat           text eol=crlf
 /gradlew        text eol=lf
+*.csv           text eol=crlf
+*.sln           text eol=crlf

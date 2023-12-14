@@ -1,4 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { existsSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 export class AbstractRepository {
   async findAll() {
@@ -68,6 +70,11 @@ export class Repository extends AbstractRepository {
   }
 
   async #store(talksMap) {
+    let dir = dirname(this.#fileName);
+    if (!existsSync(dir)) {
+      mkdirSync(dir);
+    }
+
     let json = JSON.stringify(talksMap);
     await writeFile(this.#fileName, json, 'utf-8');
   }
