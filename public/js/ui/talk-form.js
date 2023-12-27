@@ -5,7 +5,7 @@ import * as actions from './actions.js';
 class TalkForm extends HTMLElement {
   connectedCallback() {
     let template = html`
-      <form @submit="${(e) => this.#onSubmit(e)}">
+      <form @submit=${(e) => this.#onSubmit(e)}>
         <h3>Submit a Talk</h3>
         <label
           >Title:

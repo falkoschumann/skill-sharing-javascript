@@ -17,12 +17,12 @@ class Talks extends Component {
       <section class="talk">
         <h2>
           ${talk.title}
-          <button @click="${() => this.#onClickDelete(talk)}">Delete</button>
+          <button @click=${() => this.#onClickDelete(talk)}>Delete</button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
         ${talk.comments.map((c) => this.#renderComment(c))}
-        <form @submit="${(e) => this.#onSubmit(e)}">
+        <form @submit=${(e) => this.#onSubmit(e)}>
           <input type="text" hidden name="talkTitle" value="${talk.title}" />
           <input type="text" required name="comment" />
           <button type="submit">Add comment</button>
