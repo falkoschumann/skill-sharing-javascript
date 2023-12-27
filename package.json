@@ -23,8 +23,9 @@
     "supertest": "6.3.3"
   },
   "jest": {
-    "verbose": true,
+    "testEnvironment": "jsdom",
     "transform": {},
+    "verbose": true,
     "watchPathIgnorePatterns": [
       "<rootDir>/data/"
     ]
