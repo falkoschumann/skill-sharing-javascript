@@ -23,7 +23,6 @@
     "supertest": "6.3.3"
   },
   "jest": {
-    "testEnvironment": "jsdom",
     "transform": {},
     "verbose": true,
     "watchPathIgnorePatterns": [

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 
 import {
   addComment,
@@ -10,20 +10,13 @@ import {
 } from '../../../public/js/application/services.js';
 import { initialState, reducer } from '../../../public/js/domain/reducer.js';
 import { Store } from '../../../public/js/domain/store.js';
-import { Repository } from '../../../public/js/infrastructure/repository.js';
 
 import { ConfigurableResponses } from '../../configurable-responses.js';
 
-let store;
-
-beforeEach(() => {
-  store = new Store(reducer, initialState);
-  localStorage.clear();
-});
-
 describe('Change user', () => {
   test('Updates user name', async () => {
-    let repository = new Repository();
+    let store = new Store(reducer, initialState);
+    let repository = new FakeRepository();
 
     await changeUser({ userName: 'Bob' }, store, repository);
 
@@ -34,7 +27,8 @@ describe('Change user', () => {
 
 describe('User', () => {
   test('Anon is the default user', async () => {
-    let repository = new Repository();
+    let store = new Store(reducer, initialState);
+    let repository = new FakeRepository();
 
     await getUser(store, repository);
 
@@ -42,7 +36,8 @@ describe('User', () => {
   });
 
   test('Is stored user', async () => {
-    let repository = new Repository();
+    let store = new Store(reducer, initialState);
+    let repository = new FakeRepository();
     await repository.store({ userName: 'Bob' });
 
     await getUser(store, repository);
@@ -53,6 +48,7 @@ describe('User', () => {
 
 describe('Submit talk', () => {
   test('Submits talk', async () => {
+    let store = new Store(reducer, initialState);
     let api = new FakeApi();
 
     await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
@@ -67,6 +63,7 @@ describe('Submit talk', () => {
 
 describe('Post comment', () => {
   test('Posts comment', async () => {
+    let store = new Store(reducer, initialState);
     let api = new FakeApi();
 
     await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
@@ -90,6 +87,7 @@ describe('Delete talk', () => {
 
 describe('Talks', () => {
   test('Polls talks', async () => {
+    let store = new Store(reducer, initialState);
     let api = new FakeApi({
       talks: new ConfigurableResponses([
         {
@@ -110,6 +108,7 @@ describe('Talks', () => {
   });
 
   test('Does not update talks, if not modified', async () => {
+    let store = new Store(reducer, initialState);
     let api = new FakeApi({
       talks: new ConfigurableResponses([{ isNotModified: true }]),
     });
@@ -120,6 +119,7 @@ describe('Talks', () => {
   });
 
   test('Recovers after error', async () => {
+    let store = new Store(reducer, initialState);
     let api = new FakeApi({
       talks: new ConfigurableResponses([
         new Error(),
@@ -140,6 +140,22 @@ describe('Talks', () => {
     ]);
   });
 });
+
+class FakeRepository {
+  #talks;
+
+  constructor(talks = []) {
+    this.#talks = talks;
+  }
+
+  async load() {
+    return this.#talks;
+  }
+
+  async store(talks) {
+    this.#talks = talks;
+  }
+}
 
 class FakeApi {
   #talks;

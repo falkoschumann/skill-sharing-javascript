@@ -10,12 +10,11 @@ const testFile = fileURLToPath(
   new URL('../../../data/talks.test.json', import.meta.url),
 );
 
-let repository;
 let app;
 
 beforeEach(() => {
   rmSync(testFile, { force: true });
-  repository = new Repository({ fileName: testFile });
+  let repository = new Repository({ fileName: testFile });
   app = new SkillSharingApp({ repository }).app;
 });
 
