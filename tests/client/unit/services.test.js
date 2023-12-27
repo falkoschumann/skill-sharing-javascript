@@ -10,7 +10,6 @@ import {
 } from '../../../public/js/application/services.js';
 import { initialState, reducer } from '../../../public/js/domain/reducer.js';
 import { Store } from '../../../public/js/domain/store.js';
-import { AbstractApi } from '../../../public/js/infrastructure/api.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
 
 import { ConfigurableResponses } from '../../configurable-responses.js';
@@ -142,11 +141,10 @@ describe('Talks', () => {
   });
 });
 
-class FakeApi extends AbstractApi {
+class FakeApi {
   #talks;
 
   constructor({ talks = new ConfigurableResponses() } = {}) {
-    super();
     this.#talks = talks;
     this.putTalk = jest.fn(() => Promise.resolve());
     this.deleteTalk = jest.fn(() => Promise.resolve());

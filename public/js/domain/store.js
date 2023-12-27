@@ -1,28 +1,13 @@
-export class AbstractStore {
-  getState() {
-    return {};
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  dispatch(action) {}
-
-  // eslint-disable-next-line no-unused-vars
-  subscribe(listener) {
-    return () => {};
-  }
-}
-
 export function createStore(reducer) {
   return new Store(reducer);
 }
 
-export class Store extends AbstractStore {
+export class Store {
   #reducer;
   #state;
   #listeners = [];
 
   constructor(reducer, initialState = reducer(undefined, { type: '' })) {
-    super();
     this.#reducer = reducer;
     this.#state = initialState;
   }

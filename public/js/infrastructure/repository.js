@@ -1,19 +1,7 @@
-export class AbstractRepository {
-  async load() {
-    return {};
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  async store(state) {
-    return;
-  }
-}
-
-export class Repository extends AbstractRepository {
+export class Repository {
   #key;
 
   constructor({ key = 'skillSharing' } = {}) {
-    super();
     this.#key = key;
   }
 

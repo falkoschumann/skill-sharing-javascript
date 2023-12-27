@@ -2,32 +2,10 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 
-export class AbstractRepository {
-  async findAll() {
-    return [];
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  async findByTitle(title) {
-    return undefined;
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  async add({ title, presenter, summary, comments }) {
-    return;
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  async remove(title) {
-    return;
-  }
-}
-
-export class Repository extends AbstractRepository {
+export class Repository {
   #fileName;
 
   constructor({ fileName = './data/talks.json' } = {}) {
-    super();
     this.#fileName = fileName;
   }
 
