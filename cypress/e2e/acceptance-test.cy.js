@@ -1,48 +1,75 @@
 describe('Skill Sharing', () => {
+  let skillSharing;
+
   it('submits a talk', () => {
-    cy.exec('rm -f ./data/talks.json');
-    cy.visit('/');
+    skillSharing = new SkillSharing();
+    skillSharing.goToSubmission();
 
-    cy.get('s-talk-form').find('input[name="title"]').type('Foobar');
-    cy.get('s-talk-form').find('input[name="summary"]').type('Lorem ipsum');
-    cy.get('s-talk-form').find('button[type="submit"]').click();
+    skillSharing.submitTalk('Foobar', 'Lorem ipsum');
 
-    cy.get('s-talks')
-      .find('section.talk')
-      .should(($section) => {
-        expect($section.find('h2').text()).contains('Foobar');
-        expect($section.find('p').text()).contains('Lorem ipsum');
-      });
+    skillSharing.assertTalkAdded('Foobar', 'Lorem ipsum');
   });
 
   it('changes user and comments a talk', () => {
-    cy.visit('/');
+    skillSharing.goToSubmission();
+    skillSharing.changeUser('Bob');
 
-    cy.get('s-user-field')
-      .find('input')
-      .type('{backspace}{backspace}{backspace}{backspace}Bob');
-    cy.get('s-talks').find('input[name="comment"]').type('Amazing!');
-    cy.get('s-talks').find('button[type="submit"]').click();
+    skillSharing.commentOnTalk('Amazing!');
 
-    cy.get('s-talks')
-      .find('section.talk')
-      .should(($section) => {
-        expect($section.find('p.comment').last().text()).contains('Bob');
-        expect($section.find('p.comment').last().text()).contains('Amazing!');
-      });
+    skillSharing.assertCommentAdded('Bob', 'Amazing!');
   });
 
   it('answers a comment', () => {
-    cy.visit('/');
+    skillSharing.goToSubmission();
 
-    cy.get('s-talks').find('input[name="comment"]').type('Thanks.');
-    cy.get('s-talks').find('button[type="submit"]').click();
+    skillSharing.commentOnTalk('Thanks.');
 
-    cy.get('s-talks')
-      .find('section.talk')
-      .should(($section) => {
-        expect($section.find('p.comment').last().text()).contains('Anon');
-        expect($section.find('p.comment').last().text()).contains('Thanks.');
-      });
+    skillSharing.assertCommentAdded('Anon', 'Thanks.');
   });
 });
+
+class SkillSharing {
+  constructor() {
+    cy.exec('rm -f ./data/talks.json');
+  }
+
+  goToSubmission() {
+    cy.visit('/');
+  }
+
+  submitTalk(title, summary) {
+    cy.get('s-talk-form').find('input[name="title"]').type(title);
+    cy.get('s-talk-form').find('input[name="summary"]').type(summary);
+    cy.get('s-talk-form').find('button[type="submit"]').click();
+  }
+
+  commentOnTalk(comment) {
+    cy.get('s-talks').find('input[name="comment"]').type(comment);
+    cy.get('s-talks').find('button[type="submit"]').click();
+  }
+
+  changeUser(name) {
+    cy.get('s-user-field').find('input').clear();
+    cy.get('s-user-field').find('input').type(name);
+  }
+
+  assertTalkAdded(title, summary) {
+    cy.get('s-talks')
+      .find('section.talk')
+      .last()
+      .should(($section) => {
+        expect($section.find('h2').text()).contains(title);
+        expect($section.find('p').text()).contains(summary);
+      });
+  }
+
+  assertCommentAdded(author, comment) {
+    cy.get('s-talks')
+      .find('section.talk')
+      .last()
+      .should(($section) => {
+        expect($section.find('p.comment').last().text()).contains(author);
+        expect($section.find('p.comment').last().text()).contains(comment);
+      });
+  }
+}
