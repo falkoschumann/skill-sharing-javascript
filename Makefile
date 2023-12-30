@@ -11,7 +11,7 @@ distclean: clean
 
 dist: build
 
-check: test e2e
+check: test
 	npx prettier . --check
 	npx eslint public/js src tests
 
@@ -25,7 +25,10 @@ start: build
 dev: build
 	npx concurrently "npx nodemon src/main.js" "npx browser-sync 'http://localhost:3000' public -w --port 8080"
 
-test: build
+dev-e2e: build
+	npx cypress open
+
+test: build e2e
 	npx jest
 
 unit-tests: build
@@ -58,6 +61,6 @@ build:
 	fi
 	npx rollup -c
 
-.PHONY: all clean distclean dist check start dev \
+.PHONY: all clean distclean dist check start dev dev-e2e \
 	test unit-tests integration-tests e2e-tests e2e watch coverage \
 	build
