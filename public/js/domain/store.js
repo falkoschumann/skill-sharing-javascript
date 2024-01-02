@@ -1,5 +1,6 @@
-export function createStore(reducer) {
-  return new Store(reducer);
+export function createStore(reducer, preloadedState) {
+  let initialState = preloadedState || reducer(undefined, { type: '@@INIT' });
+  return new Store(reducer, initialState);
 }
 
 export class Store {
@@ -7,7 +8,7 @@ export class Store {
   #state;
   #listeners = [];
 
-  constructor(reducer, initialState = reducer(undefined, { type: '' })) {
+  constructor(reducer, initialState) {
     this.#reducer = reducer;
     this.#state = initialState;
   }
