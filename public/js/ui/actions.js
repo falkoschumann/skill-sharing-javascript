@@ -1,10 +1,8 @@
 import * as services from '../application/services.js';
-import { reducer } from '../domain/reducer.js';
-import { createStore } from '../domain/store.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
+import { store } from './store.js';
 
-export const store = createStore(reducer);
 const repository = globalThis.skillSharing?.repository ?? new Repository();
 const api = globalThis.skillSharing?.api ?? new Api();
 
