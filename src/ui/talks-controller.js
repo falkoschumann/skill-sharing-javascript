@@ -5,13 +5,12 @@ import {
   getTalks,
   submitTalk,
 } from '../application/services.js';
-import { Repository } from '../infrastructure/repository.js';
 
 export class TalksController {
   #version = 0;
   #waiting = [];
 
-  constructor({ app, repository = new Repository() } = {}) {
+  constructor({ app, repository }) {
     this.#createRoutes(app, repository);
   }
 

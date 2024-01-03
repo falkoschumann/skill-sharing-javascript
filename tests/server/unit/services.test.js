@@ -12,11 +12,19 @@ describe('Submit talk', () => {
   test('Adds talk to list of talks', async () => {
     let repository = new FakeRepository();
 
-    await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, repository);
+    await submitTalk(
+      { title: 'foobar', presenter: 'Alice', summary: 'lorem ipsum' },
+      repository,
+    );
 
     let talks = await repository.findAll();
     expect(talks).toEqual([
-      { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+      {
+        title: 'foobar',
+        presenter: 'Alice',
+        summary: 'lorem ipsum',
+        comments: [],
+      },
     ]);
   });
 });
