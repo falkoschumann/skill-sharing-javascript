@@ -1,4 +1,4 @@
-import { describe, expect, jest, test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
 import {
   addComment,
@@ -10,25 +10,25 @@ import {
 } from '../../../public/js/application/services.js';
 import { initialState, reducer } from '../../../public/js/domain/reducer.js';
 import { Store } from '../../../public/js/domain/store.js';
-
-import { ConfigurableResponses } from '../../configurable-responses.js';
+import { Api } from '../../../public/js/infrastructure/api.js';
+import { Repository } from '../../../public/js/infrastructure/repository.js';
 
 describe('Change user', () => {
   test('Updates user name', async () => {
     let store = new Store(reducer, initialState);
-    let repository = new FakeRepository();
+    let repository = Repository.createNull();
 
     await changeUser({ userName: 'Bob' }, store, repository);
 
     expect(store.getState().user).toEqual('Bob');
-    expect(await repository.load()).toEqual({ userName: 'Bob' });
+    expect(repository.lastStored).toEqual({ userName: 'Bob' });
   });
 });
 
 describe('User', () => {
   test('Anon is the default user', async () => {
     let store = new Store(reducer, initialState);
-    let repository = new FakeRepository();
+    let repository = Repository.createNull();
 
     await getUser(store, repository);
 
@@ -37,8 +37,7 @@ describe('User', () => {
 
   test('Is stored user', async () => {
     let store = new Store(reducer, initialState);
-    let repository = new FakeRepository();
-    await repository.store({ userName: 'Bob' });
+    let repository = Repository.createNull({ userName: 'Bob' });
 
     await getUser(store, repository);
 
@@ -49,55 +48,52 @@ describe('User', () => {
 describe('Submit talk', () => {
   test('Submits talk', async () => {
     let store = new Store(reducer, initialState);
-    let api = new FakeApi();
+    let api = Api.createNull();
+    let talksPut = api.trackTalksPut();
 
     await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
 
-    expect(api.putTalk).nthCalledWith(1, {
-      title: 'foobar',
-      presenter: 'Anon',
-      summary: 'lorem ipsum',
-    });
+    expect(talksPut.data).toEqual([
+      {
+        title: 'foobar',
+        presenter: 'Anon',
+        summary: 'lorem ipsum',
+      },
+    ]);
   });
 });
 
 describe('Post comment', () => {
   test('Posts comment', async () => {
     let store = new Store(reducer, initialState);
-    let api = new FakeApi();
+    let api = Api.createNull();
+    let commentsPosted = api.trackCommentsPosted();
 
     await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
 
-    expect(api.postComment).nthCalledWith(1, 'foobar', {
-      author: 'Anon',
-      message: 'lorem ipsum',
-    });
+    expect(commentsPosted.data).toEqual([
+      { title: 'foobar', author: 'Anon', message: 'lorem ipsum' },
+    ]);
   });
 });
 
 describe('Delete talk', () => {
   test('Deletes talk', async () => {
-    let api = new FakeApi();
+    let api = Api.createNull();
+    let talksDeleted = api.trackTalksDeleted();
 
     await deleteTalk({ title: 'foobar' }, api);
 
-    expect(api.deleteTalk).nthCalledWith(1, 'foobar');
+    expect(talksDeleted.data).toEqual([{ title: 'foobar' }]);
   });
 });
 
 describe('Talks', () => {
   test('Polls talks', async () => {
     let store = new Store(reducer, initialState);
-    let api = new FakeApi({
-      talks: new ConfigurableResponses([
-        {
-          isNotModified: false,
-          tag: '1',
-          talks: [
-            { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
-          ],
-        },
-      ]),
+    let api = Api.createNull({
+      headers: { etag: '1' },
+      body: '[{"title":"foobar","presenter":"Anon","summary":"lorem ipsum"}]',
     });
 
     await pollTalks(store, api, 1);
@@ -109,9 +105,7 @@ describe('Talks', () => {
 
   test('Does not update talks, if not modified', async () => {
     let store = new Store(reducer, initialState);
-    let api = new FakeApi({
-      talks: new ConfigurableResponses([{ isNotModified: true }]),
-    });
+    let api = Api.createNull({ status: 304 });
 
     await pollTalks(store, api, 1);
 
@@ -120,18 +114,13 @@ describe('Talks', () => {
 
   test('Recovers after error', async () => {
     let store = new Store(reducer, initialState);
-    let api = new FakeApi({
-      talks: new ConfigurableResponses([
-        new Error(),
-        {
-          isNotModified: false,
-          tag: '1',
-          talks: [
-            { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
-          ],
-        },
-      ]),
-    });
+    let api = Api.createNull([
+      new Error(),
+      {
+        headers: { etag: '1' },
+        body: '[{"title":"foobar","presenter":"Anon","summary":"lorem ipsum"}]',
+      },
+    ]);
 
     await pollTalks(store, api, 2);
 
@@ -140,34 +129,3 @@ describe('Talks', () => {
     ]);
   });
 });
-
-class FakeRepository {
-  #talks;
-
-  constructor(talks = []) {
-    this.#talks = talks;
-  }
-
-  async load() {
-    return this.#talks;
-  }
-
-  async store(talks) {
-    this.#talks = talks;
-  }
-}
-
-class FakeApi {
-  #talks;
-
-  constructor({ talks = new ConfigurableResponses() } = {}) {
-    this.#talks = talks;
-    this.putTalk = jest.fn(() => Promise.resolve());
-    this.deleteTalk = jest.fn(() => Promise.resolve());
-    this.postComment = jest.fn(() => Promise.resolve());
-  }
-
-  async getTalks() {
-    return this.#talks.next();
-  }
-}

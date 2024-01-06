@@ -20,15 +20,11 @@ export async function addComment(
   repository,
 ) {
   let talk = await repository.findByTitle(title);
-  return tryAddComment(talk, { author, message }, repository);
-}
-
-async function tryAddComment(talk, comment, repository) {
   if (talk == null) {
     return false;
   }
 
-  talk.comments.push(comment);
+  talk.comments.push({ author, message });
   await repository.add(talk);
   return true;
 }

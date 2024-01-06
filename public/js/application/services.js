@@ -18,6 +18,7 @@ export async function deleteTalk({ title }, api) {
 }
 
 export async function pollTalks(store, api, runs = -1) {
+  // TODO move polling to API
   let tag;
   let timeout = 0.5;
   for (let i = 0; runs === -1 || i < runs; runs === -1 ? 0 : i++) {

@@ -6,7 +6,10 @@ import { TalksController } from './talks-controller.js';
 export class SkillSharingApp {
   #express;
 
-  constructor({ publicPath = './public', repository = new Repository() } = {}) {
+  constructor({
+    publicPath = './public',
+    repository = Repository.create(),
+  } = {}) {
     this.#express = this.#createExpress(publicPath);
     new TalksController({ app: this.#express, repository });
   }

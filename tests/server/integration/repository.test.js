@@ -23,7 +23,7 @@ beforeEach(() => {
 
 describe('Find all', () => {
   test('Returns list of talks', async () => {
-    let repository = new Repository({ fileName: exampleFile });
+    let repository = Repository.create({ fileName: exampleFile });
 
     let talks = await repository.findAll();
 
@@ -33,7 +33,7 @@ describe('Find all', () => {
   });
 
   test('Returns empty list, if file does not exist', async () => {
-    let repository = new Repository({ fileName: nonExistingFile });
+    let repository = Repository.create({ fileName: nonExistingFile });
 
     let talks = await repository.findAll();
 
@@ -41,7 +41,7 @@ describe('Find all', () => {
   });
 
   test('Reports an error, if file is corrupt', async () => {
-    let repository = new Repository({ fileName: corruptedFile });
+    let repository = Repository.create({ fileName: corruptedFile });
 
     await expect(repository.findAll()).rejects.toThrow();
   });
@@ -49,7 +49,7 @@ describe('Find all', () => {
 
 describe('Find by title', () => {
   test('Returns talk with title', async () => {
-    let repository = new Repository({ fileName: exampleFile });
+    let repository = Repository.create({ fileName: exampleFile });
 
     let talk = await repository.findByTitle('Foobar');
 
@@ -61,7 +61,7 @@ describe('Find by title', () => {
   });
 
   test('Returns undefined if talk with title does not exist', async () => {
-    let repository = new Repository({ fileName: exampleFile });
+    let repository = Repository.create({ fileName: exampleFile });
 
     let talk = await repository.findByTitle('not a talk');
 
@@ -71,7 +71,7 @@ describe('Find by title', () => {
 
 describe('Add', () => {
   test('Creates file, if file does not exist', async () => {
-    let repository = new Repository({ fileName: testFile });
+    let repository = Repository.create({ fileName: testFile });
 
     await repository.add({
       title: 'foobar',
@@ -92,7 +92,7 @@ describe('Add', () => {
   });
 
   test('Adds talk, if file exists', async () => {
-    let repository = new Repository({ fileName: testFile });
+    let repository = Repository.create({ fileName: testFile });
     await repository.add({
       title: 'foo',
       author: 'Anon',
@@ -115,7 +115,7 @@ describe('Add', () => {
   });
 
   test('Updates talk, if talk exists', async () => {
-    let repository = new Repository({ fileName: testFile });
+    let repository = Repository.create({ fileName: testFile });
     await repository.add({
       title: 'foo',
       author: 'Anon',
@@ -139,7 +139,7 @@ describe('Add', () => {
 
 describe('Remove', () => {
   test('Removes talk from file', async () => {
-    let repository = new Repository({ fileName: testFile });
+    let repository = Repository.create({ fileName: testFile });
     await repository.add({
       title: 'foobar',
       author: 'Anon',

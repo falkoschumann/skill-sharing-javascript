@@ -1,7 +1,13 @@
 export class ConfigurableResponses {
+  #description;
   #responses;
 
-  constructor(responses) {
+  static create(responses, name) {
+    return new ConfigurableResponses(responses, name);
+  }
+
+  constructor(responses, name) {
+    this.#description = name == null ? '' : ` in ${name}`;
     this.#responses = Array.isArray(responses) ? [...responses] : responses;
   }
 
@@ -10,7 +16,7 @@ export class ConfigurableResponses {
       ? this.#responses.shift()
       : this.#responses;
     if (response === undefined) {
-      throw new Error('No more responses configured');
+      throw new Error(`No more responses configured${this.#description}.`);
     }
 
     if (response instanceof Error) {

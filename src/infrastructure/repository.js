@@ -1,12 +1,33 @@
-import { readFile, writeFile } from 'node:fs/promises';
-import { existsSync, mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export class Repository {
   #fileName;
+  #fs;
+  #path;
+  #lastStored;
 
-  constructor({ fileName = './data/talks.json' } = {}) {
+  static create({ fileName = './data/talks.json' } = {}) {
+    return new Repository(fileName, fs, path);
+  }
+
+  static createNull(talks = []) {
+    let mappedTalks = {};
+    for (let talk of talks) {
+      mappedTalks[talk.title] = talk;
+    }
+    let stored = JSON.stringify(mappedTalks);
+    return new Repository(
+      'nulled-file-name.json',
+      new FsStub(stored),
+      new PathStub(),
+    );
+  }
+
+  constructor(fileName, fs, path) {
     this.#fileName = fileName;
+    this.#fs = fs;
+    this.#path = path;
   }
 
   async findAll() {
@@ -37,7 +58,7 @@ export class Repository {
 
   async #load() {
     try {
-      let json = await readFile(this.#fileName, 'utf-8');
+      let json = this.#fs.readFileSync(this.#fileName, 'utf-8');
       return JSON.parse(json);
     } catch (error) {
       if (error.code === 'ENOENT') {
@@ -48,12 +69,43 @@ export class Repository {
   }
 
   async #store(talksMap) {
-    let dir = dirname(this.#fileName);
-    if (!existsSync(dir)) {
-      mkdirSync(dir);
+    let dir = this.#path.dirname(this.#fileName);
+    if (!this.#fs.existsSync(dir)) {
+      this.#fs.mkdirSync(dir);
     }
 
     let json = JSON.stringify(talksMap);
-    await writeFile(this.#fileName, json, 'utf-8');
+    this.#fs.writeFileSync(this.#fileName, json, 'utf-8');
+    this.#lastStored = json;
+  }
+
+  get lastStored() {
+    return this.#lastStored != null ? JSON.parse(this.#lastStored) : undefined;
+  }
+}
+
+class FsStub {
+  #fileContent;
+
+  constructor(fileContent) {
+    this.#fileContent = fileContent;
+  }
+
+  readFileSync() {
+    return this.#fileContent;
+  }
+
+  writeFileSync() {}
+
+  existsSync() {
+    return true;
+  }
+
+  mkdirSync() {}
+}
+
+class PathStub {
+  dirname() {
+    return 'nulled-dirname';
   }
 }

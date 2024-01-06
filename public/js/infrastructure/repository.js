@@ -1,17 +1,48 @@
-export class Repository {
-  #key;
+const storageKey = 'skillSharing';
 
-  constructor({ key = 'skillSharing' } = {}) {
-    this.#key = key;
+export class Repository {
+  #storage;
+  #lastStored;
+
+  static create() {
+    return new Repository(localStorage);
+  }
+
+  static createNull({ userName = 'Anon' } = {}) {
+    let stored = JSON.stringify({ userName });
+    return new Repository(new StorageStub(stored));
+  }
+
+  constructor(storage) {
+    this.#storage = storage;
   }
 
   async load() {
-    let json = localStorage.getItem(this.#key);
+    let json = this.#storage.getItem(storageKey);
     return JSON.parse(json) || {};
   }
 
   async store(state) {
     let json = JSON.stringify(state);
-    localStorage.setItem(this.#key, json);
+    this.#storage.setItem(storageKey, json);
+    this.#lastStored = json;
   }
+
+  get lastStored() {
+    return this.#lastStored != null ? JSON.parse(this.#lastStored) : undefined;
+  }
+}
+
+class StorageStub {
+  #item;
+
+  constructor(item) {
+    this.#item = item;
+  }
+
+  getItem() {
+    return this.#item;
+  }
+
+  setItem() {}
 }

@@ -14,7 +14,7 @@ let app;
 
 beforeEach(() => {
   rmSync(testFile, { force: true });
-  let repository = new Repository({ fileName: testFile });
+  let repository = Repository.create({ fileName: testFile });
   app = new SkillSharingApp({ repository }).app;
 });
 
