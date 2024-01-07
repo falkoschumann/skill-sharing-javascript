@@ -29,7 +29,11 @@ export class Repository {
   }
 
   get lastStored() {
-    return this.#lastStored != null ? JSON.parse(this.#lastStored) : undefined;
+    if (this.#lastStored != null) {
+      return JSON.parse(this.#lastStored);
+    }
+
+    return this.#lastStored;
   }
 }
 

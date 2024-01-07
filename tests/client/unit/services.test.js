@@ -9,14 +9,14 @@ import {
   submitTalk,
   talksUpdated,
 } from '../../../public/js/application/services.js';
-import { initialState, reducer } from '../../../public/js/domain/reducer.js';
-import { Store } from '../../../public/js/domain/store.js';
+import { reducer } from '../../../public/js/domain/reducer.js';
+import { createStore } from '../../../public/js/domain/store.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
 
 describe('Change user', () => {
   test('Updates user name', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let repository = Repository.createNull();
 
     await changeUser({ userName: 'Bob' }, store, repository);
@@ -28,7 +28,7 @@ describe('Change user', () => {
 
 describe('User', () => {
   test('Anon is the default user', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let repository = Repository.createNull();
 
     await getUser(store, repository);
@@ -37,7 +37,7 @@ describe('User', () => {
   });
 
   test('Is stored user', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let repository = Repository.createNull({ userName: 'Bob' });
 
     await getUser(store, repository);
@@ -48,7 +48,7 @@ describe('User', () => {
 
 describe('Submit talk', () => {
   test('Submits talk', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let api = Api.createNull();
     let talksPut = api.trackTalksPut();
 
@@ -66,7 +66,7 @@ describe('Submit talk', () => {
 
 describe('Post comment', () => {
   test('Posts comment', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let api = Api.createNull();
     let commentsPosted = api.trackCommentsPosted();
 
@@ -91,7 +91,7 @@ describe('Delete talk', () => {
 
 describe('Talks', () => {
   test('Talks updated', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
 
     await talksUpdated(
       [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
@@ -104,7 +104,7 @@ describe('Talks', () => {
   });
 
   test('Polls talks', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let api = Api.createNull([
       {
         status: 200,
@@ -127,7 +127,7 @@ describe('Talks', () => {
   });
 
   test('Does not update talks, if not modified', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let api = Api.createNull([
       {
         status: 200,
@@ -150,7 +150,7 @@ describe('Talks', () => {
   });
 
   test('Recovers after network error', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let api = Api.createNull([
       new Error('network error'),
       {
@@ -173,7 +173,7 @@ describe('Talks', () => {
   });
 
   test('Recovers after server error', async () => {
-    let store = new Store(reducer, initialState);
+    let store = createStore(reducer);
     let api = Api.createNull([
       {
         status: 500,
