@@ -1,5 +1,5 @@
-import { ConfigurableResponses } from './configurable-responses.js';
-import { OutputEvent, OutputTracker } from './output-tracker.js';
+import { ConfigurableResponses } from '../util/configurable-responses.js';
+import { OutputEvent, OutputTracker } from '../util/output-tracker.js';
 
 const TALKS_UPDATED_EVENT = 'talks-updated';
 const TALKS_GET_EVENT = 'talk-get';
