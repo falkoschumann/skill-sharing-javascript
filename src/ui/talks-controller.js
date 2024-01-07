@@ -69,7 +69,6 @@ export class TalksController {
     let talks = await getTalks(repository);
     let body = JSON.stringify(talks);
     return {
-      status: 200,
       headers: {
         'Content-Type': 'application/json',
         ETag: `"${this.#version}"`,
@@ -98,7 +97,6 @@ export class TalksController {
         this.#reply(res, { status: 404, body: `No talk '${title}' found` });
       } else {
         this.#reply(res, {
-          status: 200,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(talk),
         });
