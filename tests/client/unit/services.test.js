@@ -7,6 +7,7 @@ import {
   getUser,
   pollTalks,
   submitTalk,
+  talksUpdated,
 } from '../../../public/js/application/services.js';
 import { initialState, reducer } from '../../../public/js/domain/reducer.js';
 import { Store } from '../../../public/js/domain/store.js';
@@ -89,43 +90,110 @@ describe('Delete talk', () => {
 });
 
 describe('Talks', () => {
-  test('Polls talks', async () => {
+  test('Talks updated', async () => {
     let store = new Store(reducer, initialState);
-    let api = Api.createNull({
-      headers: { etag: '1' },
-      body: '[{"title":"foobar","presenter":"Anon","summary":"lorem ipsum"}]',
-    });
 
-    await pollTalks(store, api, 1);
+    await talksUpdated(
+      [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
+      store,
+    );
 
     expect(store.getState().talks).toEqual([
-      { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+      { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
     ]);
   });
 
-  test('Does not update talks, if not modified', async () => {
-    let store = new Store(reducer, initialState);
-    let api = Api.createNull({ status: 304 });
-
-    await pollTalks(store, api, 1);
-
-    expect(store.getState().talks).toEqual([]);
-  });
-
-  test('Recovers after error', async () => {
+  test('Polls talks', async () => {
     let store = new Store(reducer, initialState);
     let api = Api.createNull([
-      new Error(),
       {
+        status: 200,
         headers: { etag: '1' },
-        body: '[{"title":"foobar","presenter":"Anon","summary":"lorem ipsum"}]',
+        body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
+      },
+      {
+        status: 200,
+        headers: { etag: '2' },
+        body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"},{"title":"title 2","presenter":"presenter 2","summary":"summary 2"}]',
       },
     ]);
 
     await pollTalks(store, api, 2);
 
     expect(store.getState().talks).toEqual([
-      { title: 'foobar', presenter: 'Anon', summary: 'lorem ipsum' },
+      { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
+      { title: 'title 2', presenter: 'presenter 2', summary: 'summary 2' },
+    ]);
+  });
+
+  test('Does not update talks, if not modified', async () => {
+    let store = new Store(reducer, initialState);
+    let api = Api.createNull([
+      {
+        status: 200,
+        headers: { etag: '1' },
+        body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
+      },
+      { status: 304 },
+    ]);
+    let talksGet = api.trackTalksGet();
+
+    await pollTalks(store, api, 2);
+
+    expect(store.getState().talks).toEqual([
+      { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
+    ]);
+    expect(talksGet.data).toEqual([
+      [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
+      'not modified',
+    ]);
+  });
+
+  test('Recovers after network error', async () => {
+    let store = new Store(reducer, initialState);
+    let api = Api.createNull([
+      new Error('network error'),
+      {
+        status: 200,
+        headers: { etag: '1' },
+        body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
+      },
+    ]);
+    let talksGet = api.trackTalksGet();
+
+    await pollTalks(store, api, 2);
+
+    expect(store.getState().talks).toEqual([
+      { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
+    ]);
+    expect(talksGet.data).toEqual([
+      'network error',
+      [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
+    ]);
+  });
+
+  test('Recovers after server error', async () => {
+    let store = new Store(reducer, initialState);
+    let api = Api.createNull([
+      {
+        status: 500,
+      },
+      {
+        status: 200,
+        headers: { etag: '1' },
+        body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
+      },
+    ]);
+    let talksGet = api.trackTalksGet();
+
+    await pollTalks(store, api, 2);
+
+    expect(store.getState().talks).toEqual([
+      { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
+    ]);
+    expect(talksGet.data).toEqual([
+      'HTTP error: 500',
+      [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
     ]);
   });
 });
