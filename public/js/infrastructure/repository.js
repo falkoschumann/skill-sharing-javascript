@@ -8,8 +8,8 @@ export class Repository {
     return new Repository(localStorage);
   }
 
-  static createNull({ userName = 'Anon' } = {}) {
-    let stored = JSON.stringify({ userName });
+  static createNull(state) {
+    let stored = state != null ? JSON.stringify(state) : null;
     return new Repository(new StorageStub(stored));
   }
 
