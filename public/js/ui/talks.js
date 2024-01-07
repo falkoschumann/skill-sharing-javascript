@@ -17,12 +17,12 @@ class Talks extends Component {
       <section class="talk">
         <h2>
           ${talk.title}
-          <button @click=${() => this.#onClickDelete(talk)}>Delete</button>
+          <button @click=${() => this.#handleClickDelete(talk)}>Delete</button>
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
         ${talk.comments.map((c) => this.#renderComment(c))}
-        <form @submit=${(e) => this.#onSubmit(e)}>
+        <form @submit=${(e) => this.#handleSubmit(e)}>
           <input type="text" hidden name="talkTitle" value="${talk.title}" />
           <input type="text" required name="comment" />
           <button type="submit">Add comment</button>
@@ -39,11 +39,11 @@ class Talks extends Component {
     `;
   }
 
-  #onClickDelete(talk) {
+  #handleClickDelete(talk) {
     actions.deleteTalk({ title: talk.title });
   }
 
-  #onSubmit(event) {
+  #handleSubmit(event) {
     event.preventDefault();
     if (this.#validateForm(event.target)) {
       this.#addComment(event.target);
@@ -57,11 +57,10 @@ class Talks extends Component {
 
   #addComment(form) {
     let formData = new FormData(form);
-    let command = {
+    actions.addComment({
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
-    };
-    actions.addComment(command);
+    });
     form.reset();
   }
 }

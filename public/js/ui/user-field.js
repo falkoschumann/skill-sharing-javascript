@@ -20,12 +20,12 @@ class UserField extends Component {
         <input
           type="text"
           value="${this.state}"
-          @change=${(e) => this.#onChange(e)}
+          @change=${(e) => this.#handleChange(e)}
       /></label>
     `;
   }
 
-  #onChange(event) {
+  #handleChange(event) {
     actions.changeUser({ userName: event.target.value });
   }
 }
