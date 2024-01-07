@@ -10,7 +10,7 @@ export async function getUser(store, repository) {
 
 export async function pollTalks(store, api, runs) {
   api.addEventListener('talks-updated', (event) =>
-    talksUpdated(event.detail.talks, store),
+    talksUpdated(event.talks, store),
   );
   await api.pollTalks(runs);
 }

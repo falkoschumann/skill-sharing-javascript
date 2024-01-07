@@ -7,6 +7,19 @@ const TALK_PUT_EVENT = 'talk-put';
 const TALK_DELETED_EVENT = 'talk-deleted';
 const COMMENT_POSTED_EVENT = 'comment-posted';
 
+export class TalksUpdatedEvent extends Event {
+  #talks;
+
+  constructor(talks) {
+    super(TALKS_UPDATED_EVENT);
+    this.#talks = talks;
+  }
+
+  get talks() {
+    return this.#talks;
+  }
+}
+
 export class Api extends EventTarget {
   #baseUrl;
   #fetch;
@@ -55,9 +68,7 @@ export class Api extends EventTarget {
 
         tag = response.headers.get('ETag');
         let talks = await response.json();
-        this.dispatchEvent(
-          new CustomEvent(TALKS_UPDATED_EVENT, { detail: { talks } }),
-        );
+        this.dispatchEvent(new TalksUpdatedEvent(talks));
 
         timeout = 0.5;
 
