@@ -20,7 +20,8 @@ export async function talksUpdated(talks, store) {
 }
 
 export async function submitTalk({ title, summary }, store, api) {
-  let talk = { title, presenter: store.getState().user, summary };
+  let presenter = store.getState().user;
+  let talk = { title, presenter, summary };
   await api.putTalk(talk);
 }
 

@@ -3,8 +3,8 @@ import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
 import { store } from './store.js';
 
-const repository = globalThis.skillSharing?.repository ?? Repository.create();
-const api = globalThis.skillSharing?.api ?? Api.create();
+const repository = Repository.create();
+const api = Api.create();
 
 export async function changeUser({ userName }) {
   return services.changeUser({ userName }, store, repository);
