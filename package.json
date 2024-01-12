@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "author": "Falko Schumann",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "type": "module",
   "main": "src/main.js",
   "scripts": {
