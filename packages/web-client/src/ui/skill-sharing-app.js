@@ -1,5 +1,7 @@
-import { html, render } from '../../vendor/lit-html.js';
+import { html, render } from 'lit-html';
 
+import './app.css';
+import './style.css';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';

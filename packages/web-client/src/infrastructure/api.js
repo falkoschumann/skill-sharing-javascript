@@ -59,6 +59,11 @@ export class Api extends EventTarget {
 
         if (response.status === 304) {
           this.dispatchEvent(new OutputEvent(TALKS_GET_EVENT, 'not modified'));
+          timeout *= 2;
+          if (timeout > 10) {
+            timeout = 10;
+          }
+          await new Promise((resolve) => setTimeout(resolve, timeout * 1000));
           continue;
         }
 
