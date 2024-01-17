@@ -8,11 +8,11 @@ import {
   pollTalks,
   submitTalk,
   talksUpdated,
-} from '../../../public/js/application/services.js';
-import { reducer } from '../../../public/js/domain/reducer.js';
-import { createStore } from '../../../public/js/domain/store.js';
-import { Api } from '../../../public/js/infrastructure/api.js';
-import { Repository } from '../../../public/js/infrastructure/repository.js';
+} from '../../src/application/services.js';
+import { reducer } from '../../src/domain/reducer.js';
+import { createStore } from '../../src/domain/store.js';
+import { Api } from '../../src/infrastructure/api.js';
+import { Repository } from '../../src/infrastructure/repository.js';
 
 describe('Services', () => {
   describe('Change user', () => {

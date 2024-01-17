@@ -3,14 +3,14 @@ import request from 'supertest';
 import { rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { SkillSharingApp } from '../../../src/ui/skill-sharing-app.js';
-import { Repository } from '../../../src/infrastructure/repository.js';
+import { SkillSharingApp } from '../../src/ui/skill-sharing-app.js';
+import { Repository } from '../../src/infrastructure/repository.js';
 
 const testFile = fileURLToPath(
-  new URL('../../../data/talks.test.json', import.meta.url),
+  new URL('../../data/talks.test.json', import.meta.url),
 );
 
-describe('Skill Sharing app', () => {
+describe('API', () => {
   let app;
 
   beforeEach(() => {

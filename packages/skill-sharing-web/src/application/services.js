@@ -2,7 +2,7 @@
  * @typedef {import('../domain/reducer.js').Talk} Talk
  * @typedef {import('../domain/store.js').Store} Store
  * @typedef {import('../infrastructure/repository.js').Repository} Repository
- * @typedef {import('../infrastructure/Api.js').Api} Api
+ * @typedef {import('../infrastructure/api.js').Api} Api
  */
 
 export async function changeUser(

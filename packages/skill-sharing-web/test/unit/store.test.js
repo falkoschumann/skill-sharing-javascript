@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 
-import { Store } from '../../../public/js/domain/store.js';
+import { Store } from '../../src/domain/store.js';
 
 describe('Store', () => {
   describe('Subscribe', () => {

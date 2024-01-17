@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test } from '@jest/globals';
 import { rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { Repository } from '../../../src/infrastructure/repository.js';
+import { Repository } from '../../src/infrastructure/repository.js';
 
 const testFile = fileURLToPath(
-  new URL('../../../data/talks.test.json', import.meta.url),
+  new URL('../../data/talks.test.json', import.meta.url),
 );
 const exampleFile = fileURLToPath(
   new URL('../data/example.json', import.meta.url),
