@@ -1,7 +1,12 @@
 {
-  "name": "web-client",
+  "name": "skill-sharing-web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "author": "Falko Schumann",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
