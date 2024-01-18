@@ -1,6 +1,5 @@
 # see also https://gitignore.io
 
-data/
 tmp/
 vendor/
 
