@@ -22,10 +22,10 @@ format:
 	npx eslint --fix packages/*/src packages/*/test
 
 start: build
-	node src/main.js
+	npm start --workspace skill-sharing-server
 
 dev: build
-	npx concurrently "npx nodemon src/main.js" "npx browser-sync 'http://localhost:3000' public -w --port 8080"
+	npx concurrently "npm run dev --workspace skill-sharing-server" "npm run dev --workspace skill-sharing-web"
 
 dev-e2e: build
 	npx cypress open
@@ -43,9 +43,9 @@ e2e-tests: build e2e
 	npx jest --testPathPattern=".*\/e2e\/.*"
 
 e2e: build
-#	node src/main.js &
-#	npx cypress run
-#	kill `lsof -t -i:3000`
+	npm start --workspace skill-sharing-server &
+	npx cypress run
+	kill `lsof -t -i:3000`
 
 watch: build
 	npx jest --watch
