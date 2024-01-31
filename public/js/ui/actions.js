@@ -1,7 +1,10 @@
-import * as services from '../application/services.js';
+import services from '../application/services.js';
+import { reducer } from '../domain/reducer.js';
+import { createStore } from '../domain/store.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
-import { store } from './store.js';
+
+export const store = createStore(reducer);
 
 const repository = Repository.create();
 const api = Api.create();
@@ -29,3 +32,12 @@ export async function deleteTalk({ title }) {
 export async function addComment({ title, comment }) {
   return services.addComment({ title, comment }, store, api);
 }
+
+export default {
+  changeUser,
+  getUser,
+  pollTalks,
+  submitTalk,
+  deleteTalk,
+  addComment,
+};

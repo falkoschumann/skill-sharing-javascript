@@ -3,7 +3,7 @@ import { html, render } from '../../vendor/lit-html.js';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';
-import * as actions from './actions.js';
+import actions from './actions.js';
 
 class SkillSharingApp extends HTMLElement {
   connectedCallback() {

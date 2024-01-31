@@ -1,6 +1,6 @@
 import { html, render } from '../../vendor/lit-html.js';
 
-import * as actions from './actions.js';
+import actions from './actions.js';
 
 class TalkForm extends HTMLElement {
   connectedCallback() {

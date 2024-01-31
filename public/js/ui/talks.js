@@ -1,7 +1,7 @@
 import { html } from '../../vendor/lit-html.js';
 
 import { Component } from './component.js';
-import * as actions from './actions.js';
+import actions from './actions.js';
 
 class Talks extends Component {
   extractState(state) {

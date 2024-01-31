@@ -1,14 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import {
-  addComment,
-  changeUser,
-  deleteTalk,
-  getUser,
-  pollTalks,
-  submitTalk,
-  talksUpdated,
-} from '../../../public/js/application/services.js';
+import services from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';
 import { createStore } from '../../../public/js/domain/store.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
@@ -20,7 +12,7 @@ describe('Services', () => {
       let store = createStore(reducer);
       let repository = Repository.createNull();
 
-      await changeUser({ userName: 'Bob' }, store, repository);
+      await services.changeUser({ userName: 'Bob' }, store, repository);
 
       expect(store.getState().user).toEqual('Bob');
       expect(repository.lastStored).toEqual({ userName: 'Bob' });
@@ -32,7 +24,7 @@ describe('Services', () => {
       let store = createStore(reducer);
       let repository = Repository.createNull();
 
-      await getUser(store, repository);
+      await services.getUser(store, repository);
 
       expect(store.getState().user).toEqual('Anon');
     });
@@ -41,7 +33,7 @@ describe('Services', () => {
       let store = createStore(reducer);
       let repository = Repository.createNull({ userName: 'Bob' });
 
-      await getUser(store, repository);
+      await services.getUser(store, repository);
 
       expect(store.getState().user).toEqual('Bob');
     });
@@ -53,7 +45,11 @@ describe('Services', () => {
       let api = Api.createNull();
       let talksPut = api.trackTalksPut();
 
-      await submitTalk({ title: 'foobar', summary: 'lorem ipsum' }, store, api);
+      await services.submitTalk(
+        { title: 'foobar', summary: 'lorem ipsum' },
+        store,
+        api,
+      );
 
       expect(talksPut.data).toEqual([
         {
@@ -71,7 +67,11 @@ describe('Services', () => {
       let api = Api.createNull();
       let commentsPosted = api.trackCommentsPosted();
 
-      await addComment({ title: 'foobar', comment: 'lorem ipsum' }, store, api);
+      await services.addComment(
+        { title: 'foobar', comment: 'lorem ipsum' },
+        store,
+        api,
+      );
 
       expect(commentsPosted.data).toEqual([
         { title: 'foobar', author: 'Anon', message: 'lorem ipsum' },
@@ -84,7 +84,7 @@ describe('Services', () => {
       let api = Api.createNull();
       let talksDeleted = api.trackTalksDeleted();
 
-      await deleteTalk({ title: 'foobar' }, api);
+      await services.deleteTalk({ title: 'foobar' }, api);
 
       expect(talksDeleted.data).toEqual([{ title: 'foobar' }]);
     });
@@ -94,7 +94,7 @@ describe('Services', () => {
     test('Talks updated', async () => {
       let store = createStore(reducer);
 
-      await talksUpdated(
+      await services.talksUpdated(
         [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
         store,
       );
@@ -119,7 +119,7 @@ describe('Services', () => {
         },
       ]);
 
-      await pollTalks(store, api, 2);
+      await services.pollTalks(store, api, 2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -139,7 +139,7 @@ describe('Services', () => {
       ]);
       let talksGet = api.trackTalksGet();
 
-      await pollTalks(store, api, 2);
+      await services.pollTalks(store, api, 2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -162,7 +162,7 @@ describe('Services', () => {
       ]);
       let talksGet = api.trackTalksGet();
 
-      await pollTalks(store, api, 2);
+      await services.pollTalks(store, api, 2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -187,7 +187,7 @@ describe('Services', () => {
       ]);
       let talksGet = api.trackTalksGet();
 
-      await pollTalks(store, api, 2);
+      await services.pollTalks(store, api, 2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
