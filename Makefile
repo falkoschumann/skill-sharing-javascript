@@ -11,7 +11,7 @@ distclean: clean
 
 dist: build
 
-check: test
+check: test e2e
 	npx prettier . --check
 	npx eslint public/js src tests
 
@@ -28,7 +28,7 @@ dev: build
 dev-e2e: build
 	npx cypress open
 
-test: build e2e
+test: build
 	npx jest
 
 unit-tests: build

@@ -1,5 +1,5 @@
 import { ConfigurableResponses } from '../util/configurable-responses.js';
-import { OutputEvent, OutputTracker } from '../util/output-tracker.js';
+import { OutputTracker } from '../util/output-tracker.js';
 
 const TALKS_UPDATED_EVENT = 'talks-updated';
 const TALKS_GET_EVENT = 'talk-get';
@@ -58,7 +58,9 @@ export class Api extends EventTarget {
         });
 
         if (response.status === 304) {
-          this.dispatchEvent(new OutputEvent(TALKS_GET_EVENT, 'not modified'));
+          this.dispatchEvent(
+            new CustomEvent(TALKS_GET_EVENT, { detail: 'not modified' }),
+          );
           continue;
         }
 
@@ -72,9 +74,11 @@ export class Api extends EventTarget {
 
         timeout = 0.5;
 
-        this.dispatchEvent(new OutputEvent(TALKS_GET_EVENT, talks));
+        this.dispatchEvent(new CustomEvent(TALKS_GET_EVENT, { detail: talks }));
       } catch (error) {
-        this.dispatchEvent(new OutputEvent(TALKS_GET_EVENT, error.message));
+        this.dispatchEvent(
+          new CustomEvent(TALKS_GET_EVENT, { detail: error.message }),
+        );
         timeout *= 2;
         if (timeout > 30) {
           timeout = 30;
@@ -96,7 +100,9 @@ export class Api extends EventTarget {
       body,
     });
     this.dispatchEvent(
-      new OutputEvent(TALK_PUT_EVENT, { title, presenter, summary }),
+      new CustomEvent(TALK_PUT_EVENT, {
+        detail: { title, presenter, summary },
+      }),
     );
   }
 
@@ -106,7 +112,9 @@ export class Api extends EventTarget {
 
   async deleteTalk(title) {
     await this.#fetch(this.#talkUrl(title), { method: 'DELETE' });
-    this.dispatchEvent(new OutputEvent(TALK_DELETED_EVENT, { title }));
+    this.dispatchEvent(
+      new CustomEvent(TALK_DELETED_EVENT, { detail: { title } }),
+    );
   }
 
   trackTalksDeleted() {
@@ -121,7 +129,9 @@ export class Api extends EventTarget {
       body,
     });
     this.dispatchEvent(
-      new OutputEvent(COMMENT_POSTED_EVENT, { title, author, message }),
+      new CustomEvent(COMMENT_POSTED_EVENT, {
+        detail: { title, author, message },
+      }),
     );
   }
 

@@ -11,7 +11,7 @@ export class OutputTracker {
   constructor(eventTarget, event) {
     this.#eventTarget = eventTarget;
     this.#event = event;
-    this.#tracker = (event) => this.#data.push(event.output);
+    this.#tracker = (event) => this.#data.push(event.detail);
 
     this.#eventTarget.addEventListener(this.#event, this.#tracker);
   }
@@ -28,18 +28,5 @@ export class OutputTracker {
 
   stop() {
     this.#eventTarget.removeEventListener(this.#event, this.#tracker);
-  }
-}
-
-export class OutputEvent extends Event {
-  #output;
-
-  constructor(type, output) {
-    super(type);
-    this.#output = output;
-  }
-
-  get output() {
-    return this.#output;
   }
 }
