@@ -3,6 +3,9 @@
 export NODE_OPTIONS=--experimental-global-customevent --experimental-vm-modules --no-warnings=ExperimentalWarning
 export NPM_CONFIG_YES=true
 
+# TODO remove if eslint-plugin-cypress supports ESLit 9.0.0 flat config
+export ESLINT_USE_FLAT_CONFIG=false
+
 all: dist check
 
 clean:
@@ -58,7 +61,6 @@ build:
 		echo "CI detected, run npm ci"; \
 		npm ci; \
 	elif [ ! -d "node_modules" ] ; then \
-		echo "No node_modules detected, run npm install"; \
 		npm install; \
 	fi
 	npx rollup -c

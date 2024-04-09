@@ -22,53 +22,11 @@
     "@types/express": "4.17.21",
     "@types/supertest": "6.0.2",
     "cypress": "13.7.2",
-    "eslint": "8.57.0",
+    "eslint": "9.0.0",
     "eslint-plugin-cypress": "2.15.1",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
     "rollup": "4.14.1",
     "supertest": "6.3.4"
-  },
-  "jest": {
-    "transform": {},
-    "verbose": true,
-    "watchPathIgnorePatterns": [
-      "<rootDir>/data/"
-    ]
-  },
-  "prettier": {
-    "proseWrap": "always",
-    "singleQuote": true,
-    "trailingComma": "all"
-  },
-  "eslintConfig": {
-    "env": {
-      "es2022": true,
-      "browser": true,
-      "cypress/globals": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:cypress/recommended"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2022,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "cypress"
-    ],
-    "ignorePatterns": [
-      "coverage/",
-      "data/",
-      "vendor/"
-    ]
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "data/**",
-      "public/**",
-      "tests/**"
-    ]
   }
 }

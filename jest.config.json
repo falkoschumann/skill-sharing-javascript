@@ -1,0 +1,5 @@
+{
+  "transform": {},
+  "verbose": true,
+  "watchPathIgnorePatterns": ["<rootDir>/data/"]
+}
