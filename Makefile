@@ -60,7 +60,7 @@ build:
 	@if [ -n "$(CI)" ] ; then \
 		echo "CI detected, run npm ci"; \
 		npm ci; \
-	elif [ ! -d "node_modules" ] ; then \
+	else \
 		npm install; \
 	fi
 	npx rollup -c
