@@ -1,53 +1,70 @@
-import { beforeEach, describe, expect, jest, test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
-import { Store } from '../../../public/js/domain/store.js';
+import { createStore } from '../../../public/js/domain/store.js';
 
 describe('Store', () => {
-  describe('Subscribe', () => {
-    let store;
+  describe('Create store', () => {
+    test('Creates store with initial state', () => {
+      const store = new createStore(reducer, initialState);
 
-    beforeEach(() => {
-      store = new Store(reducer, { user: 'Alice' });
+      expect(store.getState()).toEqual(initialState);
     });
 
+    test('Creates store and initializes state with reducer', () => {
+      const store = new createStore(reducer);
+
+      expect(store.getState()).toEqual(initialState);
+    });
+  });
+
+  describe('Subscribe', () => {
     test('Does not emit event, if state is not changed', () => {
-      let listener = jest.fn();
-      store.subscribe(listener);
+      const store = configureStore();
+      let called = 0;
+      store.subscribe(() => called++);
 
       store.dispatch({ type: 'unknown-action' });
 
       expect(store.getState()).toEqual({ user: 'Alice' });
-      expect(listener).not.toBeCalled();
+      expect(called).toBe(0);
     });
 
     test('Emits event, if state is changed', () => {
-      let listener = jest.fn();
-      store.subscribe(listener);
+      const store = configureStore();
+      let called = 0;
+      store.subscribe(() => called++);
 
       store.dispatch({ type: 'user-changed', name: 'Bob' });
 
       expect(store.getState()).toEqual({ user: 'Bob' });
-      expect(listener).toBeCalledTimes(1);
+      expect(called).toBe(1);
     });
 
     test('Does not emit event, if listener is unsubscribed', () => {
-      let listener = jest.fn();
-      let unsubscribe = store.subscribe(listener);
+      const store = configureStore();
+      let called = 0;
+      const unsubscribe = store.subscribe(() => called++);
 
       unsubscribe();
       store.dispatch({ type: 'user-changed', name: 'Bob' });
 
       expect(store.getState()).toEqual({ user: 'Bob' });
-      expect(listener).not.toBeCalled();
+      expect(called).toBe(0);
     });
   });
-
-  function reducer(state, action) {
-    switch (action.type) {
-      case 'user-changed':
-        return { ...state, user: action.name };
-      default:
-        return state;
-    }
-  }
 });
+
+function configureStore() {
+  return new createStore(reducer, { user: 'Alice' });
+}
+
+const initialState = { user: '' };
+
+function reducer(state = initialState, action) {
+  switch (action.type) {
+    case 'user-changed':
+      return { ...state, user: action.name };
+    default:
+      return state;
+  }
+}

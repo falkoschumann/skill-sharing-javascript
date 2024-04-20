@@ -3,28 +3,12 @@ export function createStore(reducer, preloadedState) {
   return new Store(reducer, initialState);
 }
 
-/**
- * @typedef {Function} Reducer
- * @param {State} state
- * @param {Action} action
- * @returns {State}
- */
-
-/**
- * @typedef {Object} State
- */
-
-/**
- * @typedef {Object} Action
- * @property {string} type
- */
-
 export class Store {
   #reducer;
   #state;
   #listeners = [];
 
-  constructor(/** @type Reducer */ reducer, /** @type State */ initialState) {
+  constructor(reducer, initialState) {
     this.#reducer = reducer;
     this.#state = initialState;
   }
@@ -33,7 +17,7 @@ export class Store {
     return this.#state;
   }
 
-  dispatch(/** @type Action */ action) {
+  dispatch(action) {
     let oldState = this.#state;
     this.#state = this.#reducer(this.#state, action);
     if (oldState !== this.#state) {
@@ -41,7 +25,7 @@ export class Store {
     }
   }
 
-  subscribe(/** @type Function */ listener) {
+  subscribe(listener) {
     this.#listeners.push(listener);
     return () => this.#unsubscribe(listener);
   }
