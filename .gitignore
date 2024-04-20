@@ -1,5 +1,6 @@
 # see also https://gitignore.io
 
+build/
 data/
 dist/
 tmp/

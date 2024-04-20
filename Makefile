@@ -9,11 +9,10 @@ export ESLINT_USE_FLAT_CONFIG=false
 all: dist check
 
 clean:
-	rm -rf coverage public/vendor
+	rm -rf build coverage public/vendor
 
 distclean: clean
-	rm -rf node_modules
-	rm -rf dist
+	rm -rf dist node_modules
 
 dist: build
 
@@ -71,6 +70,14 @@ build: version
 version:
 	@echo "Use Node.js $(shell node --version)"
 	@echo "Use NPM $(shell npm --version)"
+
+# Pkg supports only Node.js 18.15.0
+# Pkg does not support ESM so we must create a CommonJS bundle
+# Path to embedded `public` folder must changed to snapshot filesystem
+sea: build
+	npx rollup --external express,node:fs,node:path --file build/index.js --format cjs src/main.js
+	sed -i '' "s/publicPath = '\.\/public'/publicPath = path\.join\(__dirname, '\.\.\/public'\)/g" build/index.js
+	npx pkg --no-bytecode .
 
 .PHONY: all clean distclean dist check format start dev dev-e2e \
 	test unit-tests integration-tests e2e-tests e2e watch coverage \
