@@ -1,6 +1,7 @@
 # see also https://gitignore.io
 
 data/
+dist/
 tmp/
 vendor/
 

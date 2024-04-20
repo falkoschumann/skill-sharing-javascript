@@ -3,7 +3,7 @@
 export NODE_OPTIONS=--experimental-global-customevent --experimental-vm-modules --no-warnings=ExperimentalWarning
 export NPM_CONFIG_YES=true
 
-# TODO remove if eslint-plugin-cypress supports ESLit 9.0.0 flat config
+# TODO remove if eslint-plugin-cypress supports ESLint 9.0.0 flat config
 export ESLINT_USE_FLAT_CONFIG=false
 
 all: dist check
@@ -13,28 +13,31 @@ clean:
 
 distclean: clean
 	rm -rf node_modules
+	rm -rf dist
 
 dist: build
 
 check: test e2e
 	npx prettier . --check
-	npx eslint public/js src tests
+	npx eslint public/js src test
 
 format:
 	npx prettier . --write
-	npx eslint --fix public/js src tests
+	npx eslint --fix public/js src test
 
 start: build
-	node src/main.js
+	npm start
 
 dev: build
-	npx concurrently "npx nodemon src/main.js" "npx browser-sync 'http://localhost:3000' public -w --port 8080"
+	npx concurrently \
+		"npx nodemon src/main.js" \
+		"npx browser-sync 'http://localhost:3000' public -w --port 8080 --no-open"
 
 dev-e2e: build
 	npx cypress open
 
 test: build
-	npx jest
+	npm test
 
 unit-tests: build
 	npx jest --testPathPattern=".*\/unit\/.*"
@@ -56,15 +59,19 @@ watch: build
 coverage: build
 	npx jest --coverage
 
-build:
+build: version
 	@if [ -n "$(CI)" ] ; then \
 		echo "CI detected, run npm ci"; \
 		npm ci; \
 	else \
 		npm install; \
 	fi
-	npx rollup -c
+	npm run build
 
-.PHONY: all clean distclean dist check start dev dev-e2e \
+version:
+	@echo "Use Node.js $(shell node --version)"
+	@echo "Use NPM $(shell npm --version)"
+
+.PHONY: all clean distclean dist check format start dev dev-e2e \
 	test unit-tests integration-tests e2e-tests e2e watch coverage \
-	build
+	build version

@@ -9,8 +9,9 @@
   "type": "module",
   "main": "src/main.js",
   "scripts": {
-    "start": "make start",
-    "test": "make test"
+    "start": "node src/main.js",
+    "test": "jest",
+    "build": "rollup -c"
   },
   "dependencies": {
     "express": "4.19.2",
@@ -26,6 +27,8 @@
     "eslint-plugin-cypress": "2.15.2",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
+    "nodemon": "3.1.0",
+    "prettier": "3.2.5",
     "rollup": "4.14.3",
     "supertest": "6.3.4"
   }
