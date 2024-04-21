@@ -15,7 +15,7 @@ describe('Services', () => {
       await services.changeUser({ username: 'Bob' }, store, repository);
 
       expect(store.getState().user).toEqual('Bob');
-      expect(repository.lastStored).toEqual({ username: 'Bob' });
+      expect(repository.lastSettings).toEqual({ username: 'Bob' });
     });
   });
 
@@ -31,7 +31,7 @@ describe('Services', () => {
 
     test('Is stored user', async () => {
       let store = createStore(reducer);
-      let repository = Repository.createNull({ username: 'Bob' });
+      let repository = Repository.createNull({ settings: { username: 'Bob' } });
 
       await services.getUser(store, repository);
 
@@ -114,18 +114,37 @@ describe('Services', () => {
 
     test('Polls talks', async () => {
       let store = createStore(reducer);
-      let api = Api.createNull([
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
-        },
-        {
-          status: 200,
-          headers: { etag: '2' },
-          body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"},{"title":"title 2","presenter":"presenter 2","summary":"summary 2"}]',
-        },
-      ]);
+      let api = Api.createNull({
+        talks: [
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+          {
+            status: 200,
+            headers: { etag: '2' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+              {
+                title: 'title 2',
+                presenter: 'presenter 2',
+                summary: 'summary 2',
+              },
+            ],
+          },
+        ],
+      });
 
       await services.pollTalks(store, api, 2);
 
@@ -137,14 +156,22 @@ describe('Services', () => {
 
     test('Does not update talks, if not modified', async () => {
       let store = createStore(reducer);
-      let api = Api.createNull([
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
-        },
-        { status: 304 },
-      ]);
+      let api = Api.createNull({
+        talks: [
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+          { status: 304 },
+        ],
+      });
       let talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
@@ -160,14 +187,22 @@ describe('Services', () => {
 
     test('Recovers after network error', async () => {
       let store = createStore(reducer);
-      let api = Api.createNull([
-        new Error('network error'),
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
-        },
-      ]);
+      let api = Api.createNull({
+        talks: [
+          new Error('network error'),
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+        ],
+      });
       let talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
@@ -183,16 +218,24 @@ describe('Services', () => {
 
     test('Recovers after server error', async () => {
       let store = createStore(reducer);
-      let api = Api.createNull([
-        {
-          status: 500,
-        },
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: '[{"title":"title 1","presenter":"presenter 1","summary":"summary 1"}]',
-        },
-      ]);
+      let api = Api.createNull({
+        talks: [
+          {
+            status: 500,
+          },
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+        ],
+      });
       let talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);

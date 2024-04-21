@@ -1,17 +1,16 @@
 const storageKey = 'skillSharing';
 
 export class Repository {
-  #storage;
-  #lastStored;
-
   static create() {
     return new Repository(localStorage);
   }
 
-  static createNull(state) {
-    let stored = state != null ? JSON.stringify(state) : null;
-    return new Repository(new StorageStub(stored));
+  static createNull({ settings } = {}) {
+    return new Repository(new StorageStub(settings));
   }
+
+  #storage;
+  #lastSettings;
 
   constructor(storage) {
     this.#storage = storage;
@@ -19,21 +18,21 @@ export class Repository {
 
   async load() {
     let json = this.#storage.getItem(storageKey);
-    return JSON.parse(json) || {};
-  }
-
-  async store(state) {
-    let json = JSON.stringify(state);
-    this.#storage.setItem(storageKey, json);
-    this.#lastStored = json;
-  }
-
-  get lastStored() {
-    if (this.#lastStored != null) {
-      return JSON.parse(this.#lastStored);
+    if (json == null) {
+      return {};
     }
 
-    return this.#lastStored;
+    return JSON.parse(json);
+  }
+
+  async store(settings) {
+    let json = JSON.stringify(settings);
+    this.#storage.setItem(storageKey, json);
+    this.#lastSettings = json;
+  }
+
+  get lastSettings() {
+    return JSON.parse(this.#lastSettings);
   }
 }
 
@@ -41,7 +40,7 @@ class StorageStub {
   #item;
 
   constructor(item) {
-    this.#item = item;
+    this.#item = item != null ? JSON.stringify(item) : null;
   }
 
   getItem() {

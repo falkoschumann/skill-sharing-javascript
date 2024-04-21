@@ -8,40 +8,31 @@ const TALK_DELETED_EVENT = 'talk-deleted';
 const COMMENT_POSTED_EVENT = 'comment-posted';
 
 export class TalksUpdatedEvent extends Event {
-  #talks;
-
   constructor(talks) {
     super(TALKS_UPDATED_EVENT);
-    this.#talks = talks;
-  }
-
-  get talks() {
-    return this.#talks;
+    this.talks = talks;
   }
 }
 
 export class Api extends EventTarget {
-  #baseUrl;
-  #fetch;
-
-  static create({ baseUrl = '/api' } = {}) {
-    return new Api(baseUrl, globalThis.fetch.bind(globalThis));
+  static create() {
+    return new Api(globalThis.fetch.bind(globalThis));
   }
 
-  static createNull(
+  static createNull({
     talks = {
       status: 200,
       headers: {},
-      body: '[]',
-      error: undefined,
+      body: [],
     },
-  ) {
-    return new Api('/api', createFetchStub(talks));
+  } = {}) {
+    return new Api(createFetchStub(talks));
   }
 
-  constructor(baseUrl, fetch) {
+  #fetch;
+
+  constructor(fetch) {
     super();
-    this.#baseUrl = baseUrl;
     this.#fetch = fetch;
   }
 
@@ -51,7 +42,7 @@ export class Api extends EventTarget {
     let timeout = 0.5;
     while (runs === -1 || runs-- > 0) {
       try {
-        let response = await this.#fetch(`${this.#baseUrl}/talks`, {
+        let response = await this.#fetch('/api/talks', {
           headers: tag && {
             'If-None-Match': tag,
             Prefer: 'wait=90',
@@ -95,7 +86,7 @@ export class Api extends EventTarget {
 
   async putTalk({ title, presenter, summary }) {
     let body = JSON.stringify({ presenter, summary });
-    await this.#fetch(this.#talkUrl(title), {
+    await this.#fetch(`/api/talks/${encodeURIComponent(title)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body,
@@ -112,7 +103,9 @@ export class Api extends EventTarget {
   }
 
   async deleteTalk(title) {
-    await this.#fetch(this.#talkUrl(title), { method: 'DELETE' });
+    await this.#fetch(`/api/talks/${encodeURIComponent(title)}`, {
+      method: 'DELETE',
+    });
     this.dispatchEvent(
       new CustomEvent(TALK_DELETED_EVENT, { detail: { title } }),
     );
@@ -124,7 +117,7 @@ export class Api extends EventTarget {
 
   async postComment(title, { author, message }) {
     let body = JSON.stringify({ author, message });
-    await this.#fetch(this.#talkUrl(title) + '/comments', {
+    await this.#fetch(`/api/talks/${encodeURIComponent(title)}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body,
@@ -138,10 +131,6 @@ export class Api extends EventTarget {
 
   trackCommentsPosted() {
     return OutputTracker.create(this, COMMENT_POSTED_EVENT);
-  }
-
-  #talkUrl(title) {
-    return `${this.#baseUrl}/talks/` + encodeURIComponent(title);
   }
 }
 
@@ -181,6 +170,6 @@ class ResponseStub {
   }
 
   json() {
-    return JSON.parse(this.#body);
+    return this.#body;
   }
 }
