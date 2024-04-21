@@ -148,6 +148,10 @@ function createFetchStub(talks) {
   let responses = ConfigurableResponses.create(talks);
   return async function () {
     let response = responses.next();
+    if (response instanceof Error) {
+      throw response;
+    }
+
     return new ResponseStub(response);
   };
 }
