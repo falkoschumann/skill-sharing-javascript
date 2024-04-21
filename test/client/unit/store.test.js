@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { createStore } from '../../../public/js/domain/store.js';
+import { createStore } from '../../../public/js/util/store.js';
 
 describe('Store', () => {
   describe('Create store', () => {

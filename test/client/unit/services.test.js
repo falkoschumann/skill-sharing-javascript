@@ -2,9 +2,9 @@ import { describe, expect, test } from '@jest/globals';
 
 import services from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';
-import { createStore } from '../../../public/js/domain/store.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
+import { createStore } from '../../../public/js/util/store.js';
 
 describe('Services', () => {
   describe('Change user', () => {
