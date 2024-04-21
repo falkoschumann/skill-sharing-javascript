@@ -8,7 +8,7 @@ export class Repository {
 
   static createNull(talks = []) {
     return new Repository(
-      'null-file-name.json',
+      'nulled-file-name.json',
       new FsStub(talks),
       new PathStub(),
     );
@@ -27,11 +27,13 @@ export class Repository {
 
   async findAll() {
     const talks = await this.#load();
+    console.log('findAll:', Object.keys(talks));
     return Object.keys(talks).map((title) => talks[title]);
   }
 
   async findByTitle(title) {
     const talks = await this.#load();
+    console.log('findByTitle:', title);
     return talks[title];
   }
 
@@ -50,7 +52,9 @@ export class Repository {
   async #load() {
     try {
       const json = this.#fs.readFileSync(this.#fileName, 'utf-8');
-      return JSON.parse(json);
+      const mappedTalks = JSON.parse(json);
+      console.log('Loaded talks:', mappedTalks);
+      return mappedTalks;
     } catch (error) {
       if (error.code === 'ENOENT') {
         return {};

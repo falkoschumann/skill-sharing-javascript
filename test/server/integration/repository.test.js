@@ -37,7 +37,9 @@ describe('Repository', () => {
     test('Reports an error, if file is corrupt', async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
-      await expect(repository.findAll()).rejects.toThrow();
+      const result = repository.findAll();
+
+      await expect(result).rejects.toThrow();
     });
   });
 
