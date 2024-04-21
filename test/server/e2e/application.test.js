@@ -1,9 +1,10 @@
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { beforeEach, describe, expect, test } from '@jest/globals';
 
-import { SkillSharingApp } from '../../../src/ui/skill-sharing-app.js';
+import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
 const testFile = fileURLToPath(
@@ -15,8 +16,9 @@ describe('Skill Sharing app', () => {
 
   beforeEach(() => {
     rmSync(testFile, { force: true });
-    let repository = Repository.create({ fileName: testFile });
-    app = new SkillSharingApp({ repository }).app;
+    app = express();
+    const repository = Repository.create({ fileName: testFile });
+    Application.create({ app, repository });
   });
 
   describe('GET talks', () => {
@@ -26,7 +28,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json');
 
@@ -50,7 +52,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('If-None-Match', '"0"');
@@ -75,7 +77,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('If-None-Match', '"1"');
@@ -84,12 +86,12 @@ describe('Skill Sharing app', () => {
     });
 
     test('Reports not modified, if long polling results in a timeout', async () => {
-      let responsePromise = request(app)
+      const responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
         .set('If-None-Match', '"0"');
-      let submitHandler = setTimeout(
+      const submitHandler = setTimeout(
         () =>
           request(app)
             .put('/api/talks/foobar')
@@ -97,14 +99,14 @@ describe('Skill Sharing app', () => {
             .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
         2000,
       );
-      let response = await responsePromise;
+      const response = await responsePromise;
       clearTimeout(submitHandler);
 
       expect(response.status).toEqual(304);
     });
 
     test('Replies talks, if a talk was submitted while long polling', async () => {
-      let responsePromise = request(app)
+      const responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
@@ -115,7 +117,7 @@ describe('Skill Sharing app', () => {
           .set('Content-Type', 'application/json')
           .send({ presenter: 'Anon', summary: 'lorem ipsum' });
       }, 500);
-      let response = await responsePromise;
+      const response = await responsePromise;
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
@@ -139,7 +141,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .get('/api/talks/foobar')
         .set('Accept', 'application/json');
 
@@ -159,7 +161,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .get('/api/talks/bar')
         .set('Accept', 'application/json');
 
@@ -261,7 +263,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .post('/api/talks/bar/comments')
         .set('Content-Type', 'application/json')
         .send({ author: 'Bob', message: 'new comment' });
@@ -277,7 +279,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .post('/api/talks/foobar/comments')
         .set('Content-Type', 'application/json')
         .send({ message: 'new comment' });
@@ -293,7 +295,7 @@ describe('Skill Sharing app', () => {
         .set('Content-Type', 'application/json')
         .send({ presenter: 'Anon', summary: 'lorem ipsum' });
 
-      let response = await request(app)
+      const response = await request(app)
         .post('/api/talks/foobar/comments')
         .set('Content-Type', 'application/json')
         .send({ author: 'Bob' });

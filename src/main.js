@@ -1,4 +1,4 @@
-import { SkillSharingApp } from './ui/skill-sharing-app.js';
+import { Application } from './ui/application.js';
 
-let app = new SkillSharingApp();
-app.run();
+const application = Application.create();
+application.start();
