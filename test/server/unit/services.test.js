@@ -1,12 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import {
-  addComment,
-  deleteTalk,
-  getTalk,
-  getTalks,
-  submitTalk,
-} from '../../../src/application/services.js';
+import * as services from '../../../src/application/services.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
 describe('Services', () => {
@@ -14,16 +8,16 @@ describe('Services', () => {
     test('Adds talk to list of talks', async () => {
       const repository = Repository.createNull();
 
-      await submitTalk(
-        { title: 'foobar', presenter: 'Alice', summary: 'lorem ipsum' },
+      await services.submitTalk(
+        { title: 'Foobar', presenter: 'Alice', summary: 'Lorem ipsum' },
         repository,
       );
 
       expect(repository.lastStored).toEqual({
-        foobar: {
-          title: 'foobar',
+        Foobar: {
+          title: 'Foobar',
           presenter: 'Alice',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
           comments: [],
         },
       });
@@ -33,19 +27,19 @@ describe('Services', () => {
   describe('Post comment', () => {
     test('Adds comment to an existing talk', async () => {
       const repository = Repository.createNull([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
       ]);
 
-      const { isSuccessful } = await addComment(
-        { title: 'foobar', comment: { author: 'Bob', message: 'new comment' } },
+      const { isSuccessful } = await services.addComment(
+        { title: 'Foobar', comment: { author: 'Bob', message: 'new comment' } },
         repository,
       );
 
       expect(isSuccessful).toEqual(true);
       expect(repository.lastStored).toEqual({
-        foobar: {
-          title: 'foobar',
-          summary: 'lorem ipsum',
+        Foobar: {
+          title: 'Foobar',
+          summary: 'Lorem ipsum',
           comments: [{ author: 'Bob', message: 'new comment' }],
         },
       });
@@ -53,10 +47,10 @@ describe('Services', () => {
 
     test('Reports an error if talk does not exists', async () => {
       const repository = Repository.createNull([
-        { title: 'foo', summary: 'lorem ipsum', comments: [] },
+        { title: 'foo', summary: 'Lorem ipsum', comments: [] },
       ]);
 
-      const { isSuccessful } = await addComment(
+      const { isSuccessful } = await services.addComment(
         { title: 'bar', comment: { author: 'Bob', message: 'new comment' } },
         repository,
       );
@@ -69,10 +63,10 @@ describe('Services', () => {
   describe('Delete talk', () => {
     test('Removes talk from list', async () => {
       const repository = Repository.createNull([
-        { title: 'foobar', summary: 'lorem ipsum' },
+        { title: 'Foobar', summary: 'Lorem ipsum' },
       ]);
 
-      await deleteTalk({ title: 'foobar' }, repository);
+      await services.deleteTalk({ title: 'Foobar' }, repository);
 
       expect(repository.lastStored).toEqual({});
     });
@@ -81,13 +75,13 @@ describe('Services', () => {
   describe('Talks', () => {
     test('Is a list of talks', async () => {
       const repository = Repository.createNull([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
       ]);
 
-      const talks = await getTalks(repository);
+      const talks = await services.getTalks(repository);
 
       expect(talks).toEqual([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
       ]);
     });
   });
@@ -95,24 +89,24 @@ describe('Services', () => {
   describe('Talk', () => {
     test('Is a single talk', async () => {
       const repository = Repository.createNull([
-        { title: 'foobar', summary: 'lorem ipsum', comments: [] },
+        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
       ]);
 
-      const talk = await getTalk({ title: 'foobar' }, repository);
+      const talk = await services.getTalk({ title: 'Foobar' }, repository);
 
       expect(talk).toEqual({
-        title: 'foobar',
-        summary: 'lorem ipsum',
+        title: 'Foobar',
+        summary: 'Lorem ipsum',
         comments: [],
       });
     });
 
     test('Is undefined if talk does not exist', async () => {
       const repository = Repository.createNull([
-        { title: 'foo', summary: 'lorem ipsum', comments: [] },
+        { title: 'foo', summary: 'Lorem ipsum', comments: [] },
       ]);
 
-      const talk = await getTalk({ title: 'bar' }, repository);
+      const talk = await services.getTalk({ title: 'bar' }, repository);
 
       expect(talk).toBeUndefined();
     });

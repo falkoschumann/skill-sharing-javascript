@@ -38,7 +38,7 @@ export class Api extends EventTarget {
 
   async pollTalks(runs = -1) {
     // TODO extract polling logic to a separate class
-    // TODO replace long polling with server-sent events
+    // TODO replace long polling with server-sent events (sent all talks on each update)
     let tag;
     let timeout = 0.5;
     while (runs === -1 || runs-- > 0) {
