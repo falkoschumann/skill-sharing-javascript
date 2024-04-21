@@ -1,9 +1,9 @@
 import { html } from '../../vendor/lit-html.js';
 
-import { Component } from './component.js';
-import actions from './actions.js';
+import * as actions from './actions.js';
+import { Container } from './components.js';
 
-class UserField extends Component {
+class UserField extends Container {
   connectedCallback() {
     super.connectedCallback();
     actions.getUser();
@@ -20,13 +20,9 @@ class UserField extends Component {
         <input
           type="text"
           value="${this.state}"
-          @change=${(e) => this.#handleChange(e)}
+          @change=${(e) => actions.changeUser({ username: e.target.value })}
       /></label>
     `;
-  }
-
-  #handleChange(event) {
-    actions.changeUser({ username: event.target.value });
   }
 }
 

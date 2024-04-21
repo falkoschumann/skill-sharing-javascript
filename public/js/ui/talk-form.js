@@ -1,11 +1,12 @@
-import { html, render } from '../../vendor/lit-html.js';
+import { html } from '../../vendor/lit-html.js';
 
-import actions from './actions.js';
+import * as actions from './actions.js';
+import { Component } from './components.js';
 
-class TalkForm extends HTMLElement {
-  connectedCallback() {
-    let template = html`
-      <form @submit=${(e) => this.#onSubmit(e)}>
+class TalkForm extends Component {
+  getView() {
+    return html`
+      <form @submit=${(e) => this.#formSubmitted(e)}>
         <h3>Submit a Talk</h3>
         <label
           >Title:
@@ -18,10 +19,9 @@ class TalkForm extends HTMLElement {
         <button type="submit">Submit</button>
       </form>
     `;
-    render(template, this);
   }
 
-  #onSubmit(event) {
+  #formSubmitted(event) {
     event.preventDefault();
     if (this.#validateForm(event.target)) {
       this.#submitTalk(event.target);

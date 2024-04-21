@@ -1,43 +1,26 @@
-import services from '../application/services.js';
-import { reducer } from '../domain/reducer.js';
-import { Api } from '../infrastructure/api.js';
-import { Repository } from '../infrastructure/repository.js';
-import { createStore } from '../util/store.js';
-
-export const store = createStore(reducer);
-
-const repository = Repository.create();
-const api = Api.create();
+import * as services from '../application/services.js';
+import { store } from './store.js';
 
 export async function changeUser({ username }) {
-  return services.changeUser({ username }, store, repository);
+  return services.changeUser({ username }, store);
 }
 
 export async function getUser() {
-  return services.getUser(store, repository);
+  return services.getUser(store);
 }
 
 export async function pollTalks() {
-  return services.pollTalks(store, api);
+  return services.pollTalks(store);
 }
 
 export async function submitTalk({ title, summary }) {
-  return services.submitTalk({ title, summary }, store, api);
+  return services.submitTalk({ title, summary }, store);
 }
 
 export async function deleteTalk({ title }) {
-  return services.deleteTalk({ title }, api);
+  return services.deleteTalk({ title });
 }
 
 export async function addComment({ title, comment }) {
-  return services.addComment({ title, comment }, store, api);
+  return services.addComment({ title, comment }, store);
 }
-
-export default {
-  changeUser,
-  getUser,
-  pollTalks,
-  submitTalk,
-  deleteTalk,
-  addComment,
-};

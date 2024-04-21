@@ -1,4 +1,3 @@
-// TODO Remove infrastructure from services?
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
 
@@ -51,13 +50,3 @@ export async function addComment(
     message: comment,
   });
 }
-
-export default {
-  changeUser,
-  getUser,
-  pollTalks,
-  talksUpdated,
-  submitTalk,
-  deleteTalk,
-  addComment,
-};

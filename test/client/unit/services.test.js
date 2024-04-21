@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import services from '../../../public/js/application/services.js';
+import * as services from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
