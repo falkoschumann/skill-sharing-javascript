@@ -1,63 +1,49 @@
-/**
- * @typedef {import('../domain/reducer.js').Talk} Talk
- * @typedef {import('../domain/store.js').Store} Store
- * @typedef {import('../infrastructure/repository.js').Repository} Repository
- * @typedef {import('../infrastructure/api.js').Api} Api
- */
+import { Api } from '../infrastructure/api.js';
+import { Repository } from '../infrastructure/repository.js';
 
 export async function changeUser(
-  { userName },
-  /** @type Store */ store,
-  /** @type Repository */ repository,
+  { username },
+  store,
+  repository = Repository.create(),
 ) {
-  store.dispatch({ type: 'change-user', userName });
-  await repository.store({ userName });
+  store.dispatch({ type: 'change-user', username });
+  await repository.store({ username });
 }
 
-export async function getUser(
-  /** @type Store */ store,
-  /** @type Repository */ repository,
-) {
-  let { userName = 'Anon' } = await repository.load();
-  store.dispatch({ type: 'change-user', userName });
+export async function getUser(store, repository = Repository.create()) {
+  let { username = 'Anon' } = await repository.load();
+  store.dispatch({ type: 'change-user', username });
 }
 
-export async function pollTalks(
-  /** @type Store */ store,
-  /** @type Api */ api,
-  /** @type number? */ runs,
-) {
+export async function pollTalks(store, api = Api.create(), runs) {
   api.addEventListener('talks-updated', (event) =>
-    talksUpdated(event.talks, store),
+    talksUpdated({ talks: event.talks }, store),
   );
   await api.pollTalks(runs);
 }
 
-export async function talksUpdated(
-  /** @type Talk[] */ talks,
-  /** @type Store */ store,
-) {
+export async function talksUpdated({ talks }, store) {
   store.dispatch({ type: 'talks-updated', talks });
 }
 
 export async function submitTalk(
   { title, summary },
-  /** @type Store */ store,
-  /** @type Api */ api,
+  store,
+  api = Api.create(),
 ) {
   let presenter = store.getState().user;
   let talk = { title, presenter, summary };
   await api.putTalk(talk);
 }
 
-export async function deleteTalk({ title }, /** @type Api */ api) {
+export async function deleteTalk({ title }, api = Api.create()) {
   await api.deleteTalk(title);
 }
 
 export async function addComment(
   { title, comment },
-  /** @type Store */ store,
-  /** @type Api */ api,
+  store,
+  api = Api.create(),
 ) {
   await api.postComment(title, {
     author: store.getState().user,

@@ -46,6 +46,7 @@ export class Api extends EventTarget {
   }
 
   async pollTalks(runs = -1) {
+    // TODO use SSE instead of long polling
     let tag;
     let timeout = 0.5;
     while (runs === -1 || runs-- > 0) {

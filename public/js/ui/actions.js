@@ -9,8 +9,8 @@ export const store = createStore(reducer);
 const repository = Repository.create();
 const api = Api.create();
 
-export async function changeUser({ userName }) {
-  return services.changeUser({ userName }, store, repository);
+export async function changeUser({ username }) {
+  return services.changeUser({ username }, store, repository);
 }
 
 export async function getUser() {

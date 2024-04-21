@@ -26,7 +26,7 @@ class UserField extends Component {
   }
 
   #handleChange(event) {
-    actions.changeUser({ userName: event.target.value });
+    actions.changeUser({ username: event.target.value });
   }
 }
 

@@ -47,6 +47,7 @@ integration-tests: build
 e2e-tests: build e2e
 	npx jest --testPathPattern=".*\/e2e\/.*"
 
+# TODO use different port for dev/prod and test
 e2e: build
 	node src/main.js &
 	npx cypress run

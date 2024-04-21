@@ -12,10 +12,10 @@ describe('Services', () => {
       let store = createStore(reducer);
       let repository = Repository.createNull();
 
-      await services.changeUser({ userName: 'Bob' }, store, repository);
+      await services.changeUser({ username: 'Bob' }, store, repository);
 
       expect(store.getState().user).toEqual('Bob');
-      expect(repository.lastStored).toEqual({ userName: 'Bob' });
+      expect(repository.lastStored).toEqual({ username: 'Bob' });
     });
   });
 
@@ -31,7 +31,7 @@ describe('Services', () => {
 
     test('Is stored user', async () => {
       let store = createStore(reducer);
-      let repository = Repository.createNull({ userName: 'Bob' });
+      let repository = Repository.createNull({ username: 'Bob' });
 
       await services.getUser(store, repository);
 
@@ -95,7 +95,15 @@ describe('Services', () => {
       let store = createStore(reducer);
 
       await services.talksUpdated(
-        [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
+        {
+          talks: [
+            {
+              title: 'title 1',
+              presenter: 'presenter 1',
+              summary: 'summary 1',
+            },
+          ],
+        },
         store,
       );
 
