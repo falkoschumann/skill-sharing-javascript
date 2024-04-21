@@ -48,16 +48,16 @@ describe('Services', () => {
       const talksPut = api.trackTalksPut();
 
       await services.submitTalk(
-        { title: 'foobar', summary: 'lorem ipsum' },
+        { title: 'Foobar', summary: 'Lorem ipsum' },
         store,
         api,
       );
 
       expect(talksPut.data).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           presenter: 'Anon',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
         },
       ]);
     });
@@ -70,13 +70,13 @@ describe('Services', () => {
       const commentsPosted = api.trackCommentsPosted();
 
       await services.addComment(
-        { title: 'foobar', comment: 'lorem ipsum' },
+        { title: 'Foobar', comment: 'Lorem ipsum' },
         store,
         api,
       );
 
       expect(commentsPosted.data).toEqual([
-        { title: 'foobar', author: 'Anon', message: 'lorem ipsum' },
+        { title: 'Foobar', author: 'Anon', message: 'Lorem ipsum' },
       ]);
     });
   });
@@ -86,9 +86,9 @@ describe('Services', () => {
       const api = Api.createNull();
       const talksDeleted = api.trackTalksDeleted();
 
-      await services.deleteTalk({ title: 'foobar' }, api);
+      await services.deleteTalk({ title: 'Foobar' }, api);
 
-      expect(talksDeleted.data).toEqual([{ title: 'foobar' }]);
+      expect(talksDeleted.data).toEqual([{ title: 'Foobar' }]);
     });
   });
 

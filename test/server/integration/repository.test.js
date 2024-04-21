@@ -70,18 +70,18 @@ describe('Repository', () => {
       const repository = Repository.create({ fileName: testFile });
 
       await repository.add({
-        title: 'foobar',
+        title: 'Foobar',
         author: 'Anon',
-        summary: 'lorem ipsum',
+        summary: 'Lorem ipsum',
         comments: [],
       });
 
       const talks = await repository.findAll();
       expect(talks).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           author: 'Anon',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
           comments: [],
         },
       ]);
@@ -137,13 +137,13 @@ describe('Repository', () => {
     test('Removes talk from file', async () => {
       const repository = Repository.create({ fileName: testFile });
       await repository.add({
-        title: 'foobar',
+        title: 'Foobar',
         author: 'Anon',
-        summary: 'lorem ipsum',
+        summary: 'Lorem ipsum',
         comments: [],
       });
 
-      await repository.remove('foobar');
+      await repository.remove('Foobar');
 
       const talks = await repository.findAll();
       expect(talks).toEqual([]);
