@@ -1,7 +1,7 @@
 # see also https://gitignore.io
 
 build/
-data/
+/data/
 dist/
 tmp/
 vendor/
