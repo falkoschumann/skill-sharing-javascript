@@ -1,12 +1,12 @@
 export class OutputTracker {
+  static create(eventTarget, event) {
+    return new OutputTracker(eventTarget, event);
+  }
+
   #eventTarget;
   #event;
   #tracker;
   #data = [];
-
-  static create(eventTarget, event) {
-    return new OutputTracker(eventTarget, event);
-  }
 
   constructor(eventTarget, event) {
     this.#eventTarget = eventTarget;
