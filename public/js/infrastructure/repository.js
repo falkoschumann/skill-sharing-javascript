@@ -17,7 +17,7 @@ export class Repository {
   }
 
   async load() {
-    let json = this.#storage.getItem(storageKey);
+    const json = this.#storage.getItem(storageKey);
     if (json == null) {
       return {};
     }
@@ -26,7 +26,7 @@ export class Repository {
   }
 
   async store(settings) {
-    let json = JSON.stringify(settings);
+    const json = JSON.stringify(settings);
     this.#storage.setItem(storageKey, json);
     this.#lastSettings = json;
   }

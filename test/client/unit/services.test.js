@@ -9,8 +9,8 @@ import { createStore } from '../../../public/js/util/store.js';
 describe('Services', () => {
   describe('Change user', () => {
     test('Updates user name', async () => {
-      let store = createStore(reducer);
-      let repository = Repository.createNull();
+      const store = createStore(reducer);
+      const repository = Repository.createNull();
 
       await services.changeUser({ username: 'Bob' }, store, repository);
 
@@ -21,8 +21,8 @@ describe('Services', () => {
 
   describe('User', () => {
     test('Anon is the default user', async () => {
-      let store = createStore(reducer);
-      let repository = Repository.createNull();
+      const store = createStore(reducer);
+      const repository = Repository.createNull();
 
       await services.getUser(store, repository);
 
@@ -30,8 +30,10 @@ describe('Services', () => {
     });
 
     test('Is stored user', async () => {
-      let store = createStore(reducer);
-      let repository = Repository.createNull({ settings: { username: 'Bob' } });
+      const store = createStore(reducer);
+      const repository = Repository.createNull({
+        settings: { username: 'Bob' },
+      });
 
       await services.getUser(store, repository);
 
@@ -41,9 +43,9 @@ describe('Services', () => {
 
   describe('Submit talk', () => {
     test('Submits talk', async () => {
-      let store = createStore(reducer);
-      let api = Api.createNull();
-      let talksPut = api.trackTalksPut();
+      const store = createStore(reducer);
+      const api = Api.createNull();
+      const talksPut = api.trackTalksPut();
 
       await services.submitTalk(
         { title: 'foobar', summary: 'lorem ipsum' },
@@ -63,9 +65,9 @@ describe('Services', () => {
 
   describe('Post comment', () => {
     test('Posts comment', async () => {
-      let store = createStore(reducer);
-      let api = Api.createNull();
-      let commentsPosted = api.trackCommentsPosted();
+      const store = createStore(reducer);
+      const api = Api.createNull();
+      const commentsPosted = api.trackCommentsPosted();
 
       await services.addComment(
         { title: 'foobar', comment: 'lorem ipsum' },
@@ -81,8 +83,8 @@ describe('Services', () => {
 
   describe('Delete talk', () => {
     test('Deletes talk', async () => {
-      let api = Api.createNull();
-      let talksDeleted = api.trackTalksDeleted();
+      const api = Api.createNull();
+      const talksDeleted = api.trackTalksDeleted();
 
       await services.deleteTalk({ title: 'foobar' }, api);
 
@@ -92,7 +94,7 @@ describe('Services', () => {
 
   describe('Talks', () => {
     test('Talks updated', async () => {
-      let store = createStore(reducer);
+      const store = createStore(reducer);
 
       await services.talksUpdated(
         {
@@ -113,8 +115,8 @@ describe('Services', () => {
     });
 
     test('Polls talks', async () => {
-      let store = createStore(reducer);
-      let api = Api.createNull({
+      const store = createStore(reducer);
+      const api = Api.createNull({
         talks: [
           {
             status: 200,
@@ -155,8 +157,8 @@ describe('Services', () => {
     });
 
     test('Does not update talks, if not modified', async () => {
-      let store = createStore(reducer);
-      let api = Api.createNull({
+      const store = createStore(reducer);
+      const api = Api.createNull({
         talks: [
           {
             status: 200,
@@ -172,7 +174,7 @@ describe('Services', () => {
           { status: 304 },
         ],
       });
-      let talksGet = api.trackTalksGet();
+      const talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
 
@@ -186,8 +188,8 @@ describe('Services', () => {
     });
 
     test('Recovers after network error', async () => {
-      let store = createStore(reducer);
-      let api = Api.createNull({
+      const store = createStore(reducer);
+      const api = Api.createNull({
         talks: [
           new Error('network error'),
           {
@@ -203,7 +205,7 @@ describe('Services', () => {
           },
         ],
       });
-      let talksGet = api.trackTalksGet();
+      const talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
 
@@ -217,8 +219,8 @@ describe('Services', () => {
     });
 
     test('Recovers after server error', async () => {
-      let store = createStore(reducer);
-      let api = Api.createNull({
+      const store = createStore(reducer);
+      const api = Api.createNull({
         talks: [
           {
             status: 500,
@@ -236,7 +238,7 @@ describe('Services', () => {
           },
         ],
       });
-      let talksGet = api.trackTalksGet();
+      const talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
 

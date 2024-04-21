@@ -52,7 +52,7 @@ class Talks extends Container {
   }
 
   #addComment(form) {
-    let formData = new FormData(form);
+    const formData = new FormData(form);
     actions.addComment({
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),

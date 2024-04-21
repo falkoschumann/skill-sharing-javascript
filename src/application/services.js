@@ -7,7 +7,7 @@ export async function getTalk({ title }, repository) {
 }
 
 export async function submitTalk({ title, presenter, summary }, repository) {
-  let talk = { title, presenter, summary, comments: [] };
+  const talk = { title, presenter, summary, comments: [] };
   await repository.add(talk);
 }
 
@@ -19,12 +19,12 @@ export async function addComment(
   { title, comment: { author, message } },
   repository,
 ) {
-  let talk = await repository.findByTitle(title);
+  const talk = await repository.findByTitle(title);
   if (talk == null) {
-    return false;
+    return { isSuccessful: false };
   }
 
   talk.comments.push({ author, message });
   await repository.add(talk);
-  return true;
+  return { isSuccessful: true };
 }

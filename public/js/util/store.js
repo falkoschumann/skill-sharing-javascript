@@ -1,5 +1,5 @@
 export function createStore(reducer, preloadedState) {
-  let initialState = preloadedState || reducer(undefined, { type: '@@INIT' });
+  const initialState = preloadedState || reducer(undefined, { type: '@@INIT' });
   return new Store(reducer, initialState);
 }
 

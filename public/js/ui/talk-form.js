@@ -34,12 +34,11 @@ class TalkForm extends Component {
   }
 
   #submitTalk(form) {
-    let formData = new FormData(form);
-    let command = {
+    const formData = new FormData(form);
+    actions.submitTalk({
       title: formData.get('title'),
       summary: formData.get('summary'),
-    };
-    actions.submitTalk(command);
+    });
     form.reset();
   }
 }

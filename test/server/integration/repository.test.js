@@ -17,9 +17,9 @@ describe('Repository', () => {
 
   describe('Find all', () => {
     test('Returns list of talks', async () => {
-      let repository = Repository.create({ fileName: exampleFile });
+      const repository = Repository.create({ fileName: exampleFile });
 
-      let talks = await repository.findAll();
+      const talks = await repository.findAll();
 
       expect(talks).toEqual([
         { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
@@ -27,15 +27,15 @@ describe('Repository', () => {
     });
 
     test('Returns empty list, if file does not exist', async () => {
-      let repository = Repository.create({ fileName: nonExistingFile });
+      const repository = Repository.create({ fileName: nonExistingFile });
 
-      let talks = await repository.findAll();
+      const talks = await repository.findAll();
 
       expect(talks).toEqual([]);
     });
 
     test('Reports an error, if file is corrupt', async () => {
-      let repository = Repository.create({ fileName: corruptedFile });
+      const repository = Repository.create({ fileName: corruptedFile });
 
       await expect(repository.findAll()).rejects.toThrow();
     });
@@ -43,9 +43,9 @@ describe('Repository', () => {
 
   describe('Find by title', () => {
     test('Returns talk with title', async () => {
-      let repository = Repository.create({ fileName: exampleFile });
+      const repository = Repository.create({ fileName: exampleFile });
 
-      let talk = await repository.findByTitle('Foobar');
+      const talk = await repository.findByTitle('Foobar');
 
       expect(talk).toEqual({
         title: 'Foobar',
@@ -55,9 +55,9 @@ describe('Repository', () => {
     });
 
     test('Returns undefined if talk with title does not exist', async () => {
-      let repository = Repository.create({ fileName: exampleFile });
+      const repository = Repository.create({ fileName: exampleFile });
 
-      let talk = await repository.findByTitle('not a talk');
+      const talk = await repository.findByTitle('not a talk');
 
       expect(talk).toBeUndefined();
     });
@@ -65,7 +65,7 @@ describe('Repository', () => {
 
   describe('Add', () => {
     test('Creates file, if file does not exist', async () => {
-      let repository = Repository.create({ fileName: testFile });
+      const repository = Repository.create({ fileName: testFile });
 
       await repository.add({
         title: 'foobar',
@@ -74,7 +74,7 @@ describe('Repository', () => {
         comments: [],
       });
 
-      let talks = await repository.findAll();
+      const talks = await repository.findAll();
       expect(talks).toEqual([
         {
           title: 'foobar',
@@ -86,7 +86,7 @@ describe('Repository', () => {
     });
 
     test('Adds talk, if file exists', async () => {
-      let repository = Repository.create({ fileName: testFile });
+      const repository = Repository.create({ fileName: testFile });
       await repository.add({
         title: 'foo',
         author: 'Anon',
@@ -101,7 +101,7 @@ describe('Repository', () => {
         comments: [],
       });
 
-      let talks = await repository.findAll();
+      const talks = await repository.findAll();
       expect(talks).toEqual([
         { title: 'foo', author: 'Anon', summary: 'lorem', comments: [] },
         { title: 'bar', author: 'Bob', summary: 'ipsum', comments: [] },
@@ -109,7 +109,7 @@ describe('Repository', () => {
     });
 
     test('Updates talk, if talk exists', async () => {
-      let repository = Repository.create({ fileName: testFile });
+      const repository = Repository.create({ fileName: testFile });
       await repository.add({
         title: 'foo',
         author: 'Anon',
@@ -124,7 +124,7 @@ describe('Repository', () => {
         comments: [],
       });
 
-      let talks = await repository.findAll();
+      const talks = await repository.findAll();
       expect(talks).toEqual([
         { title: 'foo', author: 'Bob', summary: 'ipsum', comments: [] },
       ]);
@@ -133,7 +133,7 @@ describe('Repository', () => {
 
   describe('Remove', () => {
     test('Removes talk from file', async () => {
-      let repository = Repository.create({ fileName: testFile });
+      const repository = Repository.create({ fileName: testFile });
       await repository.add({
         title: 'foobar',
         author: 'Anon',
@@ -143,7 +143,7 @@ describe('Repository', () => {
 
       await repository.remove('foobar');
 
-      let talks = await repository.findAll();
+      const talks = await repository.findAll();
       expect(talks).toEqual([]);
     });
   });

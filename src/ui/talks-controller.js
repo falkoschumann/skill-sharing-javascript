@@ -144,8 +144,11 @@ export class TalksController {
   }
 
   async #tryAddComment({ title, comment }, repository) {
-    const success = await services.addComment({ title, comment }, repository);
-    if (success) {
+    const { isSuccessful } = await services.addComment(
+      { title, comment },
+      repository,
+    );
+    if (isSuccessful) {
       await this.#talksUpdated(repository);
       return { status: 204 };
     } else {

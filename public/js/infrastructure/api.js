@@ -42,7 +42,7 @@ export class Api extends EventTarget {
     let timeout = 0.5;
     while (runs === -1 || runs-- > 0) {
       try {
-        let response = await this.#fetch('/api/talks', {
+        const response = await this.#fetch('/api/talks', {
           headers: tag && {
             'If-None-Match': tag,
             Prefer: 'wait=90',
@@ -61,7 +61,7 @@ export class Api extends EventTarget {
         }
 
         tag = response.headers.get('ETag');
-        let talks = await response.json();
+        const talks = await response.json();
         this.dispatchEvent(new TalksUpdatedEvent(talks));
 
         timeout = 0.5;
@@ -85,7 +85,7 @@ export class Api extends EventTarget {
   }
 
   async putTalk({ title, presenter, summary }) {
-    let body = JSON.stringify({ presenter, summary });
+    const body = JSON.stringify({ presenter, summary });
     await this.#fetch(`/api/talks/${encodeURIComponent(title)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -116,7 +116,7 @@ export class Api extends EventTarget {
   }
 
   async postComment(title, { author, message }) {
-    let body = JSON.stringify({ author, message });
+    const body = JSON.stringify({ author, message });
     await this.#fetch(`/api/talks/${encodeURIComponent(title)}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -135,9 +135,9 @@ export class Api extends EventTarget {
 }
 
 function createFetchStub(talks) {
-  let responses = ConfigurableResponses.create(talks);
+  const responses = ConfigurableResponses.create(talks);
   return async function () {
-    let response = responses.next();
+    const response = responses.next();
     if (response instanceof Error) {
       throw response;
     }

@@ -11,7 +11,7 @@ export async function changeUser(
 }
 
 export async function getUser(store, repository = Repository.create()) {
-  let { username = 'Anon' } = await repository.load();
+  const { username = 'Anon' } = await repository.load();
   store.dispatch({ type: 'change-user', username });
 }
 
@@ -31,8 +31,8 @@ export async function submitTalk(
   store,
   api = Api.create(),
 ) {
-  let presenter = store.getState().user;
-  let talk = { title, presenter, summary };
+  const presenter = store.getState().user;
+  const talk = { title, presenter, summary };
   await api.putTalk(talk);
 }
 
