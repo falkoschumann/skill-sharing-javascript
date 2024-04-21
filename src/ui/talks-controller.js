@@ -88,7 +88,7 @@ export class TalksController {
 
   #createRouteGetTalk(app, repository) {
     app.get('/api/talks/:title', async (req, res) => {
-      const { title } = this.#getTalkParameters(req);
+      const title = decodeURIComponent(req.params.title);
       const talk = await services.getTalk({ title }, repository);
       if (talk == null) {
         this.#reply(res, { status: 404, body: `No talk '${title}' found` });
@@ -101,13 +101,9 @@ export class TalksController {
     });
   }
 
-  #getTalkParameters(req) {
-    return { title: req.params.title };
-  }
-
   #createRoutePutTalk(app, repository) {
     app.put('/api/talks/:title', async (req, res) => {
-      const { title } = this.#getTalkParameters(req);
+      const title = decodeURIComponent(req.params.title);
       const talk = parseTalk(req.body);
       if (talk == null) {
         this.#reply(res, { status: 400, body: 'Bad talk data' });
@@ -124,7 +120,7 @@ export class TalksController {
 
   #createRouteDeleteTalk(app, repository) {
     app.delete('/api/talks/:title', async (req, res) => {
-      const { title } = this.#getTalkParameters(req);
+      const title = decodeURIComponent(req.params.title);
       await services.deleteTalk({ title }, repository);
       await this.#talksUpdated(repository);
       this.#reply(res, { status: 204 });
@@ -137,7 +133,7 @@ export class TalksController {
       if (comment == null) {
         this.#reply(res, { status: 400, body: 'Bad comment data' });
       } else {
-        const { title } = this.#getTalkParameters(req);
+        const title = decodeURIComponent(req.params.title);
         const response = await this.#tryAddComment(
           { title, comment },
           repository,

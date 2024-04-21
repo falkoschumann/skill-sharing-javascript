@@ -2,7 +2,7 @@ import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
 import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
@@ -11,22 +11,11 @@ const testFile = fileURLToPath(
   new URL('../../../data/talks.test.json', import.meta.url),
 );
 
-describe('Skill Sharing app', () => {
-  let app;
-
-  beforeEach(() => {
-    rmSync(testFile, { force: true });
-    app = express();
-    const repository = Repository.create({ fileName: testFile });
-    Application.create({ app, repository });
-  });
-
+describe('Application', () => {
   describe('GET talks', () => {
     test('Replies with talks, if client asks for the first time', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       const response = await request(app)
         .get('/api/talks')
@@ -38,19 +27,17 @@ describe('Skill Sharing app', () => {
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           presenter: 'Anon',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
           comments: [],
         },
       ]);
     });
 
     test('Replies with talks, if client is not up to date', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       const response = await request(app)
         .get('/api/talks')
@@ -63,19 +50,17 @@ describe('Skill Sharing app', () => {
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           presenter: 'Anon',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
           comments: [],
         },
       ]);
     });
 
     test('Reports not modified, if client is up to date', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       const response = await request(app)
         .get('/api/talks')
@@ -86,6 +71,8 @@ describe('Skill Sharing app', () => {
     });
 
     test('Reports not modified, if long polling results in a timeout', async () => {
+      const { app } = configure();
+
       const responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
@@ -94,29 +81,26 @@ describe('Skill Sharing app', () => {
       const submitHandler = setTimeout(
         () =>
           request(app)
-            .put('/api/talks/foobar')
+            .put('/api/talks/Foobar')
             .set('Content-Type', 'application/json')
-            .send({ presenter: 'Anon', summary: 'lorem ipsum' }),
+            .send({ presenter: 'Anon', summary: 'Lorem ipsum' }),
         2000,
       );
       const response = await responsePromise;
-      clearTimeout(submitHandler);
 
       expect(response.status).toEqual(304);
+      clearTimeout(submitHandler);
     });
 
     test('Replies talks, if a talk was submitted while long polling', async () => {
+      const { app } = configure();
+
       const responsePromise = request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
         .set('If-None-Match', '"0"');
-      setTimeout(async () => {
-        await request(app)
-          .put('/api/talks/foobar')
-          .set('Content-Type', 'application/json')
-          .send({ presenter: 'Anon', summary: 'lorem ipsum' });
-      }, 500);
+      setTimeout(async () => submitTalk(app), 500);
       const response = await responsePromise;
 
       expect(response.status).toEqual(200);
@@ -125,9 +109,9 @@ describe('Skill Sharing app', () => {
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           presenter: 'Anon',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
           comments: [],
         },
       ]);
@@ -136,30 +120,29 @@ describe('Skill Sharing app', () => {
 
   describe('GET talk', () => {
     test('Replies with talk', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       const response = await request(app)
-        .get('/api/talks/foobar')
+        .get('/api/talks/Foobar')
         .set('Accept', 'application/json');
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
       expect(response.body).toEqual({
-        title: 'foobar',
+        title: 'Foobar',
         presenter: 'Anon',
-        summary: 'lorem ipsum',
+        summary: 'Lorem ipsum',
         comments: [],
       });
     });
 
     test('Reports an error if talk does not exists', async () => {
+      const { app } = configure();
       await request(app)
         .put('/api/talks/foo')
         .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'Lorem ipsum' });
 
       const response = await request(app)
         .get('/api/talks/bar')
@@ -173,28 +156,32 @@ describe('Skill Sharing app', () => {
 
   describe('PUT talk', () => {
     test('Creates a new talk', async () => {
+      const { app } = configure();
+
       let response = await request(app)
-        .put('/api/talks/foobar')
+        .put('/api/talks/Foobar')
         .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'Lorem ipsum' });
 
       expect(response.status).toEqual(204);
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           presenter: 'Anon',
-          summary: 'lorem ipsum',
+          summary: 'Lorem ipsum',
           comments: [],
         },
       ]);
     });
 
     test('Reports an error if presenter is missing', async () => {
+      const { app } = configure();
+
       let response = await request(app)
-        .put('/api/talks/foobar')
+        .put('/api/talks/Foobar')
         .set('Accept', 'application/json')
-        .send({ summary: 'lorem ipsum' });
+        .send({ summary: 'Lorem ipsum' });
 
       expect(response.status).toEqual(400);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
@@ -204,8 +191,10 @@ describe('Skill Sharing app', () => {
     });
 
     test('Reports an error if summary is missing', async () => {
+      const { app } = configure();
+
       let response = await request(app)
-        .put('/api/talks/foobar')
+        .put('/api/talks/Foobar')
         .set('Accept', 'application/json')
         .send({ presenter: 'Anon' });
 
@@ -219,12 +208,10 @@ describe('Skill Sharing app', () => {
 
   describe('DELETE talk', () => {
     test('Deletes an existing talk', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
-      let response = await request(app).delete('/api/talks/foobar').send();
+      let response = await request(app).delete('/api/talks/Foobar').send();
 
       expect(response.status).toEqual(204);
       response = await request(app).get('/api/talks').send();
@@ -235,38 +222,37 @@ describe('Skill Sharing app', () => {
 
   describe('POST comment', () => {
     test('Adds comment', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       let response = await request(app)
-        .post('/api/talks/foobar/comments')
+        .post('/api/talks/Foobar/comments')
         .set('Content-Type', 'application/json')
-        .send({ author: 'Bob', message: 'new comment' });
+        .send({ author: 'Bob', message: 'New comment' });
 
       expect(response.status).toEqual(204);
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([
         {
-          title: 'foobar',
+          title: 'Foobar',
           presenter: 'Anon',
-          summary: 'lorem ipsum',
-          comments: [{ author: 'Bob', message: 'new comment' }],
+          summary: 'Lorem ipsum',
+          comments: [{ author: 'Bob', message: 'New comment' }],
         },
       ]);
     });
 
     test('Reports an error if talk does not exists', async () => {
+      const { app } = configure();
       await request(app)
         .put('/api/talks/foo')
         .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+        .send({ presenter: 'Anon', summary: 'Lorem ipsum' });
 
       const response = await request(app)
         .post('/api/talks/bar/comments')
         .set('Content-Type', 'application/json')
-        .send({ author: 'Bob', message: 'new comment' });
+        .send({ author: 'Bob', message: 'New comment' });
 
       expect(response.status).toEqual(404);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
@@ -274,15 +260,13 @@ describe('Skill Sharing app', () => {
     });
 
     test('Reports an error if author is missing', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       const response = await request(app)
-        .post('/api/talks/foobar/comments')
+        .post('/api/talks/Foobar/comments')
         .set('Content-Type', 'application/json')
-        .send({ message: 'new comment' });
+        .send({ message: 'New comment' });
 
       expect(response.status).toEqual(400);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
@@ -290,13 +274,11 @@ describe('Skill Sharing app', () => {
     });
 
     test('Reports an error if message is missing', async () => {
-      await request(app)
-        .put('/api/talks/foobar')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'lorem ipsum' });
+      const { app } = configure();
+      await submitTalk(app);
 
       const response = await request(app)
-        .post('/api/talks/foobar/comments')
+        .post('/api/talks/Foobar/comments')
         .set('Content-Type', 'application/json')
         .send({ author: 'Bob' });
 
@@ -306,3 +288,21 @@ describe('Skill Sharing app', () => {
     });
   });
 });
+
+function configure() {
+  rmSync(testFile, { force: true });
+  const app = express();
+  const repository = Repository.create({ fileName: testFile });
+  Application.create({ app, repository });
+  return { app };
+}
+
+function submitTalk(
+  app,
+  { title = 'Foobar', presenter = 'Anon', summary = 'Lorem ipsum' } = {},
+) {
+  return request(app)
+    .put(`/api/talks/${title}`)
+    .set('Content-Type', 'application/json')
+    .send({ presenter, summary });
+}
