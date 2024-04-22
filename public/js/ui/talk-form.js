@@ -1,4 +1,4 @@
-import { html } from '../../vendor/lit-html.js';
+import { html } from 'lit-html';
 
 import * as actions from './actions.js';
 import { Component } from './components.js';
