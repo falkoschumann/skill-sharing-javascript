@@ -22,7 +22,7 @@ describe('Services', () => {
     test('Anon is the default user', async () => {
       const { services, store } = configure();
 
-      await services.getUser();
+      await services.loadUser();
 
       expect(store.getState().user).toEqual('Anon');
     });
@@ -30,7 +30,7 @@ describe('Services', () => {
     test('Is stored user', async () => {
       const { services, store } = configure({ settings: { username: 'Bob' } });
 
-      await services.getUser();
+      await services.loadUser();
 
       expect(store.getState().user).toEqual('Bob');
     });

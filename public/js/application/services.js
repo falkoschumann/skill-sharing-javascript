@@ -25,10 +25,27 @@ export class Services {
     await this.#repository.store({ username });
   }
 
-  async getUser() {
-    // TODO rename to loadUser
+  async loadUser() {
     const { username = 'Anon' } = await this.#repository.load();
     this.#store.dispatch({ type: 'change-user', username });
+  }
+
+  async submitTalk({ title, summary }) {
+    const presenter = this.#store.getState().user;
+    const talk = { title, presenter, summary };
+    await this.#api.putTalk(talk);
+  }
+
+  async addComment({ title, comment }) {
+    const author = this.#store.getState().user;
+    await this.#api.postComment(title, {
+      author,
+      message: comment,
+    });
+  }
+
+  async deleteTalk({ title }) {
+    await this.#api.deleteTalk(title);
   }
 
   async pollTalks(runs) {
@@ -40,23 +57,5 @@ export class Services {
 
   async talksUpdated({ talks }) {
     this.#store.dispatch({ type: 'talks-updated', talks });
-  }
-
-  async submitTalk({ title, summary }) {
-    const presenter = this.#store.getState().user;
-    const talk = { title, presenter, summary };
-    await this.#api.putTalk(talk);
-  }
-
-  async deleteTalk({ title }) {
-    await this.#api.deleteTalk(title);
-  }
-
-  async addComment({ title, comment }) {
-    const author = this.#store.getState().user;
-    await this.#api.postComment(title, {
-      author,
-      message: comment,
-    });
   }
 }

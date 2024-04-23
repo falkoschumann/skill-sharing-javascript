@@ -5,7 +5,7 @@ import { Container } from './components.js';
 class UserField extends Container {
   connectedCallback() {
     super.connectedCallback();
-    this.services.getUser();
+    this.services.loadUser();
   }
 
   extractState(state) {
