@@ -22,9 +22,7 @@ describe('Repository', () => {
   });
 
   test('Loads stored settings', async () => {
-    const repository = Repository.createNull({
-      settings: { username: 'Alice' },
-    });
+    const repository = Repository.createNull({ username: 'Alice' });
 
     const settings = await repository.load();
 

@@ -19,13 +19,13 @@ export class Api extends EventTarget {
     return new Api(globalThis.fetch.bind(globalThis));
   }
 
-  static createNull({
+  static createNull(
     talks = {
       status: 200,
       headers: {},
       body: [],
     },
-  } = {}) {
+  ) {
     return new Api(createFetchStub(talks));
   }
 

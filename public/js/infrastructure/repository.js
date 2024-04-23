@@ -5,7 +5,7 @@ export class Repository {
     return new Repository(localStorage);
   }
 
-  static createNull({ settings } = {}) {
+  static createNull(settings) {
     return new Repository(new StorageStub(settings));
   }
 

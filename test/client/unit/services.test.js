@@ -31,9 +31,7 @@ describe('Services', () => {
 
     test('Is stored user', async () => {
       const store = createStore(reducer);
-      const repository = Repository.createNull({
-        settings: { username: 'Bob' },
-      });
+      const repository = Repository.createNull({ username: 'Bob' });
 
       await services.getUser(store, repository);
 
@@ -116,37 +114,35 @@ describe('Services', () => {
 
     test('Polls talks', async () => {
       const store = createStore(reducer);
-      const api = Api.createNull({
-        talks: [
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-          {
-            status: 200,
-            headers: { etag: '2' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-              {
-                title: 'title 2',
-                presenter: 'presenter 2',
-                summary: 'summary 2',
-              },
-            ],
-          },
-        ],
-      });
+      const api = Api.createNull([
+        {
+          status: 200,
+          headers: { etag: '1' },
+          body: [
+            {
+              title: 'title 1',
+              presenter: 'presenter 1',
+              summary: 'summary 1',
+            },
+          ],
+        },
+        {
+          status: 200,
+          headers: { etag: '2' },
+          body: [
+            {
+              title: 'title 1',
+              presenter: 'presenter 1',
+              summary: 'summary 1',
+            },
+            {
+              title: 'title 2',
+              presenter: 'presenter 2',
+              summary: 'summary 2',
+            },
+          ],
+        },
+      ]);
 
       await services.pollTalks(store, api, 2);
 
@@ -158,22 +154,20 @@ describe('Services', () => {
 
     test('Does not update talks, if not modified', async () => {
       const store = createStore(reducer);
-      const api = Api.createNull({
-        talks: [
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-          { status: 304 },
-        ],
-      });
+      const api = Api.createNull([
+        {
+          status: 200,
+          headers: { etag: '1' },
+          body: [
+            {
+              title: 'title 1',
+              presenter: 'presenter 1',
+              summary: 'summary 1',
+            },
+          ],
+        },
+        { status: 304 },
+      ]);
       const talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
@@ -189,22 +183,20 @@ describe('Services', () => {
 
     test('Recovers after network error', async () => {
       const store = createStore(reducer);
-      const api = Api.createNull({
-        talks: [
-          new Error('network error'),
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-        ],
-      });
+      const api = Api.createNull([
+        new Error('network error'),
+        {
+          status: 200,
+          headers: { etag: '1' },
+          body: [
+            {
+              title: 'title 1',
+              presenter: 'presenter 1',
+              summary: 'summary 1',
+            },
+          ],
+        },
+      ]);
       const talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
@@ -220,24 +212,22 @@ describe('Services', () => {
 
     test('Recovers after server error', async () => {
       const store = createStore(reducer);
-      const api = Api.createNull({
-        talks: [
-          {
-            status: 500,
-          },
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-        ],
-      });
+      const api = Api.createNull([
+        {
+          status: 500,
+        },
+        {
+          status: 200,
+          headers: { etag: '1' },
+          body: [
+            {
+              title: 'title 1',
+              presenter: 'presenter 1',
+              summary: 'summary 1',
+            },
+          ],
+        },
+      ]);
       const talksGet = api.trackTalksGet();
 
       await services.pollTalks(store, api, 2);
