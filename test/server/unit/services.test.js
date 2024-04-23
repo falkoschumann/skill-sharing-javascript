@@ -114,7 +114,7 @@ describe('Services', () => {
 });
 
 function configure({ talks }) {
-  const repository = Repository.createNull({ talks });
+  const repository = Repository.createNull(talks);
   const services = new Services(repository);
   return { services, repository };
 }

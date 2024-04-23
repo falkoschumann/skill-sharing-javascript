@@ -6,7 +6,7 @@ export class Repository {
     return new Repository('./data/talks.json');
   }
 
-  static createNull({ talks = [] } = {}) {
+  static createNull(talks = []) {
     return new Repository('nulled-file-name.json', new FsStub(talks));
   }
 

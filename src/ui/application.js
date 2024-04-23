@@ -4,8 +4,8 @@ import { TalksController } from './talks-controller.js';
 import { Services } from '../application/services.js';
 
 export class Application {
-  static create({ publicPath = './public' } = {}) {
-    return new Application(publicPath);
+  static create() {
+    return new Application('./public');
   }
 
   #app;
