@@ -1,12 +1,11 @@
 import { html } from 'lit-html';
 
-import * as actions from './actions.js';
 import { Container } from './components.js';
 
 class UserField extends Container {
   connectedCallback() {
     super.connectedCallback();
-    actions.getUser();
+    this.services.getUser();
   }
 
   extractState(state) {
@@ -20,7 +19,8 @@ class UserField extends Container {
         <input
           type="text"
           value="${this.state}"
-          @change=${(e) => actions.changeUser({ username: e.target.value })}
+          @change=${(e) =>
+            this.services.changeUser({ username: e.target.value })}
       /></label>
     `;
   }

@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import * as services from '../../../public/js/application/services.js';
+import { Services } from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
@@ -9,10 +9,9 @@ import { createStore } from '../../../public/js/util/store.js';
 describe('Services', () => {
   describe('Change user', () => {
     test('Updates user name', async () => {
-      const store = createStore(reducer);
-      const repository = Repository.createNull();
+      const { services, store, repository } = configure();
 
-      await services.changeUser({ username: 'Bob' }, store, repository);
+      await services.changeUser({ username: 'Bob' });
 
       expect(store.getState().user).toEqual('Bob');
       expect(repository.lastSettings).toEqual({ username: 'Bob' });
@@ -21,19 +20,17 @@ describe('Services', () => {
 
   describe('User', () => {
     test('Anon is the default user', async () => {
-      const store = createStore(reducer);
-      const repository = Repository.createNull();
+      const { services, store } = configure();
 
-      await services.getUser(store, repository);
+      await services.getUser();
 
       expect(store.getState().user).toEqual('Anon');
     });
 
     test('Is stored user', async () => {
-      const store = createStore(reducer);
-      const repository = Repository.createNull({ username: 'Bob' });
+      const { services, store } = configure({ settings: { username: 'Bob' } });
 
-      await services.getUser(store, repository);
+      await services.getUser();
 
       expect(store.getState().user).toEqual('Bob');
     });
@@ -41,15 +38,10 @@ describe('Services', () => {
 
   describe('Submit talk', () => {
     test('Submits talk', async () => {
-      const store = createStore(reducer);
-      const api = Api.createNull();
+      const { services, api } = configure();
       const talksPut = api.trackTalksPut();
 
-      await services.submitTalk(
-        { title: 'Foobar', summary: 'Lorem ipsum' },
-        store,
-        api,
-      );
+      await services.submitTalk({ title: 'Foobar', summary: 'Lorem ipsum' });
 
       expect(talksPut.data).toEqual([
         {
@@ -63,15 +55,10 @@ describe('Services', () => {
 
   describe('Post comment', () => {
     test('Posts comment', async () => {
-      const store = createStore(reducer);
-      const api = Api.createNull();
+      const { services, api } = configure();
       const commentsPosted = api.trackCommentsPosted();
 
-      await services.addComment(
-        { title: 'Foobar', comment: 'Lorem ipsum' },
-        store,
-        api,
-      );
+      await services.addComment({ title: 'Foobar', comment: 'Lorem ipsum' });
 
       expect(commentsPosted.data).toEqual([
         { title: 'Foobar', author: 'Anon', message: 'Lorem ipsum' },
@@ -81,10 +68,10 @@ describe('Services', () => {
 
   describe('Delete talk', () => {
     test('Deletes talk', async () => {
-      const api = Api.createNull();
+      const { services, api } = configure();
       const talksDeleted = api.trackTalksDeleted();
 
-      await services.deleteTalk({ title: 'Foobar' }, api);
+      await services.deleteTalk({ title: 'Foobar' });
 
       expect(talksDeleted.data).toEqual([{ title: 'Foobar' }]);
     });
@@ -92,20 +79,17 @@ describe('Services', () => {
 
   describe('Talks', () => {
     test('Talks updated', async () => {
-      const store = createStore(reducer);
+      const { services, store } = configure();
 
-      await services.talksUpdated(
-        {
-          talks: [
-            {
-              title: 'title 1',
-              presenter: 'presenter 1',
-              summary: 'summary 1',
-            },
-          ],
-        },
-        store,
-      );
+      await services.talksUpdated({
+        talks: [
+          {
+            title: 'title 1',
+            presenter: 'presenter 1',
+            summary: 'summary 1',
+          },
+        ],
+      });
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -113,38 +97,39 @@ describe('Services', () => {
     });
 
     test('Polls talks', async () => {
-      const store = createStore(reducer);
-      const api = Api.createNull([
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: [
-            {
-              title: 'title 1',
-              presenter: 'presenter 1',
-              summary: 'summary 1',
-            },
-          ],
-        },
-        {
-          status: 200,
-          headers: { etag: '2' },
-          body: [
-            {
-              title: 'title 1',
-              presenter: 'presenter 1',
-              summary: 'summary 1',
-            },
-            {
-              title: 'title 2',
-              presenter: 'presenter 2',
-              summary: 'summary 2',
-            },
-          ],
-        },
-      ]);
+      const { services, store } = configure({
+        talks: [
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+          {
+            status: 200,
+            headers: { etag: '2' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+              {
+                title: 'title 2',
+                presenter: 'presenter 2',
+                summary: 'summary 2',
+              },
+            ],
+          },
+        ],
+      });
 
-      await services.pollTalks(store, api, 2);
+      await services.pollTalks(2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -153,24 +138,25 @@ describe('Services', () => {
     });
 
     test('Does not update talks, if not modified', async () => {
-      const store = createStore(reducer);
-      const api = Api.createNull([
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: [
-            {
-              title: 'title 1',
-              presenter: 'presenter 1',
-              summary: 'summary 1',
-            },
-          ],
-        },
-        { status: 304 },
-      ]);
+      const { services, store, api } = configure({
+        talks: [
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+          { status: 304 },
+        ],
+      });
       const talksGet = api.trackTalksGet();
 
-      await services.pollTalks(store, api, 2);
+      await services.pollTalks(2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -182,24 +168,25 @@ describe('Services', () => {
     });
 
     test('Recovers after network error', async () => {
-      const store = createStore(reducer);
-      const api = Api.createNull([
-        new Error('network error'),
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: [
-            {
-              title: 'title 1',
-              presenter: 'presenter 1',
-              summary: 'summary 1',
-            },
-          ],
-        },
-      ]);
+      const { services, store, api } = configure({
+        talks: [
+          new Error('network error'),
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+        ],
+      });
       const talksGet = api.trackTalksGet();
 
-      await services.pollTalks(store, api, 2);
+      await services.pollTalks(2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -211,26 +198,27 @@ describe('Services', () => {
     });
 
     test('Recovers after server error', async () => {
-      const store = createStore(reducer);
-      const api = Api.createNull([
-        {
-          status: 500,
-        },
-        {
-          status: 200,
-          headers: { etag: '1' },
-          body: [
-            {
-              title: 'title 1',
-              presenter: 'presenter 1',
-              summary: 'summary 1',
-            },
-          ],
-        },
-      ]);
+      const { services, store, api } = configure({
+        talks: [
+          {
+            status: 500,
+          },
+          {
+            status: 200,
+            headers: { etag: '1' },
+            body: [
+              {
+                title: 'title 1',
+                presenter: 'presenter 1',
+                summary: 'summary 1',
+              },
+            ],
+          },
+        ],
+      });
       const talksGet = api.trackTalksGet();
 
-      await services.pollTalks(store, api, 2);
+      await services.pollTalks(2);
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
@@ -242,3 +230,11 @@ describe('Services', () => {
     });
   });
 });
+
+function configure({ settings, talks } = {}) {
+  const store = createStore(reducer);
+  const repository = Repository.createNull(settings);
+  const api = Api.createNull(talks);
+  const services = new Services(store, repository, api);
+  return { services, store, repository, api };
+}

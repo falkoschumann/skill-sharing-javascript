@@ -3,13 +3,12 @@ import { html } from 'lit-html';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';
-import * as actions from './actions.js';
 import { Component } from './components.js';
 
 class SkillSharingApp extends Component {
   connectedCallback() {
     super.connectedCallback();
-    actions.pollTalks();
+    this.services.pollTalks();
   }
 
   getView() {

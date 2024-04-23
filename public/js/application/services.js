@@ -1,37 +1,62 @@
-export async function changeUser({ username }, store, repository) {
-  store.dispatch({ type: 'change-user', username });
-  await repository.store({ username });
-}
+import { Api } from '../infrastructure/api.js';
+import { Repository } from '../infrastructure/repository.js';
 
-export async function getUser(store, repository) {
-  const { username = 'Anon' } = await repository.load();
-  store.dispatch({ type: 'change-user', username });
-}
+export class Services {
+  static create(store) {
+    return new Services(store);
+  }
 
-export async function pollTalks(store, api, runs) {
-  api.addEventListener('talks-updated', (event) =>
-    talksUpdated({ talks: event.talks }, store),
-  );
-  await api.pollTalks(runs);
-}
+  static createNull(store) {
+    return new Services(store, Repository.createNull(), Api.createNull());
+  }
 
-export async function talksUpdated({ talks }, store) {
-  store.dispatch({ type: 'talks-updated', talks });
-}
+  #store;
+  #repository;
+  #api;
 
-export async function submitTalk({ title, summary }, store, api) {
-  const presenter = store.getState().user;
-  const talk = { title, presenter, summary };
-  await api.putTalk(talk);
-}
+  constructor(store, repository = Repository.create(), api = Api.create()) {
+    this.#store = store;
+    this.#repository = repository;
+    this.#api = api;
+  }
 
-export async function deleteTalk({ title }, api) {
-  await api.deleteTalk(title);
-}
+  async changeUser({ username }) {
+    this.#store.dispatch({ type: 'change-user', username });
+    await this.#repository.store({ username });
+  }
 
-export async function addComment({ title, comment }, store, api) {
-  await api.postComment(title, {
-    author: store.getState().user,
-    message: comment,
-  });
+  async getUser() {
+    // TODO rename to loadUser
+    const { username = 'Anon' } = await this.#repository.load();
+    this.#store.dispatch({ type: 'change-user', username });
+  }
+
+  async pollTalks(runs) {
+    this.#api.addEventListener('talks-updated', (event) =>
+      this.talksUpdated({ talks: event.talks }),
+    );
+    await this.#api.pollTalks(runs);
+  }
+
+  async talksUpdated({ talks }) {
+    this.#store.dispatch({ type: 'talks-updated', talks });
+  }
+
+  async submitTalk({ title, summary }) {
+    const presenter = this.#store.getState().user;
+    const talk = { title, presenter, summary };
+    await this.#api.putTalk(talk);
+  }
+
+  async deleteTalk({ title }) {
+    await this.#api.deleteTalk(title);
+  }
+
+  async addComment({ title, comment }) {
+    const author = this.#store.getState().user;
+    await this.#api.postComment(title, {
+      author,
+      message: comment,
+    });
+  }
 }

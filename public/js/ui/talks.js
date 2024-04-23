@@ -1,6 +1,5 @@
 import { html } from 'lit-html';
 
-import * as actions from './actions.js';
 import { Container } from './components.js';
 
 class Talks extends Container {
@@ -17,7 +16,9 @@ class Talks extends Container {
       <section class="talk">
         <h2>
           ${talk.title}
-          <button @click=${() => actions.deleteTalk({ title: talk.title })}>
+          <button
+            @click=${() => this.services.deleteTalk({ title: talk.title })}
+          >
             Delete
           </button>
         </h2>
@@ -53,7 +54,7 @@ class Talks extends Container {
 
   #addComment(form) {
     const formData = new FormData(form);
-    actions.addComment({
+    this.services.addComment({
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
     });
