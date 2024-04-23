@@ -6,6 +6,7 @@ import { describe, expect, test } from '@jest/globals';
 
 import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
+import { Services } from '../../../src/application/services.js';
 
 const testFile = fileURLToPath(
   new URL('../../../data/talks.test.json', import.meta.url),
@@ -293,7 +294,8 @@ function configure() {
   rmSync(testFile, { force: true });
   const app = express();
   const repository = new Repository(testFile);
-  Application.create({ app, repository });
+  const services = new Services(repository);
+  new Application('./public', services, app);
   return { app };
 }
 

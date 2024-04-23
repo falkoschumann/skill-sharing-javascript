@@ -1,25 +1,21 @@
 import express from 'express';
 
-import { Repository } from '../infrastructure/repository.js';
 import { TalksController } from './talks-controller.js';
+import { Services } from '../application/services.js';
 
 export class Application {
-  static create({
-    publicPath = './public',
-    app = express(),
-    repository = Repository.create(),
-  } = {}) {
-    return new Application(publicPath, app, repository);
+  static create({ publicPath = './public' } = {}) {
+    return new Application(publicPath);
   }
 
   #app;
 
-  constructor(publicPath, app, repository) {
+  constructor(publicPath, services = Services.create(), app = express()) {
     this.#app = app;
     app.set('x-powered-by', false);
     app.use('/', express.static(publicPath));
     app.use(express.json());
-    TalksController.create({ app, repository });
+    new TalksController(services, app);
   }
 
   start({ port = 3000 } = {}) {

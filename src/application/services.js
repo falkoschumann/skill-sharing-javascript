@@ -2,11 +2,11 @@ import { Repository } from '../infrastructure/repository.js';
 
 export class Services {
   static create() {
-    return new Services(new Repository());
+    return new Services(Repository.create());
   }
 
-  static createNull({ repository = Repository.createNull() }) {
-    return new Services(repository);
+  static createNull() {
+    return new Services(Repository.createNull());
   }
 
   #repository;
