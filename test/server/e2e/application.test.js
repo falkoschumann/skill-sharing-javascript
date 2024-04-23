@@ -292,7 +292,7 @@ describe('Application', () => {
 function configure() {
   rmSync(testFile, { force: true });
   const app = express();
-  const repository = Repository.create({ fileName: testFile });
+  const repository = new Repository(testFile);
   Application.create({ app, repository });
   return { app };
 }

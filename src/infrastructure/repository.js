@@ -1,39 +1,31 @@
-import fs from 'node:fs';
+import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 
 export class Repository {
-  static create({ fileName = './data/talks.json' } = {}) {
-    return new Repository(fileName, fs, path);
+  static create() {
+    return new Repository('./data/talks.json');
   }
 
   static createNull(talks = []) {
-    return new Repository(
-      'nulled-file-name.json',
-      new FsStub(talks),
-      new PathStub(),
-    );
+    return new Repository('nulled-file-name.json', new FsStub(talks));
   }
 
   #fileName;
   #fs;
-  #path;
   #lastStored;
 
-  constructor(fileName, fs, path) {
+  constructor(fileName, fs = fsPromise) {
     this.#fileName = fileName;
     this.#fs = fs;
-    this.#path = path;
   }
 
   async findAll() {
     const talks = await this.#load();
-    console.log('findAll:', Object.keys(talks));
     return Object.keys(talks).map((title) => talks[title]);
   }
 
   async findByTitle(title) {
     const talks = await this.#load();
-    console.log('findByTitle:', title);
     return talks[title];
   }
 
@@ -51,9 +43,8 @@ export class Repository {
 
   async #load() {
     try {
-      const json = this.#fs.readFileSync(this.#fileName, 'utf-8');
+      const json = await this.#fs.readFile(this.#fileName, 'utf-8');
       const mappedTalks = JSON.parse(json);
-      console.log('Loaded talks:', mappedTalks);
       return mappedTalks;
     } catch (error) {
       if (error.code === 'ENOENT') {
@@ -65,13 +56,11 @@ export class Repository {
   }
 
   async #store(talksMap) {
-    const dir = this.#path.dirname(this.#fileName);
-    if (!this.#fs.existsSync(dir)) {
-      this.#fs.mkdirSync(dir);
-    }
+    const pathName = path.dirname(this.#fileName);
+    await this.#fs.mkdir(pathName, { recursive: true });
 
     const json = JSON.stringify(talksMap);
-    this.#fs.writeFileSync(this.#fileName, json, 'utf-8');
+    await this.#fs.writeFile(this.#fileName, json, 'utf-8');
     this.#lastStored = json;
   }
 
@@ -95,21 +84,11 @@ class FsStub {
     this.#content = JSON.stringify(mappedTalks);
   }
 
-  readFileSync() {
+  async readFile() {
     return this.#content;
   }
 
-  writeFileSync() {}
+  async writeFile() {}
 
-  existsSync() {
-    return false;
-  }
-
-  mkdirSync() {}
-}
-
-class PathStub {
-  dirname() {
-    return 'nulled-dirname';
-  }
+  async mkdir() {}
 }
