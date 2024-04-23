@@ -1,12 +1,12 @@
 import { describe, expect, test } from '@jest/globals';
 
-import * as services from '../../../src/application/services.js';
+import { Services } from '../../../src/application/services.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
 describe('Services', () => {
   describe('Submit talk', () => {
     test('Adds talk to list of talks', async () => {
-      const repository = Repository.createNull();
+      const { services, repository } = configure({ talks: [] });
 
       await services.submitTalk(
         { title: 'Foobar', presenter: 'Alice', summary: 'Lorem ipsum' },
@@ -26,9 +26,9 @@ describe('Services', () => {
 
   describe('Post comment', () => {
     test('Adds comment to an existing talk', async () => {
-      const repository = Repository.createNull([
-        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
-      ]);
+      const { services, repository } = configure({
+        talks: [{ title: 'Foobar', summary: 'Lorem ipsum', comments: [] }],
+      });
 
       const { isSuccessful } = await services.addComment(
         { title: 'Foobar', comment: { author: 'Bob', message: 'new comment' } },
@@ -46,9 +46,9 @@ describe('Services', () => {
     });
 
     test('Reports an error if talk does not exists', async () => {
-      const repository = Repository.createNull([
-        { title: 'foo', summary: 'Lorem ipsum', comments: [] },
-      ]);
+      const { services, repository } = configure({
+        talks: [{ title: 'foo', summary: 'Lorem ipsum', comments: [] }],
+      });
 
       const { isSuccessful } = await services.addComment(
         { title: 'bar', comment: { author: 'Bob', message: 'new comment' } },
@@ -62,9 +62,9 @@ describe('Services', () => {
 
   describe('Delete talk', () => {
     test('Removes talk from list', async () => {
-      const repository = Repository.createNull([
-        { title: 'Foobar', summary: 'Lorem ipsum' },
-      ]);
+      const { services, repository } = configure({
+        talks: [{ title: 'Foobar', summary: 'Lorem ipsum' }],
+      });
 
       await services.deleteTalk({ title: 'Foobar' }, repository);
 
@@ -74,9 +74,9 @@ describe('Services', () => {
 
   describe('Talks', () => {
     test('Is a list of talks', async () => {
-      const repository = Repository.createNull([
-        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
-      ]);
+      const { services, repository } = configure({
+        talks: [{ title: 'Foobar', summary: 'Lorem ipsum', comments: [] }],
+      });
 
       const talks = await services.getTalks(repository);
 
@@ -88,9 +88,9 @@ describe('Services', () => {
 
   describe('Talk', () => {
     test('Is a single talk', async () => {
-      const repository = Repository.createNull([
-        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
-      ]);
+      const { services, repository } = configure({
+        talks: [{ title: 'Foobar', summary: 'Lorem ipsum', comments: [] }],
+      });
 
       const talk = await services.getTalk({ title: 'Foobar' }, repository);
 
@@ -102,9 +102,9 @@ describe('Services', () => {
     });
 
     test('Is undefined if talk does not exist', async () => {
-      const repository = Repository.createNull([
-        { title: 'foo', summary: 'Lorem ipsum', comments: [] },
-      ]);
+      const { services, repository } = configure({
+        talks: [{ title: 'foo', summary: 'Lorem ipsum', comments: [] }],
+      });
 
       const talk = await services.getTalk({ title: 'bar' }, repository);
 
@@ -112,3 +112,9 @@ describe('Services', () => {
     });
   });
 });
+
+function configure({ talks }) {
+  const repository = Repository.createNull({ talks });
+  const services = new Services(repository);
+  return { services, repository };
+}

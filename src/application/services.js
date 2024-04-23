@@ -1,30 +1,45 @@
-export async function getTalks(repository) {
-  return await repository.findAll();
-}
+import { Repository } from '../infrastructure/repository.js';
 
-export async function getTalk({ title }, repository) {
-  return await repository.findByTitle(title);
-}
-
-export async function submitTalk({ title, presenter, summary }, repository) {
-  const talk = { title, presenter, summary, comments: [] };
-  await repository.add(talk);
-}
-
-export async function deleteTalk({ title }, repository) {
-  await repository.remove(title);
-}
-
-export async function addComment(
-  { title, comment: { author, message } },
-  repository,
-) {
-  const talk = await repository.findByTitle(title);
-  if (talk == null) {
-    return { isSuccessful: false };
+export class Services {
+  static create() {
+    return new Services(new Repository());
   }
 
-  talk.comments.push({ author, message });
-  await repository.add(talk);
-  return { isSuccessful: true };
+  static createNull({ repository = Repository.createNull() }) {
+    return new Services(repository);
+  }
+
+  #repository;
+
+  constructor(repository) {
+    this.#repository = repository;
+  }
+
+  async getTalks() {
+    return await this.#repository.findAll();
+  }
+
+  async getTalk({ title }) {
+    return await this.#repository.findByTitle(title);
+  }
+
+  async submitTalk({ title, presenter, summary }) {
+    const talk = { title, presenter, summary, comments: [] };
+    await this.#repository.add(talk);
+  }
+
+  async deleteTalk({ title }) {
+    await this.#repository.remove(title);
+  }
+
+  async addComment({ title, comment: { author, message } }) {
+    const talk = await this.#repository.findByTitle(title);
+    if (talk == null) {
+      return { isSuccessful: false };
+    }
+
+    talk.comments.push({ author, message });
+    await this.#repository.add(talk);
+    return { isSuccessful: true };
+  }
 }
