@@ -50,9 +50,9 @@ export class Container extends Component {
     this.#unsubscribeStore();
   }
 
-  updateView() {
+  updateView({ force = false } = {}) {
     this.state = this.extractState(store.getState());
-    if (this.state === this.oldState) {
+    if (!force && this.state === this.oldState) {
       return;
     }
 
