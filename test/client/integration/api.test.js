@@ -1,8 +1,40 @@
 import { describe, expect, test } from '@jest/globals';
+
 import { Api } from '../../../public/js/infrastructure/api.js';
 
 describe('Api', () => {
-  test.todo('Get talks events');
+  test('Get talks events', async () => {
+    const api = Api.createNull([
+      {
+        status: 200,
+        headers: { etag: '1' },
+        body: [
+          {
+            title: 'title 1',
+            presenter: 'presenter 1',
+            summary: 'summary 1',
+            comments: [],
+          },
+        ],
+      },
+      { status: 400, headers: {}, body: null },
+    ]);
+    const talksGet = api.trackTalksGet();
+
+    await api.pollTalks(2);
+
+    expect(talksGet.data).toEqual([
+      [
+        {
+          title: 'title 1',
+          presenter: 'presenter 1',
+          summary: 'summary 1',
+          comments: [],
+        },
+      ],
+      'HTTP error: 400',
+    ]);
+  });
 
   test('Put talk', async () => {
     const api = Api.createNull();
