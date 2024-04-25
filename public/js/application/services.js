@@ -3,7 +3,7 @@ import { Repository } from '../infrastructure/repository.js';
 
 export class Services {
   static create(store) {
-    return new Services(store);
+    return new Services(store, Repository.create(), Api.create());
   }
 
   static createNull(store) {
@@ -14,7 +14,7 @@ export class Services {
   #repository;
   #api;
 
-  constructor(store, repository = Repository.create(), api = Api.create()) {
+  constructor(store, repository, api) {
     this.#store = store;
     this.#repository = repository;
     this.#api = api;
@@ -48,11 +48,11 @@ export class Services {
     await this.#api.deleteTalk(title);
   }
 
-  async pollTalks(runs) {
+  async pollTalks() {
     this.#api.addEventListener('talks-updated', (event) =>
       this.talksUpdated({ talks: event.talks }),
     );
-    await this.#api.pollTalks(runs);
+    await this.#api.getTalksEvents();
   }
 
   async talksUpdated({ talks }) {

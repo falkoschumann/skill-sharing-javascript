@@ -3,7 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Api } from '../../../public/js/infrastructure/api.js';
 
 describe('Api', () => {
-  test('Get talks events', async () => {
+  test('Gets talks events', async () => {
     const api = Api.createNull([
       {
         status: 200,
@@ -19,20 +19,22 @@ describe('Api', () => {
       },
       { status: 400, headers: {}, body: null },
     ]);
-    const talksGet = api.trackTalksGet();
+    const events = [];
+    api.addEventListener('talks-updated', (event) => events.push(event));
 
-    await api.pollTalks(2);
+    await api.getTalksEvents();
 
-    expect(talksGet.data).toEqual([
-      [
-        {
-          title: 'title 1',
-          presenter: 'presenter 1',
-          summary: 'summary 1',
-          comments: [],
-        },
-      ],
-      'HTTP error: 400',
+    expect(events).toEqual([
+      expect.objectContaining({
+        talks: [
+          {
+            title: 'title 1',
+            presenter: 'presenter 1',
+            summary: 'summary 1',
+            comments: [],
+          },
+        ],
+      }),
     ]);
   });
 

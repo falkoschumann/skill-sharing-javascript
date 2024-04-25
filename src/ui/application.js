@@ -5,12 +5,12 @@ import { Services } from '../application/services.js';
 
 export class Application {
   static create() {
-    return new Application('./public');
+    return new Application('./public', Services.create(), express());
   }
 
   #app;
 
-  constructor(publicPath, services = Services.create(), app = express()) {
+  constructor(publicPath, services, app) {
     this.#app = app;
     app.set('x-powered-by', false);
     app.use('/', express.static(publicPath));

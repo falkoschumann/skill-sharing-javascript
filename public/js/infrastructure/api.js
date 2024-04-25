@@ -1,8 +1,8 @@
 import { ConfigurableResponses } from '../util/configurable-responses.js';
 import { OutputTracker } from '../util/output-tracker.js';
+import { LongPollingClient } from './long-polling-client.js';
 
 const TALKS_UPDATED_EVENT = 'talks-updated';
-const TALKS_GET_EVENT = 'talk-get';
 const TALK_PUT_EVENT = 'talk-put';
 const TALK_DELETED_EVENT = 'talk-deleted';
 const COMMENT_POSTED_EVENT = 'comment-posted';
@@ -16,7 +16,10 @@ export class TalksUpdatedEvent extends Event {
 
 export class Api extends EventTarget {
   static create() {
-    return new Api(globalThis.fetch.bind(globalThis));
+    return new Api(
+      globalThis.fetch.bind(globalThis),
+      LongPollingClient.create(),
+    );
   }
 
   static createNull(
@@ -26,63 +29,25 @@ export class Api extends EventTarget {
       body: [],
     },
   ) {
-    return new Api(createFetchStub(talks));
+    return new Api(createFetchStub(talks), LongPollingClient.createNull(talks));
   }
 
   #fetch;
+  #talksEventsClient;
 
-  constructor(fetch) {
+  constructor(fetch, talksEventsClient) {
     super();
     this.#fetch = fetch;
+    this.#talksEventsClient = talksEventsClient;
+
+    talksEventsClient.addEventListener('message', (event) => {
+      const talks = event.data;
+      this.dispatchEvent(new TalksUpdatedEvent(talks));
+    });
   }
 
-  async pollTalks(runs = -1) {
-    // TODO extract polling logic to a separate class
-    // TODO replace long polling with server-sent events (sent all talks on each update)
-    let tag;
-    let timeout = 0.5;
-    while (runs === -1 || runs-- > 0) {
-      try {
-        const response = await this.#fetch('/api/talks', {
-          headers: tag && {
-            'If-None-Match': tag,
-            Prefer: 'wait=90',
-          },
-        });
-
-        if (response.status === 304) {
-          this.dispatchEvent(
-            new CustomEvent(TALKS_GET_EVENT, { detail: 'not modified' }),
-          );
-          continue;
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        tag = response.headers.get('ETag');
-        const talks = await response.json();
-        this.dispatchEvent(new TalksUpdatedEvent(talks));
-
-        timeout = 0.5;
-
-        this.dispatchEvent(new CustomEvent(TALKS_GET_EVENT, { detail: talks }));
-      } catch (error) {
-        this.dispatchEvent(
-          new CustomEvent(TALKS_GET_EVENT, { detail: error.message }),
-        );
-        timeout *= 2;
-        if (timeout > 30) {
-          timeout = 30;
-        }
-        await new Promise((resolve) => setTimeout(resolve, timeout * 1000));
-      }
-    }
-  }
-
-  trackTalksGet() {
-    return OutputTracker.create(this, TALKS_GET_EVENT);
+  async getTalksEvents() {
+    await this.#talksEventsClient.connect();
   }
 
   async putTalk({ title, presenter, summary }) {

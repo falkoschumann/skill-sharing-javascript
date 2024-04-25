@@ -126,106 +126,19 @@ describe('Services', () => {
               },
             ],
           },
+          {
+            status: 400,
+            headers: {},
+            body: null,
+          },
         ],
       });
 
-      await services.pollTalks(2);
+      await services.pollTalks();
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
         { title: 'title 2', presenter: 'presenter 2', summary: 'summary 2' },
-      ]);
-    });
-
-    test('Does not update talks, if not modified', async () => {
-      const { services, store, api } = configure({
-        talks: [
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-          { status: 304 },
-        ],
-      });
-      const talksGet = api.trackTalksGet();
-
-      await services.pollTalks(2);
-
-      expect(store.getState().talks).toEqual([
-        { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
-      ]);
-      expect(talksGet.data).toEqual([
-        [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
-        'not modified',
-      ]);
-    });
-
-    test('Recovers after network error', async () => {
-      const { services, store, api } = configure({
-        talks: [
-          new Error('network error'),
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-        ],
-      });
-      const talksGet = api.trackTalksGet();
-
-      await services.pollTalks(2);
-
-      expect(store.getState().talks).toEqual([
-        { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
-      ]);
-      expect(talksGet.data).toEqual([
-        'network error',
-        [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
-      ]);
-    });
-
-    test('Recovers after server error', async () => {
-      const { services, store, api } = configure({
-        talks: [
-          {
-            status: 500,
-          },
-          {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
-          },
-        ],
-      });
-      const talksGet = api.trackTalksGet();
-
-      await services.pollTalks(2);
-
-      expect(store.getState().talks).toEqual([
-        { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
-      ]);
-      expect(talksGet.data).toEqual([
-        'HTTP error: 500',
-        [{ title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' }],
       ]);
     });
   });
