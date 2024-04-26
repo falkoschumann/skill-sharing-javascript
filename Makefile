@@ -79,6 +79,12 @@ sea: build
 	sed -i '' "s/publicPath = '\.\/public'/publicPath = path\.join\(__dirname, '\.\.\/public'\)/g" build/index.js
 	npx pkg --no-bytecode .
 
+# Bun supports embedded static files but needs a JavaScript to import each file
+sea-bun: build
+	npx bun build src/main.js --compile --target=bun-darwin-x64 --outfile build/skillsharing-macos
+	npx bun build src/main.js --compile --target=bun-linux-x64 --outfile build/skillsharing-linux
+	npx bun build src/main.js --compile --target=bun-windows-x64 --outfile build/skillsharing-windows
+
 .PHONY: all clean distclean dist check format start dev dev-e2e \
 	test unit-tests integration-tests e2e-tests e2e watch coverage \
 	build version
