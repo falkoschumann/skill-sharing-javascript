@@ -39,15 +39,13 @@ export class Api extends EventTarget {
     super();
     this.#fetch = fetch;
     this.#talksEventsClient = talksEventsClient;
-
-    talksEventsClient.addEventListener('message', (event) => {
-      const talks = event.data;
-      this.dispatchEvent(new TalksUpdatedEvent(talks));
-    });
   }
 
   async getTalksEvents() {
-    await this.#talksEventsClient.connect();
+    await this.#talksEventsClient.connect((event) => {
+      const talks = event.data;
+      this.dispatchEvent(new TalksUpdatedEvent(talks));
+    });
   }
 
   async putTalk({ title, presenter, summary }) {

@@ -6,22 +6,37 @@ describe('Long polling client', () => {
   test('Stops on client error', async () => {
     const client = LongPollingClient.createNull();
     const events = [];
-    client.addEventListener('message', (event) => events.push(event));
 
-    await client.connect();
+    await client.connect((event) => events.push(event));
 
     expect(events).toEqual([]);
   });
 
-  test('Receives a data', async () => {
+  test('Connects to the server', async () => {
+    const client = LongPollingClient.createNull();
+
+    await client.connect(() => {});
+
+    expect(client.isConnected).toBe(true);
+  });
+
+  test('Closes the connection', async () => {
+    const client = LongPollingClient.createNull();
+    await client.connect(() => {});
+
+    client.close();
+
+    expect(client.isConnected).toBe(false);
+  });
+
+  test('Receives a message', async () => {
     const client = LongPollingClient.createNull([
       { status: 200, headers: { etag: '1' }, body: { anwser: 42 } },
       { status: 400, headers: {}, body: [] },
     ]);
     const events = [];
-    client.addEventListener('message', (event) => events.push(event));
 
-    await client.connect();
+    await client.connect((event) => events.push(event));
 
     expect(events).toEqual([expect.objectContaining({ data: { anwser: 42 } })]);
   });
@@ -34,9 +49,8 @@ describe('Long polling client', () => {
       { status: 400, headers: {}, body: null },
     ]);
     const events = [];
-    client.addEventListener('message', (event) => events.push(event));
 
-    await client.connect();
+    await client.connect((event) => events.push(event));
 
     expect(events).toEqual([
       expect.objectContaining({ data: { counter: 1 } }),
@@ -52,9 +66,8 @@ describe('Long polling client', () => {
       { status: 400, headers: {}, body: null },
     ]);
     const events = [];
-    client.addEventListener('message', (event) => events.push(event));
 
-    await client.connect();
+    await client.connect((event) => events.push(event));
 
     expect(events).toEqual([
       expect.objectContaining({ data: { counter: 1 } }),
@@ -70,9 +83,8 @@ describe('Long polling client', () => {
       { status: 400, headers: {}, body: null },
     ]);
     const events = [];
-    client.addEventListener('message', (event) => events.push(event));
 
-    await client.connect();
+    await client.connect((event) => events.push(event));
 
     expect(events).toEqual([
       expect.objectContaining({ data: { counter: 1 } }),

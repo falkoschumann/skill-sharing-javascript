@@ -1,6 +1,6 @@
 import { ConfigurableResponses } from '../util/configurable-responses.js';
 
-export class LongPollingClient extends EventTarget {
+export class LongPollingClient {
   static create(timeout = 1000) {
     return new LongPollingClient(timeout, globalThis.fetch.bind(globalThis));
   }
@@ -17,16 +17,21 @@ export class LongPollingClient extends EventTarget {
 
   #timeout;
   #fetch;
+  #connected = false;
 
   constructor(timeout, fetch) {
-    super();
     this.#timeout = timeout;
     this.#fetch = fetch;
   }
 
-  async connect() {
+  get isConnected() {
+    return this.#connected;
+  }
+
+  async connect(eventListener) {
     let tag;
-    while (true) {
+    this.#connected = true;
+    while (this.isConnected) {
       try {
         const response = await this.#fetch('/api/talks', {
           headers: tag && {
@@ -53,12 +58,16 @@ export class LongPollingClient extends EventTarget {
 
         tag = response.headers.get('ETag');
         const data = await response.json();
-        this.dispatchEvent(new MessageEvent('message', { data }));
+        eventListener(new MessageEvent('message', { data }));
       } catch (error) {
         console.error(error);
         await new Promise((resolve) => setTimeout(resolve, this.#timeout));
       }
     }
+  }
+
+  async close() {
+    this.#connected = false;
   }
 }
 
