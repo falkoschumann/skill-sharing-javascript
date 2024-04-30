@@ -19,6 +19,7 @@ export class SseClient {
   }
 
   async connect(eventListenerOrEventType, eventListener) {
+    // TODO reject if already connected
     const eventType =
       typeof eventListenerOrEventType === 'string'
         ? eventListenerOrEventType

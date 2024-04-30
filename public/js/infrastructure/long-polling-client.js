@@ -29,6 +29,7 @@ export class LongPollingClient {
   }
 
   async connect(eventListener) {
+    // TODO reject if already connected
     let tag;
     this.#connected = true;
     while (this.isConnected) {
