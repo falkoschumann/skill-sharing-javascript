@@ -3,6 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Services } from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
+import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
 import { createStore } from '../../../public/js/util/store.js';
 
@@ -44,11 +45,7 @@ describe('Services', () => {
       await services.submitTalk({ title: 'Foobar', summary: 'Lorem ipsum' });
 
       expect(talksPut.data).toEqual([
-        {
-          title: 'Foobar',
-          presenter: 'Anon',
-          summary: 'Lorem ipsum',
-        },
+        { title: 'Foobar', presenter: 'Anon', summary: 'Lorem ipsum' },
       ]);
     });
   });
@@ -78,11 +75,14 @@ describe('Services', () => {
   });
 
   describe('Talks', () => {
-    test('Talks updated', async () => {
-      const { services, store } = configure();
+    test('Updates talks', async () => {
+      const { services, store, talksClient } = configure();
+      await services.connectTalks();
 
-      await services.talksUpdated({
-        talks: [
+      await talksClient.simulateResponse({
+        status: 200,
+        headers: { etag: '1' },
+        body: [
           {
             title: 'title 1',
             presenter: 'presenter 1',
@@ -90,64 +90,37 @@ describe('Services', () => {
           },
         ],
       });
-
-      expect(store.getState().talks).toEqual([
-        { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
-      ]);
-    });
-
-    test.skip('Polls talks', async () => {
-      const { services, store } = configure({
-        talks: [
+      await talksClient.simulateResponse({
+        status: 200,
+        headers: { etag: '2' },
+        body: [
           {
-            status: 200,
-            headers: { etag: '1' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-            ],
+            title: 'title 1',
+            presenter: 'presenter 1',
+            summary: 'summary 1',
           },
           {
-            status: 200,
-            headers: { etag: '2' },
-            body: [
-              {
-                title: 'title 1',
-                presenter: 'presenter 1',
-                summary: 'summary 1',
-              },
-              {
-                title: 'title 2',
-                presenter: 'presenter 2',
-                summary: 'summary 2',
-              },
-            ],
-          },
-          {
-            status: 400,
-            headers: {},
-            body: null,
+            title: 'title 2',
+            presenter: 'presenter 2',
+            summary: 'summary 2',
           },
         ],
       });
-
-      await services.pollTalks();
 
       expect(store.getState().talks).toEqual([
         { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
         { title: 'title 2', presenter: 'presenter 2', summary: 'summary 2' },
       ]);
+      talksClient.close();
     });
   });
 });
 
-function configure({ settings, talks } = {}) {
+function configure({ settings } = {}) {
   const store = createStore(reducer);
   const repository = Repository.createNull(settings);
-  const api = Api.createNull(talks);
+  const talksClient = LongPollingClient.createNull();
+  const api = new Api(async () => {}, talksClient);
   const services = new Services(store, repository, api);
-  return { services, store, repository, api };
+  return { services, store, repository, api, talksClient };
 }

@@ -1,13 +1,23 @@
+import { reducer } from '../domain/reducer.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
+import { createStore } from '../util/store.js';
 
 export class Services {
-  static create(store) {
-    return new Services(store, Repository.create(), Api.create());
+  static create() {
+    return new Services(
+      createStore(reducer),
+      Repository.create(),
+      Api.create(),
+    );
   }
 
-  static createNull(store) {
-    return new Services(store, Repository.createNull(), Api.createNull());
+  static createNull() {
+    return new Services(
+      createStore(reducer),
+      Repository.createNull(),
+      Api.createNull(),
+    );
   }
 
   #store;
@@ -18,6 +28,10 @@ export class Services {
     this.#store = store;
     this.#repository = repository;
     this.#api = api;
+  }
+
+  get store() {
+    return this.#store;
   }
 
   async changeUser({ username }) {
@@ -48,14 +62,10 @@ export class Services {
     await this.#api.deleteTalk(title);
   }
 
-  async pollTalks() {
+  async connectTalks() {
     this.#api.addEventListener('talks-updated', (event) =>
-      this.talksUpdated({ talks: event.talks }),
+      this.#store.dispatch({ type: 'talks-updated', talks: event.talks }),
     );
-    await this.#api.getTalksEvents();
-  }
-
-  async talksUpdated({ talks }) {
-    this.#store.dispatch({ type: 'talks-updated', talks });
+    await this.#api.connectTalks();
   }
 }

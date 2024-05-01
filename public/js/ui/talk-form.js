@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 
 import { Component } from './components.js';
 
-class TalkForm extends Component {
+class TalkFormComponent extends Component {
   getView() {
     return html`
       <form @submit=${(e) => this.#formSubmitted(e)}>
@@ -42,4 +42,4 @@ class TalkForm extends Component {
   }
 }
 
-window.customElements.define('s-talk-form', TalkForm);
+window.customElements.define('s-talk-form', TalkFormComponent);

@@ -1,5 +1,5 @@
 export class LongPollingClient {
-  static create(timeout = 1000) {
+  static create({ timeout = 1000 } = {}) {
     return new LongPollingClient(timeout, globalThis.fetch.bind(globalThis));
   }
 
@@ -25,15 +25,20 @@ export class LongPollingClient {
 
   async connect(eventListener) {
     this.#handleConnect(eventListener);
-    while (this.isConnected) {
-      try {
-        const headers = this.#createHeaders();
-        const response = await this.#fetch('/api/talks', { headers });
-        await this.#handleResponse(response);
-      } catch (error) {
-        await this.#handleError(error);
-      }
-    }
+    new Promise((resolve) => {
+      (async () => {
+        while (this.isConnected) {
+          try {
+            const headers = this.#createHeaders();
+            const response = await this.#fetch('/api/talks', { headers });
+            await this.#handleResponse(response);
+          } catch (error) {
+            await this.#handleError(error);
+          }
+        }
+        resolve();
+      })();
+    });
   }
 
   async close() {
@@ -92,8 +97,10 @@ export class LongPollingClient {
   }
 }
 
-async function fetchStub() {
-  throw new Error('fetch not implemented');
+async function fetchStub(url, options) {
+  await new Promise((resolve, reject) => {
+    options.signal.addEventListener('abort', () => reject());
+  });
 }
 
 class ResponseStub {

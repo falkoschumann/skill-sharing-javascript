@@ -5,10 +5,10 @@ import './talks.js';
 import './user-field.js';
 import { Component } from './components.js';
 
-class SkillSharingApp extends Component {
+class SkillSharingComponent extends Component {
   connectedCallback() {
     super.connectedCallback();
-    this.services.pollTalks();
+    this.services.connectTalks();
   }
 
   getView() {
@@ -21,4 +21,4 @@ class SkillSharingApp extends Component {
   }
 }
 
-window.customElements.define('s-skill-sharing-app', SkillSharingApp);
+window.customElements.define('s-skill-sharing', SkillSharingComponent);

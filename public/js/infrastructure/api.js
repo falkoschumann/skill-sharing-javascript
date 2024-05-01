@@ -1,4 +1,3 @@
-import { ConfigurableResponses } from '../util/configurable-responses.js';
 import { OutputTracker } from '../util/output-tracker.js';
 import { LongPollingClient } from './long-polling-client.js';
 
@@ -22,27 +21,21 @@ export class Api extends EventTarget {
     );
   }
 
-  static createNull(
-    talks = {
-      status: 200,
-      headers: {},
-      body: [],
-    },
-  ) {
-    return new Api(createFetchStub(talks), LongPollingClient.createNull(talks));
+  static createNull() {
+    return new Api(fetchStub, LongPollingClient.createNull());
   }
 
   #fetch;
-  #talksEventsClient;
+  #talksClient;
 
-  constructor(fetch, talksEventsClient) {
+  constructor(fetch, talksClient) {
     super();
     this.#fetch = fetch;
-    this.#talksEventsClient = talksEventsClient;
+    this.#talksClient = talksClient;
   }
 
-  async getTalksEvents() {
-    await this.#talksEventsClient.connect((event) => {
+  async connectTalks() {
+    await this.#talksClient.connect((event) => {
       const talks = event.data;
       this.dispatchEvent(new TalksUpdatedEvent(talks));
     });
@@ -98,42 +91,4 @@ export class Api extends EventTarget {
   }
 }
 
-function createFetchStub(talks) {
-  const responses = ConfigurableResponses.create(talks);
-  return async function () {
-    const response = responses.next();
-    if (response instanceof Error) {
-      throw response;
-    }
-
-    return new ResponseStub(response);
-  };
-}
-
-class ResponseStub {
-  #status;
-  #headers;
-  #body;
-
-  constructor({ status, headers, body }) {
-    this.#status = status;
-    this.#headers = new Headers(headers);
-    this.#body = body;
-  }
-
-  get ok() {
-    return this.#status >= 200 && this.#status < 300;
-  }
-
-  get status() {
-    return this.#status;
-  }
-
-  get headers() {
-    return this.#headers;
-  }
-
-  json() {
-    return this.#body;
-  }
-}
+async function fetchStub() {}

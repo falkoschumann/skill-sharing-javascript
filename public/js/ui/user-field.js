@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 
 import { Container } from './components.js';
 
-class UserField extends Container {
+class UserFieldComponent extends Container {
   connectedCallback() {
     super.connectedCallback();
     this.services.loadUser();
@@ -26,4 +26,4 @@ class UserField extends Container {
   }
 }
 
-window.customElements.define('s-user-field', UserField);
+window.customElements.define('s-user-field', UserFieldComponent);

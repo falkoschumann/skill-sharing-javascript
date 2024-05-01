@@ -1,1 +1,1 @@
-import './ui/skill-sharing-app.js';
+import './ui/skill-sharing.js';

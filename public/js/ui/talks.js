@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 
 import { Container } from './components.js';
 
-class Talks extends Container {
+class TalksComponent extends Container {
   extractState(state) {
     return state.talks;
   }
@@ -62,4 +62,4 @@ class Talks extends Container {
   }
 }
 
-window.customElements.define('s-talks', Talks);
+window.customElements.define('s-talks', TalksComponent);
