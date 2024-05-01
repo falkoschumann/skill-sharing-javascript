@@ -18,6 +18,7 @@ export class LongPollingClient {
   #timeout;
   #fetch;
   #connected = false;
+  #aboutController = new AbortController();
   #clientError;
   #tag;
   #eventListener;
@@ -45,7 +46,7 @@ export class LongPollingClient {
   }
 
   async close() {
-    // TODO use AbortController to stop fetching
+    this.#aboutController.abort();
     this.#connected = false;
   }
 
@@ -60,12 +61,12 @@ export class LongPollingClient {
   }
 
   #createHeaders() {
-    return (
-      this.#tag && {
-        'If-None-Match': this.#tag,
-        Prefer: 'wait=90',
-      }
-    );
+    const headers = { signal: this.#aboutController.signal };
+    if (this.#tag) {
+      headers['If-None-Match'] = this.#tag;
+      headers.Prefer = 'wait=90';
+    }
+    return headers;
   }
 
   async #handleResponse(response) {
