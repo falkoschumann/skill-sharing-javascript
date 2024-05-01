@@ -18,6 +18,9 @@ export class LongPollingClient {
   #timeout;
   #fetch;
   #connected = false;
+  #clientError;
+  #tag;
+  #eventListener;
 
   constructor(timeout, fetch) {
     this.#timeout = timeout;
@@ -29,46 +32,63 @@ export class LongPollingClient {
   }
 
   async connect(eventListener) {
-    // TODO reject if already connected
-    let tag;
-    this.#connected = true;
-    while (this.isConnected) {
+    this.#handleConnect(eventListener);
+    while (this.isConnected && !this.#clientError) {
       try {
-        const response = await this.#fetch('/api/talks', {
-          headers: tag && {
-            'If-None-Match': tag,
-            Prefer: 'wait=90',
-          },
-        });
-
-        if (response.status === 304) {
-          continue;
-        }
-
-        if (response.status >= 400 && response.status < 500) {
-          // stop polling on client errors
-          break;
-        }
-
-        if (!response.ok) {
-          // retry on server errors
-          throw new Error(
-            `HTTP error: ${response.status} ${response.statusText}`,
-          );
-        }
-
-        tag = response.headers.get('ETag');
-        const data = await response.json();
-        eventListener(new MessageEvent('message', { data }));
+        const headers = this.#createHeaders();
+        const response = await this.#fetch('/api/talks', { headers });
+        await this.#handleResponse(response);
       } catch (error) {
-        console.error(error);
-        await new Promise((resolve) => setTimeout(resolve, this.#timeout));
+        await this.#handleError(error);
       }
     }
   }
 
   async close() {
+    // TODO use AbortController to stop fetching
     this.#connected = false;
+  }
+
+  #handleConnect(eventListener) {
+    // TODO reject if already connected
+    this.#eventListener = eventListener;
+    this.#connected = true;
+    this.#clientError = false;
+  }
+
+  #createHeaders() {
+    return (
+      this.#tag && {
+        'If-None-Match': this.#tag,
+        Prefer: 'wait=90',
+      }
+    );
+  }
+
+  async #handleResponse(response) {
+    if (response.status === 304) {
+      return;
+    }
+
+    if (response.status >= 400 && response.status < 500) {
+      // stop polling on client errors
+      this.#clientError = true;
+      return;
+    }
+
+    if (!response.ok) {
+      // retry on server errors
+      throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+    }
+
+    this.#tag = response.headers.get('ETag');
+    const data = await response.json();
+    this.#eventListener(new MessageEvent('message', { data }));
+  }
+
+  async #handleError(error) {
+    console.error(error);
+    await new Promise((resolve) => setTimeout(resolve, this.#timeout));
   }
 }
 
