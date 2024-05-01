@@ -20,6 +20,15 @@ describe('Long polling client', () => {
     expect(client.isConnected).toBe(true);
   });
 
+  test('Rejects multiple connections', async () => {
+    const client = LongPollingClient.createNull();
+    await client.connect(() => {});
+
+    const result = client.connect(() => {});
+
+    await expect(result).rejects.toThrow();
+  });
+
   test('Closes the connection', async () => {
     const client = LongPollingClient.createNull();
     await client.connect(() => {});

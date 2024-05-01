@@ -50,7 +50,10 @@ export class LongPollingClient {
   }
 
   #handleConnect(eventListener) {
-    // TODO reject if already connected
+    if (this.isConnected) {
+      throw new Error('Already connected.');
+    }
+
     this.#eventListener = eventListener;
     this.#connected = true;
     this.#clientError = false;
