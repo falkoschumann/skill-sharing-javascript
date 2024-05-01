@@ -11,6 +11,15 @@ describe('SSE client', () => {
     expect(client.isConnected).toBe(true);
   });
 
+  test('Rejects multiple connections', async () => {
+    const client = SseClient.createNull();
+    await client.connect(() => {});
+
+    const connectTwice = client.connect(() => {});
+
+    expect(connectTwice).rejects.toThrow();
+  });
+
   test('Closes the connection', async () => {
     const client = SseClient.createNull();
     await client.connect(() => {});

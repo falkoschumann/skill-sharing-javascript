@@ -19,7 +19,10 @@ export class SseClient {
   }
 
   async connect(eventListenerOrEventType, eventListener) {
-    // TODO reject if already connected
+    if (this.isConnected) {
+      throw new Error('Already connected.');
+    }
+
     const eventType =
       typeof eventListenerOrEventType === 'string'
         ? eventListenerOrEventType
@@ -27,7 +30,7 @@ export class SseClient {
     if (typeof eventListenerOrEventType === 'function') {
       eventListener = eventListenerOrEventType;
     }
-    return new Promise((resolve) => {
+    await new Promise((resolve) => {
       this.#eventSource = new this.#eventSourceConstructor('/api/talks');
       this.#eventSource.addEventListener(eventType, eventListener);
       this.#eventSource.addEventListener('open', () => resolve());
