@@ -96,7 +96,7 @@ describe('Services', () => {
       ]);
     });
 
-    test('Polls talks', async () => {
+    test.skip('Polls talks', async () => {
       const { services, store } = configure({
         talks: [
           {

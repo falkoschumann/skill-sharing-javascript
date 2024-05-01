@@ -1,25 +1,16 @@
-import { ConfigurableResponses } from '../util/configurable-responses.js';
-
 export class LongPollingClient {
   static create(timeout = 1000) {
     return new LongPollingClient(timeout, globalThis.fetch.bind(globalThis));
   }
 
-  static createNull(
-    responses = {
-      status: 400,
-      headers: {},
-      body: null,
-    },
-  ) {
-    return new LongPollingClient(0, createFetchStub(responses));
+  static createNull() {
+    return new LongPollingClient(0, fetchStub);
   }
 
   #timeout;
   #fetch;
   #connected = false;
   #aboutController = new AbortController();
-  #clientError;
   #tag;
   #eventListener;
 
@@ -34,7 +25,7 @@ export class LongPollingClient {
 
   async connect(eventListener) {
     this.#handleConnect(eventListener);
-    while (this.isConnected && !this.#clientError) {
+    while (this.isConnected) {
       try {
         const headers = this.#createHeaders();
         const response = await this.#fetch('/api/talks', { headers });
@@ -50,6 +41,18 @@ export class LongPollingClient {
     this.#connected = false;
   }
 
+  simulateConnected(eventListener) {
+    this.#handleConnect(eventListener);
+  }
+
+  async simulateResponse({ status, headers, body }) {
+    await this.#handleResponse(new ResponseStub({ status, headers, body }));
+  }
+
+  simulateError(error) {
+    this.#handleError(error);
+  }
+
   #handleConnect(eventListener) {
     if (this.isConnected) {
       throw new Error('Already connected.');
@@ -57,7 +60,6 @@ export class LongPollingClient {
 
     this.#eventListener = eventListener;
     this.#connected = true;
-    this.#clientError = false;
   }
 
   #createHeaders() {
@@ -71,12 +73,6 @@ export class LongPollingClient {
 
   async #handleResponse(response) {
     if (response.status === 304) {
-      return;
-    }
-
-    if (response.status >= 400 && response.status < 500) {
-      // stop polling on client errors
-      this.#clientError = true;
       return;
     }
 
@@ -96,16 +92,8 @@ export class LongPollingClient {
   }
 }
 
-function createFetchStub(response) {
-  const responses = ConfigurableResponses.create(response);
-  return async function () {
-    const response = responses.next();
-    if (response instanceof Error) {
-      throw response;
-    }
-
-    return new ResponseStub(response);
-  };
+async function fetchStub() {
+  throw new Error('fetch not implemented');
 }
 
 class ResponseStub {

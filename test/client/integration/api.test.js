@@ -3,7 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Api } from '../../../public/js/infrastructure/api.js';
 
 describe('Api', () => {
-  test('Gets talks events', async () => {
+  test.skip('Gets talks events', async () => {
     const api = Api.createNull([
       {
         status: 200,

@@ -3,35 +3,26 @@ import { describe, expect, test } from '@jest/globals';
 import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
 
 describe('Long polling client', () => {
-  test('Stops on client error', async () => {
-    const client = LongPollingClient.createNull();
-    const events = [];
-
-    await client.connect((event) => events.push(event));
-
-    expect(events).toEqual([]);
-  });
-
   test('Connects to the server', async () => {
     const client = LongPollingClient.createNull();
 
-    await client.connect(() => {});
+    client.simulateConnected(() => {});
 
     expect(client.isConnected).toBe(true);
   });
 
-  test('Rejects multiple connections', async () => {
+  test('Rejects multiple connections', () => {
     const client = LongPollingClient.createNull();
-    await client.connect(() => {});
+    client.simulateConnected(() => {});
 
-    const result = client.connect(() => {});
+    const connectTwice = () => client.simulateConnected(() => {});
 
-    await expect(result).rejects.toThrow();
+    expect(connectTwice).toThrow();
   });
 
-  test('Closes the connection', async () => {
+  test('Closes the connection', () => {
     const client = LongPollingClient.createNull();
-    await client.connect(() => {});
+    client.simulateConnected(() => {});
 
     client.close();
 
@@ -39,27 +30,35 @@ describe('Long polling client', () => {
   });
 
   test('Receives a message', async () => {
-    const client = LongPollingClient.createNull([
-      { status: 200, headers: { etag: '1' }, body: { anwser: 42 } },
-      { status: 400, headers: {}, body: [] },
-    ]);
+    const client = LongPollingClient.createNull();
     const events = [];
+    client.simulateConnected((event) => events.push(event));
 
-    await client.connect((event) => events.push(event));
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '1' },
+      body: { anwser: 42 },
+    });
 
     expect(events).toEqual([expect.objectContaining({ data: { anwser: 42 } })]);
   });
 
   test('Ignores not modified', async () => {
-    const client = LongPollingClient.createNull([
-      { status: 200, headers: { etag: '1' }, body: { counter: 1 } },
-      { status: 304, headers: {}, body: null },
-      { status: 200, headers: { etag: '2' }, body: { counter: 2 } },
-      { status: 400, headers: {}, body: null },
-    ]);
+    const client = LongPollingClient.createNull();
     const events = [];
+    client.simulateConnected((event) => events.push(event));
 
-    await client.connect((event) => events.push(event));
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '1' },
+      body: { counter: 1 },
+    });
+    await client.simulateResponse({ status: 304, headers: {}, body: null });
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '2' },
+      body: { counter: 2 },
+    });
 
     expect(events).toEqual([
       expect.objectContaining({ data: { counter: 1 } }),
@@ -67,34 +66,53 @@ describe('Long polling client', () => {
     ]);
   });
 
-  test('Recovers after server error', async () => {
-    const client = LongPollingClient.createNull([
-      { status: 200, headers: { etag: '1' }, body: { counter: 1 } },
-      { status: 500, headers: {}, body: null },
-      { status: 200, headers: { etag: '2' }, body: { counter: 2 } },
-      { status: 400, headers: {}, body: null },
-    ]);
+  test('Recovers after error', async () => {
+    const client = LongPollingClient.createNull();
     const events = [];
+    client.simulateConnected((event) => events.push(event));
 
-    await client.connect((event) => events.push(event));
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '1' },
+      body: { counter: 1 },
+    });
+    const result = client.simulateResponse({
+      status: 500,
+      headers: {},
+      body: null,
+    });
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '2' },
+      body: { counter: 2 },
+    });
 
+    expect(client.isConnected).toBe(true);
     expect(events).toEqual([
       expect.objectContaining({ data: { counter: 1 } }),
       expect.objectContaining({ data: { counter: 2 } }),
     ]);
+    await expect(result).rejects.toThrow(/^HTTP error: 500/);
   });
 
   test('Recovers after network error', async () => {
-    const client = LongPollingClient.createNull([
-      { status: 200, headers: { etag: '1' }, body: { counter: 1 } },
-      new Error('network error'),
-      { status: 200, headers: { etag: '2' }, body: { counter: 2 } },
-      { status: 400, headers: {}, body: null },
-    ]);
+    const client = LongPollingClient.createNull();
     const events = [];
+    client.simulateConnected((event) => events.push(event));
 
-    await client.connect((event) => events.push(event));
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '1' },
+      body: { counter: 1 },
+    });
+    client.simulateError(new Error('network error'));
+    await client.simulateResponse({
+      status: 200,
+      headers: { etag: '2' },
+      body: { counter: 2 },
+    });
 
+    expect(client.isConnected).toBe(true);
     expect(events).toEqual([
       expect.objectContaining({ data: { counter: 1 } }),
       expect.objectContaining({ data: { counter: 2 } }),
