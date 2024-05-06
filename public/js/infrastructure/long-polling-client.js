@@ -99,7 +99,7 @@ export class LongPollingClient {
 
 async function fetchStub(url, options) {
   await new Promise((resolve, reject) => {
-    options.signal.addEventListener('abort', () => reject());
+    options?.signal?.addEventListener('abort', () => reject());
   });
 }
 

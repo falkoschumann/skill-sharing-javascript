@@ -5,13 +5,28 @@ export class TalksController {
 
   constructor(services, app) {
     this.#services = services;
-    app.get('/api/talks', (req, res) => this.#getTalks(req, res));
-    app.get('/api/talks/:title', (req, res) => this.#getTalk(req, res));
-    app.put('/api/talks/:title', (req, res) => this.#putTalk(req, res));
-    app.delete('/api/talks/:title', (req, res) => this.deleteTalk(req, res));
-    app.post('/api/talks/:title/comments', (req, res) =>
-      this.postComment(req, res),
+    app.get('/api/talks', this.#tryHandle(this.#getTalks.bind(this)));
+    app.get('/api/talks/:title', this.#tryHandle(this.#getTalk.bind(this)));
+    app.put('/api/talks/:title', this.#tryHandle(this.#putTalk.bind(this)));
+    app.delete(
+      '/api/talks/:title',
+      this.#tryHandle(this.#deleteTalk.bind(this)),
     );
+    app.post(
+      '/api/talks/:title/comments',
+      this.#tryHandle(this.#postComment.bind(this)),
+    );
+  }
+
+  #tryHandle(handler) {
+    // TODO handle exception is obsolete with with Express 5
+    return async (req, res, next) => {
+      try {
+        await handler(req, res);
+      } catch (error) {
+        next(error);
+      }
+    };
   }
 
   async #getTalks(req, res) {
@@ -103,14 +118,14 @@ export class TalksController {
     }
   }
 
-  async deleteTalk(req, res) {
+  async #deleteTalk(req, res) {
     const title = decodeURIComponent(req.params.title);
     await this.#services.deleteTalk({ title });
     await this.#talksUpdated();
     this.#reply(res, { status: 204 });
   }
 
-  async postComment(req, res) {
+  async #postComment(req, res) {
     const comment = parseComment(req);
     if (comment == null) {
       this.#reply(res, { status: 400, body: 'Bad comment data' });
