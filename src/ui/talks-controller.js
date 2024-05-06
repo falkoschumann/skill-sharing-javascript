@@ -5,23 +5,23 @@ export class TalksController {
 
   constructor(services, app) {
     this.#services = services;
-    this.#createRouteGetTalks(app);
-    this.#createRouteGetTalk(app);
-    this.#createRoutePutTalk(app);
-    this.#createRouteDeleteTalk(app);
-    this.#createRoutePostComment(app);
+    app.get('/api/talks', (req, res) => this.#getTalks(req, res));
+    app.get('/api/talks/:title', (req, res) => this.#getTalk(req, res));
+    app.put('/api/talks/:title', (req, res) => this.#putTalk(req, res));
+    app.delete('/api/talks/:title', (req, res) => this.deleteTalk(req, res));
+    app.post('/api/talks/:title/comments', (req, res) =>
+      this.postComment(req, res),
+    );
   }
 
-  #createRouteGetTalks(app) {
-    app.get('/api/talks', async (req, res) => {
-      if (this.#isCurrentVersion(req)) {
-        const response = await this.#tryLongPolling(req);
-        this.#reply(res, response);
-      } else {
-        const response = await this.#talkResponse();
-        this.#reply(res, response);
-      }
-    });
+  async #getTalks(req, res) {
+    if (this.#isCurrentVersion(req)) {
+      const response = await this.#tryLongPolling(req);
+      this.#reply(res, response);
+    } else {
+      const response = await this.#talkResponse();
+      this.#reply(res, response);
+    }
   }
 
   #isCurrentVersion(req) {
@@ -79,59 +79,45 @@ export class TalksController {
     res.status(status).header(headers).send(body);
   }
 
-  #createRouteGetTalk(app) {
-    app.get('/api/talks/:title', async (req, res) => {
-      const title = decodeURIComponent(req.params.title);
-      const talk = await this.#services.getTalk({ title });
-      if (talk == null) {
-        this.#reply(res, { status: 404, body: `No talk '${title}' found` });
-      } else {
-        this.#reply(res, {
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(talk),
-        });
-      }
-    });
+  async #getTalk(req, res) {
+    const title = decodeURIComponent(req.params.title);
+    const talk = await this.#services.getTalk({ title });
+    if (talk == null) {
+      this.#reply(res, { status: 404, body: `No talk '${title}' found` });
+    } else {
+      this.#reply(res, {
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(talk),
+      });
+    }
   }
 
-  #createRoutePutTalk(app) {
-    app.put('/api/talks/:title', async (req, res) => {
-      const title = decodeURIComponent(req.params.title);
-      const talk = parseTalk(req.body);
-      if (talk == null) {
-        this.#reply(res, { status: 400, body: 'Bad talk data' });
-      } else {
-        await this.#services.submitTalk({
-          title,
-          presenter: talk.presenter,
-          summary: talk.summary,
-        });
-        await this.#talksUpdated();
-        this.#reply(res, { status: 204 });
-      }
-    });
-  }
-
-  #createRouteDeleteTalk(app) {
-    app.delete('/api/talks/:title', async (req, res) => {
-      const title = decodeURIComponent(req.params.title);
-      await this.#services.deleteTalk({ title });
+  async #putTalk(req, res) {
+    const talk = parseTalk(req);
+    if (talk == null) {
+      this.#reply(res, { status: 400, body: 'Bad talk data' });
+    } else {
+      await this.#services.submitTalk(talk);
       await this.#talksUpdated();
       this.#reply(res, { status: 204 });
-    });
+    }
   }
 
-  #createRoutePostComment(app) {
-    app.post('/api/talks/:title/comments', async (req, res) => {
-      const comment = parseComment(req.body);
-      if (comment == null) {
-        this.#reply(res, { status: 400, body: 'Bad comment data' });
-      } else {
-        const title = decodeURIComponent(req.params.title);
-        const response = await this.#tryAddComment({ title, comment });
-        this.#reply(res, response);
-      }
-    });
+  async deleteTalk(req, res) {
+    const title = decodeURIComponent(req.params.title);
+    await this.#services.deleteTalk({ title });
+    await this.#talksUpdated();
+    this.#reply(res, { status: 204 });
+  }
+
+  async postComment(req, res) {
+    const comment = parseComment(req);
+    if (comment == null) {
+      this.#reply(res, { status: 400, body: 'Bad comment data' });
+    } else {
+      const response = await this.#tryAddComment(comment);
+      this.#reply(res, response);
+    }
   }
 
   async #tryAddComment({ title, comment }) {
@@ -155,17 +141,23 @@ export class TalksController {
   }
 }
 
-function parseTalk({ presenter, summary }) {
+function parseTalk(req) {
+  const title = decodeURIComponent(req.params.title);
+  const { presenter, summary } = req.body;
+
   if (typeof presenter == 'string' && typeof summary == 'string') {
-    return { presenter, summary };
+    return { title, presenter, summary };
   }
 
   return null;
 }
 
-function parseComment({ author, message }) {
+function parseComment(req) {
+  const title = decodeURIComponent(req.params.title);
+  const { author, message } = req.body;
+
   if (typeof author == 'string' && typeof message == 'string') {
-    return { author, message };
+    return { title, comment: { author, message } };
   }
 
   return null;
