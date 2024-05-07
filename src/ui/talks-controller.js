@@ -30,6 +30,7 @@ export class TalksController {
   }
 
   async #getTalks(req, res) {
+    // TODO extract long polling to class
     if (this.#isCurrentVersion(req)) {
       const response = await this.#tryLongPolling(req);
       this.#reply(res, response);
@@ -95,7 +96,7 @@ export class TalksController {
   }
 
   async #getTalk(req, res) {
-    const title = decodeURIComponent(req.params.title);
+    const title = parseTitle(req);
     const talk = await this.#services.getTalk({ title });
     if (talk == null) {
       this.#reply(res, { status: 404, body: `No talk '${title}' found` });
@@ -119,7 +120,7 @@ export class TalksController {
   }
 
   async #deleteTalk(req, res) {
-    const title = decodeURIComponent(req.params.title);
+    const title = parseTitle(req);
     await this.#services.deleteTalk({ title });
     await this.#talksUpdated();
     this.#reply(res, { status: 204 });
@@ -156,8 +157,12 @@ export class TalksController {
   }
 }
 
+function parseTitle(req) {
+  return decodeURIComponent(req.params.title);
+}
+
 function parseTalk(req) {
-  const title = decodeURIComponent(req.params.title);
+  const title = parseTitle(req);
   const { presenter, summary } = req.body;
 
   if (typeof presenter == 'string' && typeof summary == 'string') {
@@ -168,7 +173,7 @@ function parseTalk(req) {
 }
 
 function parseComment(req) {
-  const title = decodeURIComponent(req.params.title);
+  const title = parseTitle(req);
   const { author, message } = req.body;
 
   if (typeof author == 'string' && typeof message == 'string') {

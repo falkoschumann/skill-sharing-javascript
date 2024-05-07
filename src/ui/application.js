@@ -13,8 +13,8 @@ export class Application {
   constructor(publicPath, services, app) {
     this.#app = app;
     app.set('x-powered-by', false);
-    app.use('/', express.static(publicPath));
     app.use(express.json());
+    app.use('/', express.static(publicPath));
     new TalksController(services, app);
   }
 
