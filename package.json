@@ -29,7 +29,7 @@
     "jest-environment-jsdom": "29.7.0",
     "nodemon": "3.1.0",
     "prettier": "3.2.5",
-    "rollup": "4.17.1",
+    "rollup": "4.17.2",
     "supertest": "7.0.0"
   },
   "bin": "build/index.js",
