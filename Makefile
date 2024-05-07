@@ -3,9 +3,6 @@
 export NODE_OPTIONS=--experimental-global-customevent --experimental-vm-modules --no-warnings=ExperimentalWarning
 export NPM_CONFIG_YES=true
 
-# TODO remove if eslint-plugin-cypress supports ESLint 9.0.0 flat config
-export ESLINT_USE_FLAT_CONFIG=false
-
 all: dist check
 
 clean:
