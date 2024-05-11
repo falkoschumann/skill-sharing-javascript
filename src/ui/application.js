@@ -1,7 +1,8 @@
 import express from 'express';
 
-import { TalksController } from './talks-controller.js';
 import { Services } from '../application/services.js';
+import { MetricsController } from './metrics-controller.js';
+import { TalksController } from './talks-controller.js';
 
 export class Application {
   static create() {
@@ -16,6 +17,7 @@ export class Application {
     app.use(express.json());
     app.use('/', express.static(publicPath));
     new TalksController(services, app);
+    new MetricsController(services, app);
   }
 
   start({ port = 3000 } = {}) {

@@ -3,7 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
 
-describe('Api', () => {
+describe('API', () => {
   test('Gets talks events', async () => {
     const client = LongPollingClient.createNull();
     const api = new Api(null, client);

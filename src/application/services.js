@@ -42,4 +42,16 @@ export class Services {
     await this.#repository.add(talk);
     return { isSuccessful: true };
   }
+
+  async getMetrics() {
+    let talksCount = 0;
+    const presenters = new Set();
+
+    for (const talk of await this.#repository.findAll()) {
+      talksCount++;
+      presenters.add(talk.presenter);
+    }
+
+    return { talksCount, presentersCount: presenters.size };
+  }
 }

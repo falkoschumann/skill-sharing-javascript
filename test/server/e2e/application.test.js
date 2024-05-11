@@ -288,9 +288,38 @@ describe('Application', () => {
       expect(response.text).toEqual('Bad comment data');
     });
   });
+
+  describe('Metrics', () => {
+    test('Gets talks count', async () => {
+      const { app } = configure();
+      await submitTalk(app);
+
+      const response = await request(app).get('/metrics');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toContain(
+        '# TYPE talks_count gauge\ntalks_count 1',
+      );
+    });
+
+    test('Gets presenters count', async () => {
+      const { app } = configure();
+      await submitTalk(app);
+
+      const response = await request(app).get('/metrics');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toContain(
+        '# TYPE presenters_count gauge\npresenters_count 1',
+      );
+    });
+  });
 });
 
 function configure() {
+  // TODO configure with stored talks
   rmSync(testFile, { force: true });
   const app = express();
   const repository = new Repository(testFile);

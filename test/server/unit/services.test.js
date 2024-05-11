@@ -111,6 +111,38 @@ describe('Services', () => {
       expect(talk).toBeUndefined();
     });
   });
+
+  describe('Metrics', () => {
+    test('Counts talks and presenter', async () => {
+      // TODO use Talk.createTest()
+      const { services } = configure({
+        talks: [
+          {
+            title: 'foo',
+            summary: 'Lorem ipsum',
+            presenter: 'Alice',
+            comments: [],
+          },
+          {
+            title: 'bar',
+            summary: 'Lorem ipsum',
+            presenter: 'Bob',
+            comments: [],
+          },
+          {
+            title: 'foobar',
+            summary: 'Lorem ipsum',
+            presenter: 'Alice',
+            comments: [],
+          },
+        ],
+      });
+
+      const metrics = await services.getMetrics();
+
+      expect(metrics).toEqual({ talksCount: 3, presentersCount: 2 });
+    });
+  });
 });
 
 function configure({ talks }) {
