@@ -6,6 +6,7 @@ import { Api } from '../../../public/js/infrastructure/api.js';
 import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
 import { createStore } from '../../../public/js/util/store.js';
+import { Talk } from '../../../public/js/domain/talks.js';
 
 describe('Services', () => {
   describe('Change user', () => {
@@ -82,34 +83,17 @@ describe('Services', () => {
       await talksClient.simulateResponse({
         status: 200,
         headers: { etag: '1' },
-        body: [
-          {
-            title: 'title 1',
-            presenter: 'presenter 1',
-            summary: 'summary 1',
-          },
-        ],
+        body: [Talk.createTestInstance()],
       });
       await talksClient.simulateResponse({
         status: 200,
         headers: { etag: '2' },
-        body: [
-          {
-            title: 'title 1',
-            presenter: 'presenter 1',
-            summary: 'summary 1',
-          },
-          {
-            title: 'title 2',
-            presenter: 'presenter 2',
-            summary: 'summary 2',
-          },
-        ],
+        body: [Talk.createTestInstance(), Talk.createTestInstance()],
       });
 
       expect(store.getState().talks).toEqual([
-        { title: 'title 1', presenter: 'presenter 1', summary: 'summary 1' },
-        { title: 'title 2', presenter: 'presenter 2', summary: 'summary 2' },
+        Talk.createTestInstance(),
+        Talk.createTestInstance(),
       ]);
       talksClient.close();
     });

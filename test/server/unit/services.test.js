@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 
 import { Services } from '../../../src/application/services.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
+import { Talk } from '../../../public/js/domain/talks.js';
 
 describe('Services', () => {
   describe('Submit talk', () => {
@@ -26,32 +27,39 @@ describe('Services', () => {
 
   describe('Post comment', () => {
     test('Adds comment to an existing talk', async () => {
+      const title = 'Title 1';
+      const talk = Talk.createTestInstance({ title });
       const { services, repository } = configure({
-        talks: [{ title: 'Foobar', summary: 'Lorem ipsum', comments: [] }],
+        talks: [talk],
       });
 
       const { isSuccessful } = await services.addComment(
-        { title: 'Foobar', comment: { author: 'Bob', message: 'new comment' } },
+        { title, comment: { author: 'Bob', message: 'new comment' } },
         repository,
       );
 
       expect(isSuccessful).toEqual(true);
       expect(repository.lastStored).toEqual({
-        Foobar: {
-          title: 'Foobar',
-          summary: 'Lorem ipsum',
-          comments: [{ author: 'Bob', message: 'new comment' }],
+        [title]: {
+          ...talk,
+          comments: [
+            ...talk.comments,
+            { author: 'Bob', message: 'new comment' },
+          ],
         },
       });
     });
 
     test('Reports an error if talk does not exists', async () => {
       const { services, repository } = configure({
-        talks: [{ title: 'foo', summary: 'Lorem ipsum', comments: [] }],
+        talks: [Talk.createTestInstance()],
       });
 
       const { isSuccessful } = await services.addComment(
-        { title: 'bar', comment: { author: 'Bob', message: 'new comment' } },
+        {
+          title: 'non-existing-talk',
+          comment: { author: 'Bob', message: 'new comment' },
+        },
         repository,
       );
 
@@ -62,11 +70,12 @@ describe('Services', () => {
 
   describe('Delete talk', () => {
     test('Removes talk from list', async () => {
+      const title = 'Title 1';
       const { services, repository } = configure({
-        talks: [{ title: 'Foobar', summary: 'Lorem ipsum' }],
+        talks: [Talk.createTestInstance({ title })],
       });
 
-      await services.deleteTalk({ title: 'Foobar' }, repository);
+      await services.deleteTalk({ title }, repository);
 
       expect(repository.lastStored).toEqual({});
     });
@@ -75,38 +84,34 @@ describe('Services', () => {
   describe('Talks', () => {
     test('Is a list of talks', async () => {
       const { services, repository } = configure({
-        talks: [{ title: 'Foobar', summary: 'Lorem ipsum', comments: [] }],
+        talks: [Talk.createTestInstance()],
       });
 
-      const talks = await services.getTalks(repository);
+      const result = await services.getTalks(repository);
 
-      expect(talks).toEqual([
-        { title: 'Foobar', summary: 'Lorem ipsum', comments: [] },
-      ]);
+      expect(result).toEqual([Talk.createTestInstance()]);
     });
   });
 
   describe('Talk', () => {
     test('Is a single talk', async () => {
-      const { services, repository } = configure({
-        talks: [{ title: 'Foobar', summary: 'Lorem ipsum', comments: [] }],
-      });
+      const talk = Talk.createTestInstance();
+      const { services, repository } = configure({ talks: [talk] });
 
-      const talk = await services.getTalk({ title: 'Foobar' }, repository);
+      const result = await services.getTalk({ title: talk.title }, repository);
 
-      expect(talk).toEqual({
-        title: 'Foobar',
-        summary: 'Lorem ipsum',
-        comments: [],
-      });
+      expect(result).toEqual(talk);
     });
 
     test('Is undefined if talk does not exist', async () => {
       const { services, repository } = configure({
-        talks: [{ title: 'foo', summary: 'Lorem ipsum', comments: [] }],
+        talks: [Talk.createTestInstance()],
       });
 
-      const talk = await services.getTalk({ title: 'bar' }, repository);
+      const talk = await services.getTalk(
+        { title: 'non-existing-talk' },
+        repository,
+      );
 
       expect(talk).toBeUndefined();
     });
@@ -114,27 +119,11 @@ describe('Services', () => {
 
   describe('Metrics', () => {
     test('Counts talks and presenter', async () => {
-      // TODO use Talk.createTest()
       const { services } = configure({
         talks: [
-          {
-            title: 'foo',
-            summary: 'Lorem ipsum',
-            presenter: 'Alice',
-            comments: [],
-          },
-          {
-            title: 'bar',
-            summary: 'Lorem ipsum',
-            presenter: 'Bob',
-            comments: [],
-          },
-          {
-            title: 'foobar',
-            summary: 'Lorem ipsum',
-            presenter: 'Alice',
-            comments: [],
-          },
+          Talk.createTestInstance({ title: 'Talk 1', presenter: 'Alice' }),
+          Talk.createTestInstance({ title: 'Talk 2', presenter: 'Bob' }),
+          Talk.createTestInstance({ title: 'Talk 3', presenter: 'Alice' }),
         ],
       });
 

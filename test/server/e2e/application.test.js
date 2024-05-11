@@ -7,6 +7,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 import { Services } from '../../../src/application/services.js';
+import { Talk } from '../../../public/js/domain/talks.js';
 
 const testFile = fileURLToPath(
   new URL('../../../data/talks.test.json', import.meta.url),
@@ -27,12 +28,7 @@ describe('Application', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        {
-          title: 'Foobar',
-          presenter: 'Anon',
-          summary: 'Lorem ipsum',
-          comments: [],
-        },
+        Talk.createTestInstance({ comments: [] }),
       ]);
     });
 
@@ -50,12 +46,7 @@ describe('Application', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        {
-          title: 'Foobar',
-          presenter: 'Anon',
-          summary: 'Lorem ipsum',
-          comments: [],
-        },
+        Talk.createTestInstance({ comments: [] }),
       ]);
     });
 
@@ -109,12 +100,7 @@ describe('Application', () => {
       expect(response.get('Cache-Control')).toEqual('no-store');
       expect(response.get('ETag')).toEqual('"1"');
       expect(response.body).toEqual([
-        {
-          title: 'Foobar',
-          presenter: 'Anon',
-          summary: 'Lorem ipsum',
-          comments: [],
-        },
+        Talk.createTestInstance({ comments: [] }),
       ]);
     });
   });
@@ -122,7 +108,7 @@ describe('Application', () => {
   describe('GET talk', () => {
     test('Replies with talk', async () => {
       const { app } = configure();
-      await submitTalk(app);
+      await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));
 
       const response = await request(app)
         .get('/api/talks/Foobar')
@@ -130,12 +116,9 @@ describe('Application', () => {
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.body).toEqual({
-        title: 'Foobar',
-        presenter: 'Anon',
-        summary: 'Lorem ipsum',
-        comments: [],
-      });
+      expect(response.body).toEqual(
+        Talk.createTestInstance({ title: 'Foobar', comments: [] }),
+      );
     });
 
     test('Reports an error if talk does not exists', async () => {
@@ -210,7 +193,7 @@ describe('Application', () => {
   describe('DELETE talk', () => {
     test('Deletes an existing talk', async () => {
       const { app } = configure();
-      await submitTalk(app);
+      await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));
 
       let response = await request(app).delete('/api/talks/Foobar').send();
 
@@ -224,7 +207,7 @@ describe('Application', () => {
   describe('POST comment', () => {
     test('Adds comment', async () => {
       const { app } = configure();
-      await submitTalk(app);
+      await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));
 
       let response = await request(app)
         .post('/api/talks/Foobar/comments')
@@ -234,12 +217,10 @@ describe('Application', () => {
       expect(response.status).toEqual(204);
       response = await request(app).get('/api/talks').send();
       expect(response.body).toEqual([
-        {
+        Talk.createTestInstance({
           title: 'Foobar',
-          presenter: 'Anon',
-          summary: 'Lorem ipsum',
           comments: [{ author: 'Bob', message: 'New comment' }],
-        },
+        }),
       ]);
     });
 
@@ -319,7 +300,6 @@ describe('Application', () => {
 });
 
 function configure() {
-  // TODO configure with stored talks
   rmSync(testFile, { force: true });
   const app = express();
   const repository = new Repository(testFile);
@@ -328,12 +308,9 @@ function configure() {
   return { app };
 }
 
-function submitTalk(
-  app,
-  { title = 'Foobar', presenter = 'Anon', summary = 'Lorem ipsum' } = {},
-) {
+function submitTalk(app, talk = Talk.createTestInstance()) {
   return request(app)
-    .put(`/api/talks/${title}`)
+    .put(`/api/talks/${encodeURIComponent(talk.title)}`)
     .set('Content-Type', 'application/json')
-    .send({ presenter, summary });
+    .send({ presenter: talk.presenter, summary: talk.summary });
 }
