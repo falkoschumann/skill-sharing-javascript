@@ -1,5 +1,6 @@
 {
-  "title": {
-    "title": "Foobar",
-    "summary": "Lorem ipsum",
-    "comments": []
+  "Talk test title": {
+    "title": "Talk test title",
+    "presenter": "Talk test presenter",
+    "summary": "Talk test summary.",
+    "comments": [
