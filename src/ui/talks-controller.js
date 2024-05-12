@@ -1,3 +1,5 @@
+import * as handler from './handler.js';
+
 export class TalksController {
   #services;
   #version = 0;
@@ -5,38 +7,27 @@ export class TalksController {
 
   constructor(services, app) {
     this.#services = services;
-    app.get('/api/talks', this.#tryHandle(this.#getTalks.bind(this)));
-    app.get('/api/talks/:title', this.#tryHandle(this.#getTalk.bind(this)));
-    app.put('/api/talks/:title', this.#tryHandle(this.#putTalk.bind(this)));
+    app.get('/api/talks', handler.runSafe(this.#getTalks.bind(this)));
+    app.get('/api/talks/:title', handler.runSafe(this.#getTalk.bind(this)));
+    app.put('/api/talks/:title', handler.runSafe(this.#putTalk.bind(this)));
     app.delete(
       '/api/talks/:title',
-      this.#tryHandle(this.#deleteTalk.bind(this)),
+      handler.runSafe(this.#deleteTalk.bind(this)),
     );
     app.post(
       '/api/talks/:title/comments',
-      this.#tryHandle(this.#postComment.bind(this)),
+      handler.runSafe(this.#postComment.bind(this)),
     );
-  }
-
-  #tryHandle(handler) {
-    // TODO handle exception is obsolete with with Express 5
-    return async (req, res, next) => {
-      try {
-        await handler(req, res);
-      } catch (error) {
-        next(error);
-      }
-    };
   }
 
   async #getTalks(req, res) {
     // TODO extract long polling to class
     if (this.#isCurrentVersion(req)) {
       const response = await this.#tryLongPolling(req);
-      this.#reply(res, response);
+      handler.reply(res, response);
     } else {
       const response = await this.#talkResponse();
-      this.#reply(res, response);
+      handler.reply(res, response);
     }
   }
 
@@ -84,24 +75,13 @@ export class TalksController {
     };
   }
 
-  #reply(
-    res,
-    {
-      status = 200,
-      headers = { 'Content-Type': 'text/plain' },
-      body = '',
-    } = {},
-  ) {
-    res.status(status).header(headers).send(body);
-  }
-
   async #getTalk(req, res) {
     const title = parseTitle(req);
     const talk = await this.#services.getTalk({ title });
     if (talk == null) {
-      this.#reply(res, { status: 404, body: `No talk '${title}' found` });
+      handler.reply(res, { status: 404, body: `No talk '${title}' found` });
     } else {
-      this.#reply(res, {
+      handler.reply(res, {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(talk),
       });
@@ -111,11 +91,11 @@ export class TalksController {
   async #putTalk(req, res) {
     const talk = parseTalk(req);
     if (talk == null) {
-      this.#reply(res, { status: 400, body: 'Bad talk data' });
+      handler.reply(res, { status: 400, body: 'Bad talk data' });
     } else {
       await this.#services.submitTalk(talk);
       await this.#talksUpdated();
-      this.#reply(res, { status: 204 });
+      handler.reply(res, { status: 204 });
     }
   }
 
@@ -123,16 +103,16 @@ export class TalksController {
     const title = parseTitle(req);
     await this.#services.deleteTalk({ title });
     await this.#talksUpdated();
-    this.#reply(res, { status: 204 });
+    handler.reply(res, { status: 204 });
   }
 
   async #postComment(req, res) {
     const comment = parseComment(req);
     if (comment == null) {
-      this.#reply(res, { status: 400, body: 'Bad comment data' });
+      handler.reply(res, { status: 400, body: 'Bad comment data' });
     } else {
       const response = await this.#tryAddComment(comment);
-      this.#reply(res, response);
+      handler.reply(res, response);
     }
   }
 
