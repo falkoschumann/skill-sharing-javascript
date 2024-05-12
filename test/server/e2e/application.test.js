@@ -14,7 +14,7 @@ const testFile = fileURLToPath(
 );
 
 describe('Application', () => {
-  describe('GET talks', () => {
+  describe('Gets talks', () => {
     test('Replies with talks, if client asks for the first time', async () => {
       const { app } = configure();
       await submitTalk(app);
@@ -105,7 +105,7 @@ describe('Application', () => {
     });
   });
 
-  describe('PUT talk', () => {
+  describe('Puts talk', () => {
     test('Creates a new talk', async () => {
       const { app } = configure();
 
@@ -157,7 +157,7 @@ describe('Application', () => {
     });
   });
 
-  describe('DELETE talk', () => {
+  describe('Deletes talk', () => {
     test('Deletes an existing talk', async () => {
       const { app } = configure();
       await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));
@@ -171,7 +171,7 @@ describe('Application', () => {
     });
   });
 
-  describe('POST comment', () => {
+  describe('Posts comment', () => {
     test('Adds comment', async () => {
       const { app } = configure();
       await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));

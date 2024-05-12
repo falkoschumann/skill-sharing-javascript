@@ -2,44 +2,32 @@ import { describe, expect, test } from '@jest/globals';
 
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
+import { Talk } from '../../../public/js/domain/talks.js';
 
 describe('API', () => {
-  test('Gets talks events', async () => {
+  test('Gets talks', async () => {
     const client = LongPollingClient.createNull();
     const api = new Api(null, client);
     const events = [];
     api.addEventListener('talks-updated', (event) => events.push(event));
 
     await api.connectTalks();
+    const talk = Talk.createTestInstance();
     await client.simulateResponse({
       status: 200,
       headers: { etag: '1' },
-      body: [
-        {
-          title: 'title 1',
-          presenter: 'presenter 1',
-          summary: 'summary 1',
-          comments: [],
-        },
-      ],
+      body: [talk],
     });
 
     expect(events).toEqual([
       expect.objectContaining({
-        talks: [
-          {
-            title: 'title 1',
-            presenter: 'presenter 1',
-            summary: 'summary 1',
-            comments: [],
-          },
-        ],
+        talks: [talk],
       }),
     ]);
     client.close();
   });
 
-  test('Put talk', async () => {
+  test('Puts talk', async () => {
     const api = Api.createNull();
     const talksPut = api.trackTalksPut();
 
@@ -54,7 +42,7 @@ describe('API', () => {
     ]);
   });
 
-  test('Delete talk', async () => {
+  test('Deletes talk', async () => {
     const api = Api.createNull();
     const talksDeleted = api.trackTalksDeleted();
 
@@ -63,7 +51,7 @@ describe('API', () => {
     expect(talksDeleted.data).toEqual([{ title: 'title-1' }]);
   });
 
-  test('Post comment', async () => {
+  test('Posts comment', async () => {
     const api = Api.createNull();
     const commentsPosted = api.trackCommentsPosted();
 

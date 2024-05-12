@@ -7,8 +7,6 @@ const TALK_PUT_EVENT = 'talk-put';
 const TALK_DELETED_EVENT = 'talk-deleted';
 const COMMENT_POSTED_EVENT = 'comment-posted';
 
-// TODO unify server and client API
-
 export class TalksUpdatedEvent extends Event {
   constructor(talks) {
     super(TALKS_UPDATED_EVENT);
