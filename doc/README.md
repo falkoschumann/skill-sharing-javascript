@@ -41,6 +41,11 @@
 -   Is a single talk
 -   Is undefined if talk does not exist
 
+### Metrics
+
+-   Count talks.
+-   Count presenters.
+
 ## Users
 
 ![Uses](./users.png)
