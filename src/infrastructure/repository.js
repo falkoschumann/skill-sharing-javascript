@@ -2,11 +2,11 @@ import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 
 export class Repository {
-  static create() {
-    return new Repository('./data/talks.json');
+  static create({ fileName = './data/talks.json' } = {}) {
+    return new Repository(fileName, fsPromise);
   }
 
-  static createNull(talks = []) {
+  static createNull({ talks = [] } = {}) {
     return new Repository('nulled-file-name.json', new FsStub(talks));
   }
 
@@ -14,7 +14,7 @@ export class Repository {
   #fs;
   #lastStored;
 
-  constructor(fileName, fs = fsPromise) {
+  constructor(fileName, fs) {
     this.#fileName = fileName;
     this.#fs = fs;
   }

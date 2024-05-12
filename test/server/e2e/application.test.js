@@ -302,7 +302,7 @@ describe('Application', () => {
 function configure() {
   rmSync(testFile, { force: true });
   const app = express();
-  const repository = new Repository(testFile);
+  const repository = Repository.create({ fileName: testFile });
   const services = new Services(repository);
   new Application('./public', services, app);
   return { app };
