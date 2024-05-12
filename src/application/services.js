@@ -19,10 +19,6 @@ export class Services {
     return await this.#repository.findAll();
   }
 
-  async getTalk({ title }) {
-    return await this.#repository.findByTitle(title);
-  }
-
   async submitTalk({ title, presenter, summary }) {
     const talk = { title, presenter, summary, comments: [] };
     await this.#repository.add(talk);

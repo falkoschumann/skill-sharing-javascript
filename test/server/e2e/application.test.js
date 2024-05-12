@@ -105,39 +105,6 @@ describe('Application', () => {
     });
   });
 
-  describe('GET talk', () => {
-    test('Replies with talk', async () => {
-      const { app } = configure();
-      await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));
-
-      const response = await request(app)
-        .get('/api/talks/Foobar')
-        .set('Accept', 'application/json');
-
-      expect(response.status).toEqual(200);
-      expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.body).toEqual(
-        Talk.createTestInstance({ title: 'Foobar', comments: [] }),
-      );
-    });
-
-    test('Reports an error if talk does not exists', async () => {
-      const { app } = configure();
-      await request(app)
-        .put('/api/talks/foo')
-        .set('Content-Type', 'application/json')
-        .send({ presenter: 'Anon', summary: 'Lorem ipsum' });
-
-      const response = await request(app)
-        .get('/api/talks/bar')
-        .set('Accept', 'application/json');
-
-      expect(response.status).toEqual(404);
-      expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toEqual("No talk 'bar' found");
-    });
-  });
-
   describe('PUT talk', () => {
     test('Creates a new talk', async () => {
       const { app } = configure();

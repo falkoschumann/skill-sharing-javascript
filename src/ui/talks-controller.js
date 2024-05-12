@@ -8,7 +8,6 @@ export class TalksController {
   constructor(services, app) {
     this.#services = services;
     app.get('/api/talks', handler.runSafe(this.#getTalks.bind(this)));
-    app.get('/api/talks/:title', handler.runSafe(this.#getTalk.bind(this)));
     app.put('/api/talks/:title', handler.runSafe(this.#putTalk.bind(this)));
     app.delete(
       '/api/talks/:title',
@@ -73,19 +72,6 @@ export class TalksController {
       },
       body,
     };
-  }
-
-  async #getTalk(req, res) {
-    const title = parseTitle(req);
-    const talk = await this.#services.getTalk({ title });
-    if (talk == null) {
-      handler.reply(res, { status: 404, body: `No talk '${title}' found` });
-    } else {
-      handler.reply(res, {
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(talk),
-      });
-    }
   }
 
   async #putTalk(req, res) {

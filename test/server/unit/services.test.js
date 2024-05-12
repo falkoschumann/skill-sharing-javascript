@@ -93,30 +93,6 @@ describe('Services', () => {
     });
   });
 
-  describe('Talk', () => {
-    test('Is a single talk', async () => {
-      const talk = Talk.createTestInstance();
-      const { services, repository } = configure({ talks: [talk] });
-
-      const result = await services.getTalk({ title: talk.title }, repository);
-
-      expect(result).toEqual(talk);
-    });
-
-    test('Is undefined if talk does not exist', async () => {
-      const { services, repository } = configure({
-        talks: [Talk.createTestInstance()],
-      });
-
-      const talk = await services.getTalk(
-        { title: 'non-existing-talk' },
-        repository,
-      );
-
-      expect(talk).toBeUndefined();
-    });
-  });
-
   describe('Metrics', () => {
     test('Counts talks and presenter', async () => {
       const { services } = configure({
