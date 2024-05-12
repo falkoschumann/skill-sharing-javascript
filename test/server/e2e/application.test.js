@@ -246,8 +246,8 @@ describe('Application', () => {
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toContain(
-        '# TYPE talks_count gauge\ntalks_count 1',
+      expect(response.text).toMatch(
+        /# TYPE talks_count gauge\ntalks_count 1 \d+\n\n/,
       );
     });
 
@@ -259,8 +259,8 @@ describe('Application', () => {
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
-      expect(response.text).toContain(
-        '# TYPE presenters_count gauge\npresenters_count 1',
+      expect(response.text).toMatch(
+        /# TYPE presenters_count gauge\npresenters_count 1 \d+\n\n/,
       );
     });
   });

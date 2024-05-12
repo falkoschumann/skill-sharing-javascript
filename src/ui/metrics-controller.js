@@ -10,8 +10,9 @@ export class MetricsController {
 
   async #getMetrics(req, res) {
     const metrics = await this.#services.getMetrics();
-    let body = `# TYPE talks_count gauge\ntalks_count ${metrics.talksCount}\n\n`;
-    body += `# TYPE presenters_count gauge\npresenters_count ${metrics.presentersCount}\n\n`;
+    const timestamp = new Date().getTime();
+    let body = `# TYPE talks_count gauge\ntalks_count ${metrics.talksCount} ${timestamp}\n\n`;
+    body += `# TYPE presenters_count gauge\npresenters_count ${metrics.presentersCount} ${timestamp}\n\n`;
 
     handler.reply(res, { body });
   }
