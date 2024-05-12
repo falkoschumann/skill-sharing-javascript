@@ -1,6 +1,8 @@
 import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 
+import { Talk } from '../../public/js/domain/talks.js';
+
 export class Repository {
   static create({ fileName = './data/talks.json' } = {}) {
     return new Repository(fileName, fsPromise);
@@ -21,12 +23,17 @@ export class Repository {
 
   async findAll() {
     const talks = await this.#load();
-    return Object.keys(talks).map((title) => talks[title]);
+    return Object.keys(talks).map((title) => Talk.create(talks[title]));
   }
 
   async findByTitle(title) {
     const talks = await this.#load();
-    return talks[title];
+    const talk = talks[title];
+    if (talk == null) {
+      return undefined;
+    }
+
+    return Talk.create(talk);
   }
 
   async add(talk) {

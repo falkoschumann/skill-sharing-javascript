@@ -33,8 +33,7 @@ describe('Repository', () => {
     const repository = Repository.createNull();
 
     await repository.store({ username: 'Alice' });
-    const settings = repository.lastSettings;
 
-    expect(settings).toEqual({ username: 'Alice' });
+    expect(repository.lastUser).toEqual({ username: 'Alice' });
   });
 });

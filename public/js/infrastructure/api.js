@@ -1,3 +1,4 @@
+import { Talk } from '../domain/talks.js';
 import { OutputTracker } from '../util/output-tracker.js';
 import { LongPollingClient } from './long-polling-client.js';
 
@@ -38,7 +39,7 @@ export class Api extends EventTarget {
 
   async connectTalks() {
     await this.#talksClient.connect((event) => {
-      const talks = event.data;
+      const talks = event.data.map((talk) => Talk.create(talk));
       this.dispatchEvent(new TalksUpdatedEvent(talks));
     });
   }

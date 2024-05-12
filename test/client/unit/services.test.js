@@ -20,7 +20,7 @@ describe('Services', () => {
       await services.changeUser(user);
 
       expect(store.getState().user).toEqual(user.username);
-      expect(repository.lastSettings).toEqual(user);
+      expect(repository.lastUser).toEqual(user);
     });
   });
 

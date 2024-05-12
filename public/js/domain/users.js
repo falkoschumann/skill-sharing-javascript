@@ -1,5 +1,3 @@
-// TODO use factory method in repository
-
 export class User {
   static create({ username }) {
     return new User(username);

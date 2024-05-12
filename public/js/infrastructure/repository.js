@@ -1,3 +1,5 @@
+import { User } from '../domain/users.js';
+
 const storageKey = 'skillSharing';
 
 export class Repository {
@@ -5,12 +7,12 @@ export class Repository {
     return new Repository(localStorage);
   }
 
-  static createNull(settings) {
-    return new Repository(new StorageStub(settings));
+  static createNull(user) {
+    return new Repository(new StorageStub(user));
   }
 
   #storage;
-  #lastSettings;
+  #lastUser;
 
   constructor(storage) {
     this.#storage = storage;
@@ -22,17 +24,18 @@ export class Repository {
       return {};
     }
 
-    return JSON.parse(json);
+    const user = JSON.parse(json);
+    return User.create(user);
   }
 
-  async store(settings) {
-    const json = JSON.stringify(settings);
+  async store(user) {
+    const json = JSON.stringify(user);
     this.#storage.setItem(storageKey, json);
-    this.#lastSettings = json;
+    this.#lastUser = json;
   }
 
-  get lastSettings() {
-    return JSON.parse(this.#lastSettings);
+  get lastUser() {
+    return JSON.parse(this.#lastUser);
   }
 }
 
