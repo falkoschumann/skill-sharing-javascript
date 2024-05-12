@@ -1,3 +1,5 @@
+// TODO use factory method in repository and client API
+
 export class Talk {
   static create({ title, presenter, summary, comments }) {
     return new Talk(title, presenter, summary, comments);

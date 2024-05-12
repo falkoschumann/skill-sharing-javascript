@@ -7,6 +7,7 @@ import { LongPollingClient } from '../../../public/js/infrastructure/long-pollin
 import { Repository } from '../../../public/js/infrastructure/repository.js';
 import { createStore } from '../../../public/js/util/store.js';
 import { Talk } from '../../../public/js/domain/talks.js';
+import { User } from '../../../public/js/domain/users.js';
 
 // TODO review user/settings stories
 
@@ -15,10 +16,11 @@ describe('Services', () => {
     test('Updates user name', async () => {
       const { services, store, repository } = configure();
 
-      await services.changeUser({ username: 'Bob' });
+      const user = User.createTestInstance();
+      await services.changeUser(user);
 
-      expect(store.getState().user).toEqual('Bob');
-      expect(repository.lastSettings).toEqual({ username: 'Bob' });
+      expect(store.getState().user).toEqual(user.username);
+      expect(repository.lastSettings).toEqual(user);
     });
   });
 
@@ -32,11 +34,12 @@ describe('Services', () => {
     });
 
     test('Is stored user', async () => {
-      const { services, store } = configure({ settings: { username: 'Bob' } });
+      const user = User.createTestInstance();
+      const { services, store } = configure({ settings: user });
 
       await services.loadUser();
 
-      expect(store.getState().user).toEqual('Bob');
+      expect(store.getState().user).toEqual(user.username);
     });
   });
 
