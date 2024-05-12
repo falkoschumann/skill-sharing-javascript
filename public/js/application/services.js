@@ -3,6 +3,8 @@ import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
 import { createStore } from '../util/store.js';
 
+// TODO handle errors
+
 export class Services {
   static create() {
     return new Services(

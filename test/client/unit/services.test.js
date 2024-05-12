@@ -8,6 +8,8 @@ import { Repository } from '../../../public/js/infrastructure/repository.js';
 import { createStore } from '../../../public/js/util/store.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 
+// TODO review user/settings stories
+
 describe('Services', () => {
   describe('Change user', () => {
     test('Updates user name', async () => {
@@ -39,7 +41,7 @@ describe('Services', () => {
   });
 
   describe('Submit talk', () => {
-    test('Submits talk', async () => {
+    test('Adds talk to list', async () => {
       const { services, api } = configure();
       const talksPut = api.trackTalksPut();
 
@@ -51,8 +53,8 @@ describe('Services', () => {
     });
   });
 
-  describe('Post comment', () => {
-    test('Posts comment', async () => {
+  describe('Adds comment', () => {
+    test('Adds comment to an existing talk', async () => {
       const { services, api } = configure();
       const commentsPosted = api.trackCommentsPosted();
 
@@ -62,10 +64,21 @@ describe('Services', () => {
         { title: 'Foobar', author: 'Anon', message: 'Lorem ipsum' },
       ]);
     });
+
+    test.todo('Reports an error if talk does not exists');
   });
 
   describe('Delete talk', () => {
-    test('Deletes talk', async () => {
+    test('Removes talk from list', async () => {
+      const { services, api } = configure();
+      const talksDeleted = api.trackTalksDeleted();
+
+      await services.deleteTalk({ title: 'Foobar' });
+
+      expect(talksDeleted.data).toEqual([{ title: 'Foobar' }]);
+    });
+
+    test('Ignores already removed talk', async () => {
       const { services, api } = configure();
       const talksDeleted = api.trackTalksDeleted();
 
@@ -76,25 +89,18 @@ describe('Services', () => {
   });
 
   describe('Talks', () => {
-    test('Updates talks', async () => {
+    test('Lists all talks', async () => {
       const { services, store, talksClient } = configure();
       await services.connectTalks();
 
+      const talk = Talk.createTestInstance();
       await talksClient.simulateResponse({
         status: 200,
         headers: { etag: '1' },
-        body: [Talk.createTestInstance()],
-      });
-      await talksClient.simulateResponse({
-        status: 200,
-        headers: { etag: '2' },
-        body: [Talk.createTestInstance(), Talk.createTestInstance()],
+        body: [talk],
       });
 
-      expect(store.getState().talks).toEqual([
-        Talk.createTestInstance(),
-        Talk.createTestInstance(),
-      ]);
+      expect(store.getState().talks).toEqual([talk]);
       talksClient.close();
     });
   });
@@ -103,8 +109,9 @@ describe('Services', () => {
 function configure({ settings } = {}) {
   const store = createStore(reducer);
   const repository = Repository.createNull(settings);
+  const fetchStub = async () => {};
   const talksClient = LongPollingClient.createNull();
-  const api = new Api(async () => {}, talksClient);
+  const api = new Api(fetchStub, talksClient);
   const services = new Services(store, repository, api);
   return { services, store, repository, api, talksClient };
 }

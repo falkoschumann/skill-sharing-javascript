@@ -15,36 +15,25 @@
 
 ### Submit talk
 
--   Submits talk
--   Adds talk to list of talks
+-   Adds talk to list
 
-### Post comment
+### Add comment
 
--   Posts comment
 -   Adds comment to an existing talk
 -   Reports an error if talk does not exists
 
 ### Delete talk
 
--   Deletes talk
 -   Removes talk from list
+-   Ignores already removed talk
 
 ### Talks
 
--   Polls talks
--   Does not update talks, if not modified
--   Recovers after error
--   Is a list of talks
-
-### Talk
-
--   Is a single talk
--   Is undefined if talk does not exist
+-   Lists all talks
 
 ### Metrics
 
--   Count talks.
--   Count presenters.
+-   Count talks and presenters
 
 ## Users
 

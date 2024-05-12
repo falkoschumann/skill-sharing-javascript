@@ -1,5 +1,7 @@
 import { Repository } from '../infrastructure/repository.js';
 
+// TODO handle errors
+
 export class Services {
   static create() {
     return new Services(Repository.create());

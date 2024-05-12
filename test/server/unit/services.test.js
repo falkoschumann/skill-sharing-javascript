@@ -6,7 +6,7 @@ import { Talk } from '../../../public/js/domain/talks.js';
 
 describe('Services', () => {
   describe('Submit talk', () => {
-    test('Adds talk to list of talks', async () => {
+    test('Adds talk to list', async () => {
       const { services, repository } = configure({ talks: [] });
 
       await services.submitTalk(
@@ -25,7 +25,7 @@ describe('Services', () => {
     });
   });
 
-  describe('Post comment', () => {
+  describe('Add comment', () => {
     test('Adds comment to an existing talk', async () => {
       const title = 'Title 1';
       const talk = Talk.createTestInstance({ title });
@@ -79,10 +79,18 @@ describe('Services', () => {
 
       expect(repository.lastStored).toEqual({});
     });
+
+    test('Ignores already removed talk', async () => {
+      const { services, repository } = configure();
+
+      await services.deleteTalk({ title: 'Foobar' }, repository);
+
+      expect(repository.lastStored).toEqual({});
+    });
   });
 
   describe('Talks', () => {
-    test('Is a list of talks', async () => {
+    test('Lists all talks', async () => {
       const { services, repository } = configure({
         talks: [Talk.createTestInstance()],
       });
@@ -110,7 +118,7 @@ describe('Services', () => {
   });
 });
 
-function configure({ talks }) {
+function configure({ talks } = {}) {
   const repository = Repository.createNull({ talks });
   const services = new Services(repository);
   return { services, repository };
