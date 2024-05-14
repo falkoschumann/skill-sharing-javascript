@@ -9,8 +9,6 @@ import { createStore } from '../../../public/js/util/store.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 import { User } from '../../../public/js/domain/users.js';
 
-// TODO review user/settings stories
-
 describe('Services', () => {
   describe('Change user', () => {
     test('Updates user name', async () => {
