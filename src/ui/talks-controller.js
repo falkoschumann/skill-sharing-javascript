@@ -1,12 +1,14 @@
 import * as handler from './handler.js';
+import { LongPolling } from './long-polling.js';
 
 export class TalksController {
   #services;
-  #version = 0;
-  #waiting = [];
+  #longPolling;
 
   constructor(services, app) {
     this.#services = services;
+    this.#longPolling = new LongPolling(() => this.#services.getTalks());
+
     app.get('/api/talks', handler.runSafe(this.#getTalks.bind(this)));
     app.put('/api/talks/:title', handler.runSafe(this.#putTalk.bind(this)));
     app.delete(
@@ -20,58 +22,7 @@ export class TalksController {
   }
 
   async #getTalks(req, res) {
-    // TODO extract long polling to class
-    if (this.#isCurrentVersion(req)) {
-      const response = await this.#tryLongPolling(req);
-      handler.reply(res, response);
-    } else {
-      const response = await this.#talkResponse();
-      handler.reply(res, response);
-    }
-  }
-
-  #isCurrentVersion(req) {
-    const tag = /"(.*)"/.exec(req.get('If-None-Match'));
-    return tag && tag[1] === String(this.#version);
-  }
-
-  async #tryLongPolling(req) {
-    const time = this.#getPollingTime(req);
-    if (time == null) {
-      return { status: 304 };
-    }
-
-    return this.#waitForChange(time);
-  }
-
-  #getPollingTime(req) {
-    const wait = /\bwait=(\d+)/.exec(req.get('Prefer'));
-    return wait != null ? Number(wait[1]) : null;
-  }
-
-  async #waitForChange(time) {
-    return new Promise((resolve) => {
-      this.#waiting.push(resolve);
-      setTimeout(async () => {
-        if (this.#waiting.includes(resolve)) {
-          this.#waiting = this.#waiting.filter((r) => r !== resolve);
-          resolve({ status: 304 });
-        }
-      }, time * 1000);
-    });
-  }
-
-  async #talkResponse() {
-    const talks = await this.#services.getTalks();
-    const body = JSON.stringify(talks);
-    return {
-      headers: {
-        'Content-Type': 'application/json',
-        ETag: `"${this.#version}"`,
-        'Cache-Control': 'no-store',
-      },
-      body,
-    };
+    this.#longPolling.poll(req, res);
   }
 
   async #putTalk(req, res) {
@@ -80,7 +31,7 @@ export class TalksController {
       handler.reply(res, { status: 400, body: 'Bad talk data' });
     } else {
       await this.#services.submitTalk(talk);
-      await this.#talksUpdated();
+      await this.#longPolling.send();
       handler.reply(res, { status: 204 });
     }
   }
@@ -88,7 +39,7 @@ export class TalksController {
   async #deleteTalk(req, res) {
     const title = parseTitle(req);
     await this.#services.deleteTalk({ title });
-    await this.#talksUpdated();
+    await this.#longPolling.send();
     handler.reply(res, { status: 204 });
   }
 
@@ -108,18 +59,11 @@ export class TalksController {
       comment,
     });
     if (isSuccessful) {
-      await this.#talksUpdated();
+      await this.#longPolling.send();
       return { status: 204 };
     } else {
       return { status: 404, body: `No talk '${title}' found` };
     }
-  }
-
-  async #talksUpdated() {
-    this.#version++;
-    const response = await this.#talkResponse();
-    this.#waiting.forEach((resolve) => resolve(response));
-    this.#waiting = [];
   }
 }
 
