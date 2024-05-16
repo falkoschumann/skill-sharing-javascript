@@ -11,7 +11,7 @@ clean:
 distclean: clean
 	rm -rf dist node_modules
 
-dist: build
+dist: build sea
 
 check: test e2e
 	npx prettier . --check
@@ -73,7 +73,7 @@ version:
 # Path to embedded `public` folder must changed to snapshot filesystem
 sea: build
 	npx rollup --external express,node:fs,node:path --file build/index.js --format cjs src/main.js
-	sed -i '' "s/publicPath = '\.\/public'/publicPath = path\.join\(__dirname, '\.\.\/public'\)/g" build/index.js
+	sed -i.bak -r "s/path\.join\('\.\//path\.join\(__dirname, '\.\.\//g" build/index.js
 	npx pkg --no-bytecode .
 
 # Bun supports embedded static files but needs a JavaScript to import each file

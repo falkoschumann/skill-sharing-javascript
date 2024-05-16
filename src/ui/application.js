@@ -1,3 +1,4 @@
+import path from 'node:path';
 import express from 'express';
 
 import { Services } from '../application/services.js';
@@ -6,16 +7,16 @@ import { TalksController } from './talks-controller.js';
 
 export class Application {
   static create() {
-    return new Application('./public', Services.create(), express());
+    return new Application(Services.create(), express());
   }
 
   #app;
 
-  constructor(publicPath, services, app) {
+  constructor(services, app) {
     this.#app = app;
     app.set('x-powered-by', false);
     app.use(express.json());
-    app.use('/', express.static(publicPath));
+    app.use('/', express.static(path.join('./public')));
     new TalksController(services, app);
     new MetricsController(services, app);
   }

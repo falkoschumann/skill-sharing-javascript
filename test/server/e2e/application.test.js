@@ -271,7 +271,7 @@ function configure() {
   const app = express();
   const repository = Repository.create({ fileName: testFile });
   const services = new Services(repository);
-  new Application('./public', services, app);
+  new Application(services, app);
   return { app };
 }
 

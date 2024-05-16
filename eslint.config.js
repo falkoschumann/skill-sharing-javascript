@@ -12,7 +12,7 @@ export default [
   }),
   {
     languageOptions: {
-      ecmaVersion: 2022,
+      ecmaVersion: 2023,
       globals: {
         ...globals.es2017,
         ...globals.node,
