@@ -11,6 +11,7 @@ export class Application {
   }
 
   #app;
+  #server;
 
   constructor(services, app) {
     this.#app = app;
@@ -22,8 +23,21 @@ export class Application {
   }
 
   start({ port = 3000 } = {}) {
-    this.#app.listen(port, () => {
-      console.log(`Server is listening on port ${port}`);
+    return new Promise((resolve) => {
+      this.#server = this.#app.listen(port, () => {
+        console.log(`Server is listening on port ${port}.`);
+        resolve();
+      });
+    });
+  }
+
+  stop() {
+    return new Promise((resolve) => {
+      this.#server.on('close', () => {
+        console.log('Server stopped.');
+        resolve();
+      });
+      this.#server.close();
     });
   }
 }

@@ -1,3 +1,4 @@
+import EventSource from 'eventsource';
 import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
@@ -14,7 +15,7 @@ const testFile = fileURLToPath(
 );
 
 describe('Application', () => {
-  describe('Gets talks', () => {
+  describe('Get talks', () => {
     test('Replies with talks, if client asks for the first time', async () => {
       const { app } = configure();
       await submitTalk(app);
@@ -105,7 +106,7 @@ describe('Application', () => {
     });
   });
 
-  describe('Puts talk', () => {
+  describe('Put talk', () => {
     test('Creates a new talk', async () => {
       const { app } = configure();
 
@@ -157,7 +158,7 @@ describe('Application', () => {
     });
   });
 
-  describe('Deletes talk', () => {
+  describe('Delete talk', () => {
     test('Deletes an existing talk', async () => {
       const { app } = configure();
       await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));
@@ -171,7 +172,7 @@ describe('Application', () => {
     });
   });
 
-  describe('Posts comment', () => {
+  describe('Post comment', () => {
     test('Adds comment', async () => {
       const { app } = configure();
       await submitTalk(app, Talk.createTestInstance({ title: 'Foobar' }));

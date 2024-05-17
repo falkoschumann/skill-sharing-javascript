@@ -1,3 +1,4 @@
+import { SseEmitter } from '../infrastructure/sse-emitter.js';
 import * as handler from './handler.js';
 import { LongPolling } from './long-polling.js';
 
@@ -10,6 +11,10 @@ export class TalksController {
     this.#longPolling = new LongPolling(() => this.#services.getTalks());
 
     app.get('/api/talks', handler.runSafe(this.#getTalks.bind(this)));
+    app.get(
+      '/api/talks/events',
+      handler.runSafe(this.#receiveTalks.bind(this)),
+    );
     app.put('/api/talks/:title', handler.runSafe(this.#putTalk.bind(this)));
     app.delete(
       '/api/talks/:title',
@@ -22,7 +27,17 @@ export class TalksController {
   }
 
   async #getTalks(req, res) {
-    this.#longPolling.poll(req, res);
+    if (req.headers.accept == 'text/event-stream') {
+      this.#receiveTalks(req, res);
+    } else {
+      this.#longPolling.poll(req, res);
+    }
+  }
+
+  async #receiveTalks(request, response) {
+    const emitter = SseEmitter.create({ response });
+    const talks = await this.#services.getTalks();
+    emitter.send(talks);
   }
 
   async #putTalk(req, res) {

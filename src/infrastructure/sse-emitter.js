@@ -1,19 +1,28 @@
 export class SseEmitter {
-  #outputMessage;
-
-  constructor(timeout) {
-    console.log(timeout);
+  static create({ response, timeout } = {}) {
+    return new SseEmitter(response, timeout);
   }
 
-  extendReponse(outputMessage) {
-    this.#outputMessage = outputMessage;
-  }
+  constructor(response, timeout) {
+    this.response = response
+      .status(200)
+      .setHeader('Content-Type', 'text/event-stream')
+      .setHeader('Keep-Alive', `timeout=60`)
+      .setHeader('Connection', 'keep-alive');
 
-  send(data, event) {
-    if (event) {
-      this.#outputMessage.write(`event: ${event}\n`);
+    if (timeout != null) {
+      setTimeout(() => response.end(), timeout);
     }
-    const message = typeof data === 'string' ? data : JSON.stringify(data);
-    this.#outputMessage.write(`data: ${message}\n\n`);
+  }
+
+  send(/** @type {object|string} */ data, /** @type {string} */ event) {
+    if (event != null) {
+      this.response.write(`event: ${event}\n`);
+    }
+    if (typeof data === 'object') {
+      data = JSON.stringify(data);
+    }
+    this.response.write(`data: ${data}\n`);
+    this.response.write('\n');
   }
 }
