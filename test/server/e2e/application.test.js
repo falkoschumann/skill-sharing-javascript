@@ -106,6 +106,27 @@ describe('Application', () => {
     });
   });
 
+  describe('Receive talk updates', () => {
+    test.skip('Receives talk updates', async () => {
+      const { application, app } = configure();
+      const talksPromise = new Promise((resolve) => {
+        const client = new EventSource('http://localhost:3000/api/talks');
+        client.onmessage = (event) => {
+          resolve(JSON.parse(event.data));
+        };
+      });
+      await application.start();
+
+      await submitTalk(app);
+      const talks = await talksPromise;
+
+      await application.stop();
+      expect(talks).toEqual([
+        { title: 'Foobar', presenter: 'Anon', summary: 'Lorem ipsum' },
+      ]);
+    });
+  });
+
   describe('Put talk', () => {
     test('Creates a new talk', async () => {
       const { app } = configure();
@@ -272,8 +293,8 @@ function configure() {
   const app = express();
   const repository = Repository.create({ fileName: testFile });
   const services = new Services(repository);
-  new Application(services, app);
-  return { app };
+  const application = new Application(services, app);
+  return { application, app };
 }
 
 function submitTalk(app, talk = Talk.createTestInstance()) {
