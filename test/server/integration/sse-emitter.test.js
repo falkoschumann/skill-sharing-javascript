@@ -1,27 +1,14 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  jest,
-  test,
-} from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 
 import { SseEmitter } from '../../../src/infrastructure/sse-emitter.js';
 
 describe('SSE emitter', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
   test('Initializes response', () => {
     const response = new ResponseStub();
-    const emitter = SseEmitter.create({ response });
+    SseEmitter.create({ response });
 
-    expect(emitter.response.statusCode).toBe(200);
-    expect(emitter.response.getHeader('Content-Type')).toBe(
-      'text/event-stream',
-    );
+    expect(response.statusCode).toBe(200);
+    expect(response.getHeader('Content-Type')).toBe('text/event-stream');
   });
 
   test('Sends event', () => {
@@ -46,15 +33,11 @@ describe('SSE emitter', () => {
 
   test('Closes response after timeout', () => {
     const response = new ResponseStub();
-    SseEmitter.create({ response, timeout: 20000 });
+    const emitter = SseEmitter.create({ response });
 
-    jest.advanceTimersByTime(20000);
+    emitter.simulateTimeout();
 
     expect(response.finished).toBe(true);
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 });
 

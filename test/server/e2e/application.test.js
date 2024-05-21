@@ -108,22 +108,21 @@ describe('Application', () => {
 
   describe('Receive talk updates', () => {
     test.skip('Receives talk updates', async () => {
-      const { application, app } = configure();
-      const talksPromise = new Promise((resolve) => {
-        const client = new EventSource('http://localhost:3000/api/talks');
-        client.onmessage = (event) => {
-          resolve(JSON.parse(event.data));
-        };
+      await startAndStop({
+        run: async ({ app, source }) => {
+          await submitTalk(app);
+
+          const talks = await new Promise((resolve) => {
+            source.addEventListener('message', (event) => {
+              resolve(JSON.parse(event.data));
+            });
+          });
+
+          expect(talks).toEqual([
+            { title: 'Foobar', presenter: 'Anon', summary: 'Lorem ipsum' },
+          ]);
+        },
       });
-      await application.start();
-
-      await submitTalk(app);
-      const talks = await talksPromise;
-
-      await application.stop();
-      expect(talks).toEqual([
-        { title: 'Foobar', presenter: 'Anon', summary: 'Lorem ipsum' },
-      ]);
     });
   });
 
@@ -295,6 +294,18 @@ function configure() {
   const services = new Services(repository);
   const application = new Application(services, app);
   return { application, app };
+}
+
+async function startAndStop({ run = async () => {} } = {}) {
+  const { application, app } = configure();
+  await application.start({ port: 3333 });
+  const source = new EventSource('http://localhost:3333/api/talks');
+  try {
+    await run({ app, source });
+  } finally {
+    source.close();
+    await application.stop();
+  }
 }
 
 function submitTalk(app, talk = Talk.createTestInstance()) {
