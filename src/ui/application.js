@@ -33,11 +33,10 @@ export class Application {
 
   stop() {
     return new Promise((resolve) => {
-      this.#server.on('close', () => {
+      this.#server.close(() => {
         console.log('Server stopped.');
         resolve();
       });
-      this.#server.close();
     });
   }
 }

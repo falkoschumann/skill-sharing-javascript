@@ -1,6 +1,6 @@
 import { SseEmitter } from '../infrastructure/sse-emitter.js';
 import * as handler from './handler.js';
-import { LongPolling } from './long-polling.js';
+import { LongPolling } from '../infrastructure/long-polling.js';
 
 export class TalksController {
   #services;
