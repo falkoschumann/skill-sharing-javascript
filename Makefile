@@ -45,9 +45,9 @@ e2e-tests: build e2e
 	npx jest --testPathPattern=".*\/e2e\/.*"
 
 e2e: build
-	node src/main.js &
+	PORT=3333 node src/main.js &
 	npx cypress run
-	kill `lsof -t -i:3000`
+	kill `lsof -t -i:3333`
 
 watch: build
 	npx jest --watch
