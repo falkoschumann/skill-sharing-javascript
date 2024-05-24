@@ -35,6 +35,7 @@ export class TalksController {
   }
 
   async #receiveTalks(request, response) {
+    // TODO send talks to client, when updated
     const emitter = SseEmitter.create({ response });
     const talks = await this.#services.getTalks();
     emitter.send(talks);

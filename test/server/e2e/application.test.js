@@ -93,7 +93,7 @@ describe('Application', () => {
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
         .set('If-None-Match', '"0"');
-      setTimeout(() => submitTalk(app), 500);
+      setTimeout(async () => submitTalk(app), 500);
       const response = await responsePromise;
 
       expect(response.status).toEqual(200);
@@ -112,6 +112,7 @@ describe('Application', () => {
         run: async ({ app, source }) => {
           await submitTalk(app);
 
+          // FIXME Submitted talk is not written to disk when the event is sent
           const talks = await new Promise((resolve) => {
             source.addEventListener('message', (event) => {
               resolve(JSON.parse(event.data));
