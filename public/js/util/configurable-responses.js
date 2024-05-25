@@ -1,4 +1,5 @@
 export class ConfigurableResponses {
+  // TODO use signature shielding
   static create(responses, name) {
     return new ConfigurableResponses(responses, name);
   }
@@ -6,7 +7,7 @@ export class ConfigurableResponses {
   #description;
   #responses;
 
-  constructor(responses, name) {
+  constructor(/** @type {Object|tArray} */ responses, name) {
     this.#description = name == null ? '' : ` in ${name}`;
     this.#responses = Array.isArray(responses) ? [...responses] : responses;
   }

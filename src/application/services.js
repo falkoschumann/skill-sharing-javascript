@@ -13,7 +13,7 @@ export class Services {
 
   #repository;
 
-  constructor(repository) {
+  constructor(/** @type {Repository} */ repository) {
     this.#repository = repository;
   }
 

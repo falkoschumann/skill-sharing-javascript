@@ -7,7 +7,7 @@ import { Talk } from '../../../public/js/domain/talks.js';
 describe('API', () => {
   test('Gets talks', async () => {
     const client = LongPollingClient.createNull();
-    const api = new Api(null, client);
+    const api = new Api(client, null);
     const events = [];
     api.addEventListener('talks-updated', (event) => events.push(event));
 

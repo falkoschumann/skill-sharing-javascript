@@ -1,4 +1,8 @@
-export function runSafe(handler) {
+/**
+ * @typedef {import('express').Response} Response
+ */
+
+export function runSafe(/** @type {Function} */ handler) {
   // TODO handle exception is obsolete with with Express 5
   return async (request, response, next) => {
     try {
@@ -10,7 +14,7 @@ export function runSafe(handler) {
 }
 
 export function reply(
-  response,
+  /** @type {Response} */ response,
   { status = 200, headers = { 'Content-Type': 'text/plain' }, body = '' } = {},
 ) {
   response.status(status).header(headers).send(body);

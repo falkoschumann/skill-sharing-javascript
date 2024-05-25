@@ -14,7 +14,10 @@ export class LongPollingClient {
   #tag;
   #eventListener;
 
-  constructor(timeout, fetch) {
+  constructor(
+    /** @type {number} */ timeout,
+    /** @type {typeof globalThis.fetch} */ fetch,
+  ) {
     this.#timeout = timeout;
     this.#fetch = fetch;
   }
@@ -76,7 +79,7 @@ export class LongPollingClient {
     return headers;
   }
 
-  async #handleResponse(response) {
+  async #handleResponse(/** @type {Response} */ response) {
     if (response.status === 304) {
       return;
     }

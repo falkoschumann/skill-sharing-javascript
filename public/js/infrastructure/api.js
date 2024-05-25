@@ -17,22 +17,22 @@ export class TalksUpdatedEvent extends Event {
 export class Api extends EventTarget {
   static create() {
     return new Api(
-      globalThis.fetch.bind(globalThis),
       LongPollingClient.create(),
+      globalThis.fetch.bind(globalThis),
     );
   }
 
   static createNull() {
-    return new Api(fetchStub, LongPollingClient.createNull());
+    return new Api(LongPollingClient.createNull(), fetchStub);
   }
 
-  #fetch;
   #talksClient;
+  #fetch;
 
-  constructor(fetch, talksClient) {
+  constructor(talksClient, /** @type {typeof globalThis.fetch} */ fetch) {
     super();
-    this.#fetch = fetch;
     this.#talksClient = talksClient;
+    this.#fetch = fetch;
   }
 
   async connectTalks() {

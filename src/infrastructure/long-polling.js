@@ -1,21 +1,26 @@
 import * as handler from '../ui/handler.js';
 
+/**
+ * @typedef {import('express').Response} Response
+ * @typedef {import('express').Request} Request
+ */
+
 export class LongPolling {
   #version = 0;
   #waiting = [];
   #getData;
 
-  constructor(getData) {
+  constructor(/** @type {Function} */ getData) {
     this.#getData = getData;
   }
 
-  async poll(req, res) {
-    if (this.#isCurrentVersion(req)) {
-      const response = await this.#tryLongPolling(req);
-      handler.reply(res, response);
+  async poll(/** @type {Request} */ request, /** @type {Response} */ response) {
+    if (this.#isCurrentVersion(request)) {
+      const responseData = await this.#tryLongPolling(request);
+      handler.reply(response, responseData);
     } else {
-      const response = await this.#getResponse();
-      handler.reply(res, response);
+      const responseData = await this.#getResponse();
+      handler.reply(response, responseData);
     }
   }
 
@@ -26,13 +31,13 @@ export class LongPolling {
     this.#waiting = [];
   }
 
-  #isCurrentVersion(req) {
-    const tag = /"(.*)"/.exec(req.get('If-None-Match'));
+  #isCurrentVersion(/** @type {Request} */ request) {
+    const tag = /"(.*)"/.exec(request.get('If-None-Match'));
     return tag && tag[1] === String(this.#version);
   }
 
-  async #tryLongPolling(req) {
-    const time = this.#getPollingTime(req);
+  async #tryLongPolling(/** @type {Request} */ request) {
+    const time = this.#getPollingTime(request);
     if (time == null) {
       return { status: 304 };
     }
@@ -40,12 +45,12 @@ export class LongPolling {
     return this.#waitForChange(time);
   }
 
-  #getPollingTime(req) {
-    const wait = /\bwait=(\d+)/.exec(req.get('Prefer'));
+  #getPollingTime(/** @type {Request} */ request) {
+    const wait = /\bwait=(\d+)/.exec(request.get('Prefer'));
     return wait != null ? Number(wait[1]) : null;
   }
 
-  async #waitForChange(time) {
+  async #waitForChange(/** @type {number} */ time) {
     return new Promise((resolve) => {
       this.#waiting.push(resolve);
       setTimeout(async () => {

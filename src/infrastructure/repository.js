@@ -9,14 +9,17 @@ export class Repository {
   }
 
   static createNull({ talks = [] } = {}) {
-    return new Repository('nulled-file-name.json', new FsStub(talks));
+    return new Repository('null-repository.json', new FsStub(talks));
   }
 
   #fileName;
   #fs;
   #lastStored;
 
-  constructor(fileName, fs) {
+  constructor(
+    /** @type {string} */ fileName,
+    /** @type {typeof fsPromise} */ fs,
+  ) {
     this.#fileName = fileName;
     this.#fs = fs;
   }
@@ -68,15 +71,11 @@ export class Repository {
 
     const json = JSON.stringify(talksMap);
     await this.#fs.writeFile(this.#fileName, json, 'utf-8');
-    this.#lastStored = json;
+    this.#lastStored = talksMap;
   }
 
   get lastStored() {
-    if (this.#lastStored == null) {
-      return undefined;
-    }
-
-    return JSON.parse(this.#lastStored);
+    return this.#lastStored;
   }
 }
 

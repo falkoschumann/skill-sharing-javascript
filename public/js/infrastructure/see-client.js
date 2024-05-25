@@ -8,9 +8,9 @@ export class SseClient {
   }
 
   #eventSourceConstructor;
-  #eventSource;
+  /** @type {EventSource} */ #eventSource;
 
-  constructor(eventSourceConstructor) {
+  constructor(/** @type {typeof EventSource} */ eventSourceConstructor) {
     this.#eventSourceConstructor = eventSourceConstructor;
   }
 

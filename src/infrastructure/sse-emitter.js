@@ -1,11 +1,15 @@
+/**
+ * @typedef {import('express').Response} Response
+ */
+
 export class SseEmitter {
-  static create({ response, timeout } = {}) {
+  static create({ response, timeout = 60000 } = {}) {
     return new SseEmitter(response, timeout);
   }
 
   #response;
 
-  constructor(response, timeout) {
+  constructor(/** @type {Response} */ response, /** @type {number} */ timeout) {
     this.#response = response
       .status(200)
       .setHeader('Content-Type', 'text/event-stream')

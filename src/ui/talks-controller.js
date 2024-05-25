@@ -2,11 +2,18 @@ import { SseEmitter } from '../infrastructure/sse-emitter.js';
 import * as handler from './handler.js';
 import { LongPolling } from '../infrastructure/long-polling.js';
 
+/**
+ * @typedef {import('../application/services.js').Services} Services
+ * @typedef {import('express').Express} Express
+ * @typedef {import('express').Response} Response
+ * @typedef {import('express').Request} Request
+ */
+
 export class TalksController {
   #services;
   #longPolling;
 
-  constructor(services, app) {
+  constructor(/** @type {Services} */ services, /** @type {Express} */ app) {
     this.#services = services;
     this.#longPolling = new LongPolling(() => this.#services.getTalks());
 
@@ -26,46 +33,61 @@ export class TalksController {
     );
   }
 
-  async #getTalks(req, res) {
-    if (req.headers.accept == 'text/event-stream') {
-      this.#receiveTalks(req, res);
+  async #getTalks(
+    /** @type {Request} */ request,
+    /** @type {Response} */ response,
+  ) {
+    if (request.headers.accept == 'text/event-stream') {
+      this.#receiveTalks(request, response);
     } else {
-      this.#longPolling.poll(req, res);
+      this.#longPolling.poll(request, response);
     }
   }
 
-  async #receiveTalks(request, response) {
+  async #receiveTalks(
+    /** @type {Request} */ request,
+    /** @type {Response} */ response,
+  ) {
     // TODO send talks to client, when updated
     const emitter = SseEmitter.create({ response });
     const talks = await this.#services.getTalks();
     emitter.send(talks);
   }
 
-  async #putTalk(req, res) {
-    const talk = parseTalk(req);
+  async #putTalk(
+    /** @type {Request} */ request,
+    /** @type {Response} */ response,
+  ) {
+    const talk = parseTalk(request);
     if (talk == null) {
-      handler.reply(res, { status: 400, body: 'Bad talk data' });
+      handler.reply(response, { status: 400, body: 'Bad talk data' });
     } else {
       await this.#services.submitTalk(talk);
       await this.#longPolling.send();
-      handler.reply(res, { status: 204 });
+      handler.reply(response, { status: 204 });
     }
   }
 
-  async #deleteTalk(req, res) {
-    const title = parseTitle(req);
+  async #deleteTalk(
+    /** @type {Request} */ request,
+    /** @type {Response} */ response,
+  ) {
+    const title = parseTitle(request);
     await this.#services.deleteTalk({ title });
     await this.#longPolling.send();
-    handler.reply(res, { status: 204 });
+    handler.reply(response, { status: 204 });
   }
 
-  async #postComment(req, res) {
-    const comment = parseComment(req);
+  async #postComment(
+    /** @type {Request} */ request,
+    /** @type {Response} */ response,
+  ) {
+    const comment = parseComment(request);
     if (comment == null) {
-      handler.reply(res, { status: 400, body: 'Bad comment data' });
+      handler.reply(response, { status: 400, body: 'Bad comment data' });
     } else {
-      const response = await this.#tryAddComment(comment);
-      handler.reply(res, response);
+      const responseData = await this.#tryAddComment(comment);
+      handler.reply(response, responseData);
     }
   }
 
@@ -83,13 +105,13 @@ export class TalksController {
   }
 }
 
-function parseTitle(req) {
-  return decodeURIComponent(req.params.title);
+function parseTitle(/** @type {Request} */ request) {
+  return decodeURIComponent(request.params.title);
 }
 
-function parseTalk(req) {
-  const title = parseTitle(req);
-  const { presenter, summary } = req.body;
+function parseTalk(/** @type {Request} */ request) {
+  const title = parseTitle(request);
+  const { presenter, summary } = request.body;
 
   if (typeof presenter == 'string' && typeof summary == 'string') {
     return { title, presenter, summary };
@@ -98,9 +120,9 @@ function parseTalk(req) {
   return null;
 }
 
-function parseComment(req) {
-  const title = parseTitle(req);
-  const { author, message } = req.body;
+function parseComment(/** @type {Request} */ request) {
+  const title = parseTitle(request);
+  const { author, message } = request.body;
 
   if (typeof author == 'string' && typeof message == 'string') {
     return { title, comment: { author, message } };

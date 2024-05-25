@@ -112,7 +112,7 @@ function configure({ settings } = {}) {
   const repository = Repository.createNull(settings);
   const fetchStub = async () => {};
   const talksClient = LongPollingClient.createNull();
-  const api = new Api(fetchStub, talksClient);
+  const api = new Api(talksClient, fetchStub);
   const services = new Services(store, repository, api);
   return { services, store, repository, api, talksClient };
 }

@@ -26,7 +26,11 @@ export class Services {
   #repository;
   #api;
 
-  constructor(store, repository, api) {
+  constructor(
+    /** @type {Store} */ store,
+    /** @type {Repository} */ repository,
+    /** @type {Api} */ api,
+  ) {
     this.#store = store;
     this.#repository = repository;
     this.#api = api;

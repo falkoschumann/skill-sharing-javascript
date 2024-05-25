@@ -13,7 +13,7 @@ export class Application {
   #app;
   #server;
 
-  constructor(services, app) {
+  constructor(/** @type {Services} */ services, /** @type {Express} */ app) {
     this.#app = app;
     app.set('x-powered-by', false);
     app.use(express.json());
