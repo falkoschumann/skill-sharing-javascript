@@ -3,6 +3,10 @@ import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
 import { createStore } from '../util/store.js';
 
+/**
+ * @typedef {import('../util/store.js').Store} Store
+ */
+
 // TODO handle errors
 
 export class Services {
