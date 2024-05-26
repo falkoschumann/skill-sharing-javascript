@@ -39,7 +39,7 @@ class SkillSharing {
 
   submitTalk(title, summary) {
     cy.get('s-talk-form').find('input[name="title"]').type(title);
-    cy.get('s-talk-form').find('input[name="summary"]').type(summary);
+    cy.get('s-talk-form').find('textarea[name="summary"]').type(summary);
     cy.get('s-talk-form').find('button[type="submit"]').click();
   }
 
@@ -49,8 +49,8 @@ class SkillSharing {
   }
 
   changeUser(name) {
-    cy.get('s-user-field').find('input').clear();
-    cy.get('s-user-field').find('input').type(name);
+    cy.get('s-user-field').find('input[name="username"]').clear();
+    cy.get('s-user-field').find('input[name="username"]').type(name);
   }
 
   assertTalkAdded(title, summary) {
@@ -68,8 +68,8 @@ class SkillSharing {
       .find('section.talk')
       .last()
       .should(($section) => {
-        expect($section.find('p.comment').last().text()).contains(author);
-        expect($section.find('p.comment').last().text()).contains(comment);
+        expect($section.find('.comment').last().text()).contains(author);
+        expect($section.find('.comment').last().text()).contains(comment);
       });
   }
 }

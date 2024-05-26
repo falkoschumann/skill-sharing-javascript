@@ -7,15 +7,25 @@ class TalkFormComponent extends Component {
     return html`
       <form @submit=${(e) => this.#formSubmitted(e)}>
         <h3>Submit a Talk</h3>
-        <label
-          >Title:
-          <input type="text" required name="title" />
-        </label>
-        <label
-          >Summary:
-          <input type="text" required name="summary" />
-        </label>
-        <button type="submit">Submit</button>
+        <ul class="form">
+          <li>
+            <label for="title">Title:</label>
+            <input type="text" required id="title" name="title" />
+          </li>
+          <li>
+            <label for="summary">Summary:</label>
+            <textarea
+              rows="6"
+              cols="30"
+              required
+              id="summary"
+              name="summary"
+            ></textarea>
+          </li>
+          <li>
+            <button type="submit">Submit</button>
+          </li>
+        </ul>
       </form>
     `;
   }

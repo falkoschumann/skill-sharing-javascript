@@ -14,14 +14,20 @@ class UserFieldComponent extends Container {
 
   getView() {
     return html`
-      <label
-        >Your name:
-        <input
-          type="text"
-          value="${this.state}"
-          @change=${(e) =>
-            this.services.changeUser({ username: e.target.value })}
-      /></label>
+      <ul class="form">
+        <li>
+          <label for="username">Your name:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            autocomplete="username"
+            .value="${this.state}"
+            @change=${(e) =>
+              this.services.changeUser({ username: e.target.value })}
+          />
+        </li>
+      </ul>
     `;
   }
 }

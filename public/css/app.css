@@ -1,46 +1,14 @@
-:root {
-  --main-color: #292c2f; /* RAL 9011, Graphitschwarz */
-  --main-background-color: #fdfdfd; /* RAL 9020, Seidenmatt–Weiß */
-}
-
-body {
-  margin: 24px;
-
-  background: var(--main-background-color);
-  color: var(--main-color);
-}
-
-button,
-input {
-  padding: 4px;
-
-  color: var(--main-color);
-}
-
-label input {
+s-skill-sharing {
   display: block;
-  margin-bottom: 8px;
-  width: 30em;
+  padding: 2rem;
 }
 
-p {
-  margin: 16px 0;
+s-talks h2 button {
+  padding: 0.4rem 0.8rem;
+  vertical-align: middle;
+  font-size: 0.8rem;
 }
 
-.talk {
-  margin: 40px 0;
-}
-
-.talk h2 button {
-  vertical-align: bottom;
-}
-
-.comment {
-  margin: 0;
-
-  font-style: italic;
-}
-
-.comment strong {
-  font-style: normal;
+s-talks .comments {
+  margin-block: 1rem;
 }

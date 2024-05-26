@@ -24,19 +24,38 @@ class TalksComponent extends Container {
         </h2>
         <div>by <strong>${talk.presenter}</strong></div>
         <p>${talk.summary}</p>
-        ${talk.comments.map(
-          (comment) => html`
-            <p class="comment">
-              <strong>${comment.author}</strong>: ${comment.message}
-            </p>
-          `,
-        )}
-        <form @submit=${(e) => this.#formSubmitted(e)}>
-          <input type="text" hidden name="talkTitle" value="${talk.title}" />
-          <input type="text" required name="comment" />
-          <button type="submit">Add comment</button>
+        ${this.#commentsTemplate(talk.comments)}
+        <form @submit=${(e) => this.#formSubmitted(e)} class="form">
+          <ul>
+            <li>
+              <input
+                type="text"
+                hidden
+                name="talkTitle"
+                value="${talk.title}"
+              />
+              <input type="text" required name="comment" />
+            </li>
+            <li>
+              <button type="submit">Add comment</button>
+            </li>
+          </ul>
         </form>
       </section>
+    `;
+  }
+
+  #commentsTemplate(comments) {
+    return html`
+      <ul class="comments">
+        ${comments.map(
+          (comment) => html`
+            <li class="comment">
+              <strong>${comment.author}</strong>: ${comment.message}
+            </li>
+          `,
+        )}
+      </ul>
     `;
   }
 
