@@ -72,16 +72,18 @@ version:
 	@echo "Use Node.js $(shell node --version)"
 	@echo "Use NPM $(shell npm --version)"
 
+bundle: build
+	npx rollup --plugin commonjs --plugin json --plugin node-resolve --file build/index.js --format cjs src/main.js
+
 # SEA does not support cross-compilation
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
-sea-linux: build
+sea-linux: bundle
 	node --experimental-sea-config sea-config.json
 	cp $(shell command -v node) build/skillsharing
 	chmod 777 build/skillsharing
 	npx postject build/skillsharing NODE_SEA_BLOB build/sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 
-sea-macos: build
-	npx rollup --plugin commonjs --plugin json --plugin node-resolve --file build/index.js --format cjs src/main.js
+sea-macos: bundle
 	node --experimental-sea-config sea-config.json
 	cp $(shell command -v node) build/skillsharing
 	chmod 777 build/skillsharing
@@ -89,7 +91,7 @@ sea-macos: build
 	npx postject build/skillsharing NODE_SEA_BLOB build/sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --macho-segment-name NODE_SEA
 	codesign --sign - build/skillsharing
 
-sea-windows: build
+sea-windows: bundle
 	node --experimental-sea-config sea-config.json
 	node -e "require('fs').copyFileSync(process.execPath, 'build/skillsharing.exe')"
 	signtool remove /s build/skillsharing.exe
@@ -99,22 +101,22 @@ sea-windows: build
 # Pkg supports only Node.js 18.15.0
 # Pkg does not support ESM so we must create a CommonJS bundle
 # Path to embedded `public` folder must changed to snapshot filesystem
-sea-pkg: build
-	npx rollup --external express,node:fs/promise,node:path --file build/index.js --format cjs src/main.js
+sea-pkg: bundle
+	npx rollup --plugin commonjs --plugin json --plugin node-resolve --file build/index.js --format cjs src/main.js
 	sed -i.bak -r "s/path\.join\('\.\//path\.join\(__dirname, '\.\.\//g" build/index.js
 	npx pkg --no-bytecode .
 
 # Deno does not support embedded static files
 sea-deno: build
-	npx deno compile --target x86_64-unknown-linux-gnu --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-linux src/main.js
-	npx deno compile --target x86_64-apple-darwin --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-macos src/main.js
-	npx deno compile --target x86_64-pc-windows-msvc --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-windows src/main.js
+	deno compile --target x86_64-unknown-linux-gnu --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-linux src/main.js
+	deno compile --target x86_64-apple-darwin --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-macos src/main.js
+	deno compile --target x86_64-pc-windows-msvc --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-windows src/main.js
 
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
 sea-bun: build
-	npx bun build src/main.js --compile --target=bun-linux-x64 --outfile dist/skillsharing-bun-linux
-	npx bun build src/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
-	npx bun build src/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
+	bun build src/main.js --compile --target=bun-linux-x64 --outfile dist/skillsharing-bun-linux
+	bun build src/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
+	bun build src/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
 
 .PHONY: all clean distclean dist check format start dev dev-e2e \
 	test unit-tests integration-tests e2e-tests e2e watch coverage \
