@@ -1,6 +1,5 @@
 # TODO remove --experimental-global-customevent when Node.js 18 must not be supported anymore
-# TODO remove --experimental-vm-modules when Jest supports ESM
-export NODE_OPTIONS=--experimental-global-customevent --experimental-vm-modules --no-warnings=ExperimentalWarning
+export NODE_OPTIONS=--experimental-global-customevent --no-warnings=ExperimentalWarning
 export NPM_CONFIG_YES=true
 
 all: dist check
@@ -33,16 +32,16 @@ dev-e2e: build
 	npx cypress open
 
 test: build
-	npm test
+	npm run test
 
 unit-tests: build
-	npx jest --testPathPattern=".*\/unit\/.*"
+	npx vitest run unit
 
 integration-tests: build
-	npx jest --testPathPattern=".*\/integration\/.*"
+	npx vitest run integration
 
 e2e-tests: build e2e
-	npx jest --testPathPattern=".*\/e2e\/.*"
+	npx vitest run e2e
 
 e2e: build
 	PORT=3333 node src/main.js &
@@ -54,10 +53,10 @@ e2e-clean:
 
 
 watch: build
-	npx jest --watch
+	npx vitest watch
 
 coverage: build
-	npx jest --coverage
+	npx vitest run --coverage
 
 build: version
 	@if [ -n "$(CI)" ] ; then \

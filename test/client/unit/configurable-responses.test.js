@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 
 import { ConfigurableResponses } from '../../../public/js/util/configurable-responses.js';
 
