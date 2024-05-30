@@ -5,13 +5,17 @@ import { Services } from '../application/services.js';
 import { MetricsController } from './metrics-controller.js';
 import { TalksController } from './talks-controller.js';
 
+/**
+ * @typedef {import('node:http').Server} Server
+ */
 export class Application {
   static create() {
+    // TODO make repository file configurable for testing
     return new Application(Services.create(), express());
   }
 
   #app;
-  #server;
+  /** @type {Server} */ #server;
 
   constructor(/** @type {Services} */ services, /** @type {Express} */ app) {
     this.#app = app;
@@ -23,6 +27,7 @@ export class Application {
   }
 
   start({ port = 3000 } = {}) {
+    console.log('Starting server...');
     return new Promise((resolve) => {
       this.#server = this.#app.listen(port, () => {
         console.log(`Server is listening on port ${port}.`);
@@ -33,10 +38,12 @@ export class Application {
 
   stop() {
     return new Promise((resolve) => {
-      this.#server.close(() => {
+      this.#server.on('close', () => {
         console.log('Server stopped.');
         resolve();
       });
+      this.#server.close();
+      console.log('Stopping server...');
     });
   }
 }

@@ -1,4 +1,4 @@
-import { rmSync } from 'node:fs';
+import fs from 'node:fs/promises';
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
 import { Talk } from '../../../public/js/domain/talks.js';
@@ -14,10 +14,12 @@ const nonExistingFile = new URL(
 ).pathname;
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 
+// TODO replace beforeEach and afterEach with test function
+
 describe('Repository', () => {
-  beforeEach(() => {
-    rmSync(testFile, { force: true });
-    rmSync(nonExistingFile, { force: true });
+  beforeEach(async () => {
+    await fs.rm(testFile, { force: true });
+    await fs.rm(nonExistingFile, { force: true });
   });
 
   describe('Find all', () => {

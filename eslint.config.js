@@ -1,15 +1,9 @@
 import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
 import globals from 'globals';
-
-const compat = new FlatCompat();
 
 /** @type { import("eslint").Linter.FlatConfig[] } */
 export default [
   js.configs.recommended,
-  ...compat.config({
-    extends: ['plugin:cypress/recommended'],
-  }),
   {
     languageOptions: {
       ecmaVersion: 2022,

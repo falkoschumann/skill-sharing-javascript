@@ -16,6 +16,13 @@ const testFile = fileURLToPath(
 );
 
 describe('Application', () => {
+  test('Starts and stops the app', async () => {
+    const { application } = configure();
+
+    await application.start({ port: 3333 });
+    await application.stop();
+  });
+
   describe('Get talks', () => {
     test('Replies with talks, if client asks for the first time', async () => {
       const { app } = configure();

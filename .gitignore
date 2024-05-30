@@ -3,6 +3,7 @@
 build/
 /data/
 dist/
+/screenshots/
 tmp/
 vendor/
 

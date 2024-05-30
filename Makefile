@@ -6,7 +6,7 @@ export NPM_CONFIG_YES=true
 all: dist check
 
 clean:
-	rm -rf build coverage public/vendor
+	rm -rf build coverage public/vendor screenshots
 
 distclean: clean
 	rm -rf dist node_modules
@@ -29,9 +29,6 @@ dev: build
 		"npx nodemon src/main.js" \
 		"npx browser-sync 'http://localhost:3000' public -w --port 8080 --no-open"
 
-dev-e2e: build
-	npx cypress open
-
 test: build
 	npm test
 
@@ -41,16 +38,8 @@ unit-tests: build
 integration-tests: build
 	npx jest --testPathPattern=".*\/integration\/.*"
 
-e2e-tests: build e2e
+e2e-tests: build
 	npx jest --testPathPattern=".*\/e2e\/.*"
-
-e2e: build
-	PORT=3333 node src/main.js &
-	npx cypress run
-	kill `lsof -t -i:3333`
-
-e2e-clean:
-	kill `lsof -t -i:3333`
 
 watch: build
 	npx jest --watch
