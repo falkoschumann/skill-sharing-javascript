@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from '@jest/globals';
 
 import { Services } from '../../../src/application/services.js';
 import { Repository } from '../../../src/infrastructure/repository.js';

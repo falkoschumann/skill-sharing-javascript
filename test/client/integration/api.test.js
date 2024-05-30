@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from '@jest/globals';
 
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';

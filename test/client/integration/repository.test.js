@@ -1,8 +1,6 @@
-/**
- * @vitest-environment jsdom
- */
+/* @jest-environment jsdom */
 
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from '@jest/globals';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
 
 describe('Repository', () => {

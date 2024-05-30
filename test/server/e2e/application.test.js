@@ -3,13 +3,14 @@ import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from '@jest/globals';
 
 import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 import { Services } from '../../../src/application/services.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 
+// TODO Use testdata folder
 const testFile = fileURLToPath(
   new URL('../../../data/talks.test.json', import.meta.url),
 );

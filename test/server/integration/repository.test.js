@@ -1,9 +1,10 @@
 import { rmSync } from 'node:fs';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from '@jest/globals';
 
 import { Talk } from '../../../public/js/domain/talks.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 
+// TODO Use testdata folder
 const testFile = new URL('../../../data/talks.test.json', import.meta.url)
   .pathname;
 const exampleFile = new URL('../data/example.json', import.meta.url).pathname;
