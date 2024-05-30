@@ -3,11 +3,12 @@
  */
 
 export class SseEmitter {
-  static create({ response, timeout = 60000 } = {}) {
+  static create({ response, timeout } = {}) {
     return new SseEmitter(response, timeout);
   }
 
   #response;
+  #timeoutId;
 
   constructor(/** @type {Response} */ response, /** @type {number} */ timeout) {
     this.#response = response
@@ -16,8 +17,9 @@ export class SseEmitter {
       .setHeader('Keep-Alive', `timeout=60`)
       .setHeader('Connection', 'keep-alive');
 
+    this.#response.addListener('close', () => clearTimeout(this.#timeoutId));
     if (timeout != null) {
-      setTimeout(() => this.#close(), timeout);
+      this.#timeoutId = setTimeout(() => this.#close(), timeout);
     }
   }
 

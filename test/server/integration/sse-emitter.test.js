@@ -1,3 +1,4 @@
+import events from 'node:events';
 import { describe, expect, test } from '@jest/globals';
 
 import { SseEmitter } from '../../../src/infrastructure/sse-emitter.js';
@@ -33,7 +34,7 @@ describe('SSE emitter', () => {
 
   test('Closes response after timeout', () => {
     const response = new ResponseStub();
-    const emitter = SseEmitter.create({ response });
+    const emitter = SseEmitter.create({ response, timeout: 60000 });
 
     emitter.simulateTimeout();
 
@@ -41,7 +42,7 @@ describe('SSE emitter', () => {
   });
 });
 
-class ResponseStub {
+class ResponseStub extends events.EventEmitter {
   body = '';
   #headers = {};
 
@@ -65,5 +66,6 @@ class ResponseStub {
 
   end() {
     this.finished = true;
+    this.emit('close');
   }
 }

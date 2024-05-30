@@ -96,13 +96,13 @@ describe('Application', () => {
     test('Replies talks, if a talk was submitted while long polling', async () => {
       const { app } = configure();
 
-      const responsePromise = request(app)
+      const timeoutId = setTimeout(() => submitTalk(app), 500);
+      const response = await request(app)
         .get('/api/talks')
         .set('Accept', 'application/json')
         .set('Prefer', 'wait=1')
         .set('If-None-Match', '"0"');
-      setTimeout(async () => submitTalk(app), 500);
-      const response = await responsePromise;
+      clearTimeout(timeoutId);
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/application\/json/);
@@ -317,7 +317,7 @@ async function startAndStop({ run = async () => {} } = {}) {
   }
 }
 
-function submitTalk(app, talk = Talk.createTestInstance()) {
+async function submitTalk(app, talk = Talk.createTestInstance()) {
   return request(app)
     .put(`/api/talks/${encodeURIComponent(talk.title)}`)
     .set('Content-Type', 'application/json')
