@@ -61,7 +61,14 @@ version:
 	@echo "Use NPM $(shell npm --version)"
 
 bundle: build
-	npx rollup --plugin commonjs --plugin json --plugin node-resolve --file build/index.js --format cjs src/main.js
+	npx rollup \
+		--failAfterWarnings \
+		--plugin commonjs \
+		--plugin json \
+		--plugin 'node-resolve={preferBuiltins: true}' \
+		--file build/index.js \
+		--format cjs \
+		src/main.js
 
 # SEA does not support cross-compilation
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
@@ -90,7 +97,6 @@ sea-windows: bundle
 # Pkg does not support ESM so we must create a CommonJS bundle
 # Path to embedded `public` folder must changed to snapshot filesystem
 sea-pkg: bundle
-	npx rollup --plugin commonjs --plugin json --plugin node-resolve --file build/index.js --format cjs src/main.js
 	sed -i.bak -r "s/path\.join\('\.\//path\.join\(__dirname, '\.\.\//g" build/index.js
 	npx pkg --no-bytecode .
 
@@ -106,6 +112,7 @@ sea-bun: build
 	bun build src/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
 	bun build src/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
 
-.PHONY: all clean distclean dist check format start dev dev-e2e \
-	test unit-tests integration-tests e2e-tests e2e watch coverage \
-	build version
+.PHONY: all clean distclean dist check format start \
+	dev test unit-tests integration-tests e2e-tests watch coverage \
+	build version \
+	bundle sea-linux sea-macos sea-windows sea-pkg sea-deno sea-bun
