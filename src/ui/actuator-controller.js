@@ -69,25 +69,9 @@ export class ActuatorController {
     /** @type {Request} */ request,
     /** @type {Response} */ response,
   ) {
-    // TODO Create class HealthIndicator and Health
-    // TODO Improve health endpoint
-    // TODO Map DOWN status to 503
-    // Example:
-    // {
-    //   "status": "UP",
-    //   "components": {
-    //     "realtime": {
-    //       "status": "UP",
-    //       "details": {
-    //         "file": "realtime.csv"
-    //       }
-    //     }
-    //   }
-    // }
-
-    response.status(200).json({
-      status: 'UP',
-    });
+    const health = await this.#services.getHealth();
+    const status = health.status === 'UP' ? 200 : 503;
+    response.status(status).json(health);
   }
 
   async #getMetrics(

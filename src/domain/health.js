@@ -22,6 +22,10 @@ export class HealthIndicator {
 }
 
 export class HealthRegistry {
+  static create() {
+    return new HealthRegistry();
+  }
+
   /** @type {Map<string, HealthIndicator>} */ #registry = new Map();
 
   health() {

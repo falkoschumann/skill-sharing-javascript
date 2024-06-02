@@ -5,7 +5,7 @@ import { Health, HealthRegistry, Status } from '../../../src/domain/health.js';
 describe('Health', () => {
   describe('Health endpoint', () => {
     test('Returns default health', () => {
-      const endpoint = new HealthRegistry();
+      const endpoint = HealthRegistry.create();
 
       const health = endpoint.health();
 
@@ -13,7 +13,7 @@ describe('Health', () => {
     });
 
     test('Registers health indicators', () => {
-      const endpoint = new HealthRegistry();
+      const endpoint = HealthRegistry.create();
       endpoint.register('test', {
         health() {
           return new Health();
@@ -29,7 +29,7 @@ describe('Health', () => {
     });
 
     test('Determines the worst status', () => {
-      const endpoint = new HealthRegistry();
+      const endpoint = HealthRegistry.create();
       endpoint.register('test1', {
         health() {
           return new Health(Status.OUT_OF_SERVICE);

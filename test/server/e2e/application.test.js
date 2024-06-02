@@ -2,18 +2,15 @@ import EventSource from 'eventsource';
 import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from '@jest/globals';
 
 import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 import { Services } from '../../../src/application/services.js';
 import { Talk } from '../../../public/js/domain/talks.js';
+import { HealthRegistry } from '../../../src/domain/health.js';
 
-// TODO Use testdata folder
-const testFile = fileURLToPath(
-  new URL('../../../data/talks.test.json', import.meta.url),
-);
+const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 
 describe('Application', () => {
   test('Starts and stops the app', async () => {
@@ -320,15 +317,27 @@ describe('Application', () => {
       });
     });
 
-    test('Gets health', async () => {
-      const { app } = configure();
-      await submitTalk(app);
+    describe('Health', () => {
+      test('Gets up', async () => {
+        const { app } = configure();
 
-      const response = await request(app).get('/actuator/health');
+        const response = await request(app).get('/actuator/health');
 
-      expect(response.status).toEqual(200);
-      expect(response.get('Content-Type')).toMatch(/application\/json/);
-      expect(response.body).toEqual({ status: 'UP' });
+        expect(response.status).toEqual(200);
+        expect(response.get('Content-Type')).toMatch(/application\/json/);
+        expect(response.body).toMatchObject({ status: 'UP' });
+      });
+
+      test('Gets down', async () => {
+        const { app } = configure({ fileName: corruptedFile });
+        await submitTalk(app);
+
+        const response = await request(app).get('/actuator/health');
+
+        expect(response.status).toEqual(503);
+        expect(response.get('Content-Type')).toMatch(/application\/json/);
+        expect(response.body).toMatchObject({ status: 'DOWN' });
+      });
     });
 
     test('Gets metrics', async () => {
@@ -348,11 +357,15 @@ describe('Application', () => {
   });
 });
 
-function configure() {
+// TODO Use testdata folder
+const testFile = new URL('../../../data/talks.test.json', import.meta.url)
+  .pathname;
+
+function configure({ fileName = testFile } = {}) {
   rmSync(testFile, { force: true });
   const app = express();
-  const repository = Repository.create({ fileName: testFile });
-  const services = new Services(repository);
+  const repository = Repository.create({ fileName });
+  const services = new Services(repository, HealthRegistry.create());
   const application = new Application(services, app);
   return { application, app };
 }

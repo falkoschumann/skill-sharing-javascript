@@ -3,6 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Services } from '../../../src/application/services.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 import { Talk } from '../../../public/js/domain/talks.js';
+import { HealthRegistry } from '../../../src/domain/health.js';
 
 describe('Services', () => {
   describe('Submit talk', () => {
@@ -124,6 +125,6 @@ describe('Services', () => {
 
 function configure({ talks } = {}) {
   const repository = Repository.createNull({ talks });
-  const services = new Services(repository);
+  const services = new Services(repository, HealthRegistry.create());
   return { services, repository };
 }
