@@ -10,7 +10,10 @@ export class SseEmitter {
   #response;
   #timeoutId;
 
-  constructor(/** @type {Response} */ response, /** @type {number} */ timeout) {
+  constructor(
+    /** @type {Response} */ response,
+    /** @type {?number} */ timeout,
+  ) {
     this.#response = response
       .status(200)
       .setHeader('Content-Type', 'text/event-stream')
