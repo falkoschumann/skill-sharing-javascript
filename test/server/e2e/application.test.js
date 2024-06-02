@@ -272,7 +272,7 @@ describe('Application', () => {
       const { app } = configure();
       await submitTalk(app);
 
-      const response = await request(app).get('/metrics');
+      const response = await request(app).get('/actuator/prometheus');
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
@@ -285,13 +285,65 @@ describe('Application', () => {
       const { app } = configure();
       await submitTalk(app);
 
-      const response = await request(app).get('/metrics');
+      const response = await request(app).get('/actuator/prometheus');
 
       expect(response.status).toEqual(200);
       expect(response.get('Content-Type')).toMatch(/text\/plain/);
       expect(response.text).toMatch(
         /# TYPE presenters_count gauge\npresenters_count 1 \d+\n\n/,
       );
+    });
+
+    test('Gets comments count', async () => {
+      const { app } = configure();
+      await submitTalk(app);
+
+      const response = await request(app).get('/actuator/prometheus');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/text\/plain/);
+      expect(response.text).toMatch(
+        /# TYPE comments_count gauge\ncomments_count 0 \d+\n\n/,
+      );
+    });
+
+    test('Gets info', async () => {
+      const { app } = configure();
+      await submitTalk(app);
+
+      const response = await request(app).get('/actuator/info');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/application\/json/);
+      expect(response.body).toEqual({
+        'skill-sharing': { version: expect.any(String) },
+      });
+    });
+
+    test('Gets health', async () => {
+      const { app } = configure();
+      await submitTalk(app);
+
+      const response = await request(app).get('/actuator/health');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/application\/json/);
+      expect(response.body).toEqual({ status: 'UP' });
+    });
+
+    test('Gets metrics', async () => {
+      const { app } = configure();
+      await submitTalk(app);
+
+      const response = await request(app).get('/actuator/metrics');
+
+      expect(response.status).toEqual(200);
+      expect(response.get('Content-Type')).toMatch(/application\/json/);
+      expect(response.body).toEqual({
+        cpu: expect.any(Object),
+        mem: expect.any(Object),
+        uptime: expect.any(Number),
+      });
     });
   });
 });

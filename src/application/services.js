@@ -43,13 +43,15 @@ export class Services {
 
   async getMetrics() {
     let talksCount = 0;
+    let commentsCount = 0;
     const presenters = new Set();
 
     for (const talk of await this.#repository.findAll()) {
       talksCount++;
       presenters.add(talk.presenter);
+      commentsCount += talk.comments.length;
     }
 
-    return { talksCount, presentersCount: presenters.size };
+    return { talksCount, presentersCount: presenters.size, commentsCount };
   }
 }

@@ -2,12 +2,13 @@ import path from 'node:path';
 import express from 'express';
 
 import { Services } from '../application/services.js';
-import { MetricsController } from './metrics-controller.js';
+import { ActuatorController } from './actuator-controller.js';
 import { TalksController } from './talks-controller.js';
 
 /**
  * @typedef {import('node:http').Server} Server
  */
+
 export class Application {
   static create() {
     // TODO make repository file configurable for testing
@@ -23,7 +24,7 @@ export class Application {
     app.use(express.json());
     app.use('/', express.static(path.join('./public')));
     new TalksController(services, app);
-    new MetricsController(services, app);
+    new ActuatorController(services, app);
   }
 
   start({ port = 3000 } = {}) {

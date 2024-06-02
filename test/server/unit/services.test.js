@@ -102,7 +102,7 @@ describe('Services', () => {
   });
 
   describe('Metrics', () => {
-    test('Counts talks and presenter', async () => {
+    test('Counts talks, presenter and comments', async () => {
       const { services } = configure({
         talks: [
           Talk.createTestInstance({ title: 'Talk 1', presenter: 'Alice' }),
@@ -113,7 +113,11 @@ describe('Services', () => {
 
       const metrics = await services.getMetrics();
 
-      expect(metrics).toEqual({ talksCount: 3, presentersCount: 2 });
+      expect(metrics).toEqual({
+        talksCount: 3,
+        presentersCount: 2,
+        commentsCount: 3,
+      });
     });
   });
 });
