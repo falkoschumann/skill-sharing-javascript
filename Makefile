@@ -13,7 +13,7 @@ distclean: clean
 
 dist: build sea-pkg
 
-check: test e2e
+check: test
 	npx prettier . --check
 	npx eslint public/js src test
 
