@@ -2,6 +2,7 @@ import * as handler from './handler.js';
 
 /**
  * @typedef {import('../application/services.js').Services} Services
+ * @typedef {import('../util/health.js').HealthRegistry} HealthRegistry
  * @typedef {import('express').Express} Express
  * @typedef {import('express').Response} Response
  * @typedef {import('express').Request} Request
@@ -9,9 +10,15 @@ import * as handler from './handler.js';
 
 export class ActuatorController {
   #services;
+  #healthRegistry;
 
-  constructor(/** @type {Services} */ services, /** @type {Express} */ app) {
+  constructor(
+    /** @type {Services} */ services,
+    /** @type {HealthRegistry} */ healthRegistry,
+    /** @type {Express} */ app,
+  ) {
     this.#services = services;
+    this.#healthRegistry = healthRegistry;
 
     app.get('/actuator', this.#getActuator.bind(this));
     app.get('/actuator/info', this.#getActuatorInfo.bind(this));
@@ -65,11 +72,11 @@ export class ActuatorController {
     });
   }
 
-  async #getActuatorHealth(
+  #getActuatorHealth(
     /** @type {Request} */ request,
     /** @type {Response} */ response,
   ) {
-    const health = await this.#services.getHealth();
+    const health = this.#healthRegistry.health();
     const status = health.status === 'UP' ? 200 : 503;
     response.status(status).json(health);
   }

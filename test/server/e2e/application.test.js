@@ -8,7 +8,7 @@ import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 import { Services } from '../../../src/application/services.js';
 import { Talk } from '../../../public/js/domain/talks.js';
-import { HealthRegistry } from '../../../src/domain/health.js';
+import { HealthRegistry } from '../../../src/util/health.js';
 
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 
@@ -365,8 +365,9 @@ function configure({ fileName = testFile } = {}) {
   rmSync(testFile, { force: true });
   const app = express();
   const repository = Repository.create({ fileName });
-  const services = new Services(repository, HealthRegistry.create());
-  const application = new Application(services, app);
+  const healthRegistry = HealthRegistry.create();
+  const services = new Services(repository, healthRegistry);
+  const application = new Application(services, healthRegistry, app);
   return { application, app };
 }
 

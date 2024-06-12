@@ -4,6 +4,7 @@ import express from 'express';
 import { Services } from '../application/services.js';
 import { ActuatorController } from './actuator-controller.js';
 import { TalksController } from './talks-controller.js';
+import { HealthRegistry } from '../util/health.js';
 
 /**
  * @typedef {import('node:http').Server} Server
@@ -12,19 +13,28 @@ import { TalksController } from './talks-controller.js';
 export class Application {
   static create() {
     // TODO make repository file configurable for testing
-    return new Application(Services.create(), express());
+    const healthRegistry = HealthRegistry.create();
+    return new Application(
+      Services.create({ healthRegistry }),
+      healthRegistry,
+      express(),
+    );
   }
 
   #app;
   /** @type {Server} */ #server;
 
-  constructor(/** @type {Services} */ services, /** @type {Express} */ app) {
+  constructor(
+    /** @type {Services} */ services,
+    /** @type {HealthRegistry} */ healthRegistry,
+    /** @type {Express} */ app,
+  ) {
     this.#app = app;
     app.set('x-powered-by', false);
     app.use(express.json());
     app.use('/', express.static(path.join('./public')));
     new TalksController(services, app);
-    new ActuatorController(services, app);
+    new ActuatorController(services, healthRegistry, app);
   }
 
   start({ port = 3000 } = {}) {

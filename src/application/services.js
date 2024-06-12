@@ -1,11 +1,11 @@
-import { HealthRegistry } from '../domain/health.js';
+import { HealthRegistry } from '../util/health.js';
 import { Repository } from '../infrastructure/repository.js';
 
 // TODO handle errors
 
 export class Services {
-  static create() {
-    return new Services(Repository.create(), HealthRegistry.create());
+  static create({ healthRegistry = HealthRegistry.create() } = {}) {
+    return new Services(Repository.create(), healthRegistry);
   }
 
   static createNull() {
@@ -13,14 +13,12 @@ export class Services {
   }
 
   #repository;
-  #healthRegistry;
 
   constructor(
     /** @type {Repository} */ repository,
     /** @type {HealthRegistry} */ healthRegistry,
   ) {
     this.#repository = repository;
-    this.#healthRegistry = healthRegistry;
 
     healthRegistry.register('repository', repository);
   }
@@ -61,9 +59,5 @@ export class Services {
     }
 
     return { talksCount, presentersCount: presenters.size, commentsCount };
-  }
-
-  async getHealth() {
-    return this.#healthRegistry.health();
   }
 }

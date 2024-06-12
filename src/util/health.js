@@ -6,6 +6,22 @@ export const Status = Object.freeze({
 });
 
 export class Health {
+  static up(/** @type {?Record<string, any>} */ details) {
+    return new Health(Status.UP, details);
+  }
+
+  static down(/** @type {?Record<string, any>} */ details) {
+    return new Health(Status.DOWN, details);
+  }
+
+  static outOfService(/** @type {?Record<string, any>} */ details) {
+    return new Health(Status.OUT_OF_SERVICE, details);
+  }
+
+  static unknown(/** @type {?Record<string, any>} */ details) {
+    return new Health(Status.UNKNOWN, details);
+  }
+
   constructor(
     /** @type {Status} */ status = Status.UP,
     /** @type {?Record<string, any>} */ details,
@@ -17,7 +33,7 @@ export class Health {
 
 export class HealthIndicator {
   health() {
-    return new Health();
+    return Health.up();
   }
 }
 
