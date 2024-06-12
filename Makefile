@@ -1,3 +1,6 @@
+export PORT=3000
+export DEV_PORT=8080
+
 # TODO remove --experimental-global-customevent when Node.js 18 must not be supported anymore
 # TODO remove --experimental-vm-modules when Jest supports ESM
 export NODE_OPTIONS=--experimental-global-customevent --experimental-vm-modules
@@ -27,7 +30,7 @@ start: build
 dev: build
 	npx concurrently \
 		"npx nodemon src/main.js" \
-		"npx browser-sync 'http://localhost:3000' public -w --port 8080 --no-open"
+		"npx browser-sync 'http://localhost:$(PORT)' public -w --port $(DEV_PORT) --no-open"
 
 test: build
 	npm test
