@@ -66,6 +66,5 @@ class ResponseStub extends events.EventEmitter {
 
   end() {
     this.finished = true;
-    this.emit('close');
   }
 }

@@ -20,7 +20,7 @@ export class TalksController {
     app.get('/api/talks', handler.runSafe(this.#getTalks.bind(this)));
     app.get(
       '/api/talks/events',
-      handler.runSafe(this.#receiveTalks.bind(this)),
+      handler.runSafe(this.#eventStreamTalks.bind(this)),
     );
     app.put('/api/talks/:title', handler.runSafe(this.#putTalk.bind(this)));
     app.delete(
@@ -38,18 +38,22 @@ export class TalksController {
     /** @type {Response} */ response,
   ) {
     if (request.headers.accept == 'text/event-stream') {
-      this.#receiveTalks(request, response);
+      this.#eventStreamTalks(request, response);
     } else {
       this.#longPolling.poll(request, response);
     }
   }
 
-  async #receiveTalks(
+  async #eventStreamTalks(
     /** @type {Request} */ request,
     /** @type {Response} */ response,
   ) {
     // TODO send talks to client, when updated
-    const emitter = SseEmitter.create({ response });
+    const emitter = SseEmitter.create({
+      response,
+      // TODO activate timeout and fix open handle
+      // timeout: 5 * 60 * 1000, // 5 min
+    });
     const talks = await this.#services.getTalks();
     emitter.send(talks);
   }
