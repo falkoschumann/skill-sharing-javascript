@@ -46,7 +46,7 @@ export class HealthRegistry {
 
   health() {
     if (this.#registry.size === 0) {
-      return new Health();
+      return Health.up();
     }
 
     const order = ['DOWN', 'OUT_OF_SERVICE', 'UP', 'UNKNOWN'];
