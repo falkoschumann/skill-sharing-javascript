@@ -1,4 +1,4 @@
-export function createStore(reducer, preloadedState) {
+export function createStore(/** @type {Function} */ reducer, preloadedState) {
   const initialState = preloadedState || reducer(undefined, { type: '@@INIT' });
   return new Store(reducer, initialState);
 }
@@ -8,7 +8,7 @@ export class Store {
   #state;
   #listeners = [];
 
-  constructor(reducer, initialState) {
+  constructor(/** @type {Function} */ reducer, initialState) {
     this.#reducer = reducer;
     this.#state = initialState;
   }
@@ -25,7 +25,7 @@ export class Store {
     }
   }
 
-  subscribe(listener) {
+  subscribe(/** @type {Function} */ listener) {
     this.#listeners.push(listener);
     return () => this.#unsubscribe(listener);
   }
