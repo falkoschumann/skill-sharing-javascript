@@ -23,7 +23,7 @@ export class Health {
   }
 
   constructor(
-    /** @type {Status} */ status = Status.UP,
+    /** @type {string} */ status = Status.UP,
     /** @type {?Record<string, any>} */ details,
   ) {
     this.status = status;

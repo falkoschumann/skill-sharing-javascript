@@ -7,7 +7,7 @@ export class ConfigurableResponses {
   #description;
   #responses;
 
-  constructor(/** @type {Object|tArray} */ responses, name) {
+  constructor(/** @type {Object|Array} */ responses, name) {
     this.#description = name == null ? '' : ` in ${name}`;
     this.#responses = Array.isArray(responses) ? [...responses] : responses;
   }

@@ -27,7 +27,7 @@ export class Application {
   constructor(
     /** @type {Services} */ services,
     /** @type {HealthRegistry} */ healthRegistry,
-    /** @type {Express} */ app,
+    /** @type {express.Express} */ app,
   ) {
     this.#app = app;
     app.set('x-powered-by', false);

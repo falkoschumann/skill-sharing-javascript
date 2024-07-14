@@ -10,10 +10,11 @@ describe('Services', () => {
     test('Adds talk to list', async () => {
       const { services, repository } = configure({ talks: [] });
 
-      await services.submitTalk(
-        { title: 'Foobar', presenter: 'Alice', summary: 'Lorem ipsum' },
-        repository,
-      );
+      await services.submitTalk({
+        title: 'Foobar',
+        presenter: 'Alice',
+        summary: 'Lorem ipsum',
+      });
 
       expect(repository.lastStored).toEqual({
         Foobar: {
@@ -34,10 +35,10 @@ describe('Services', () => {
         talks: [talk],
       });
 
-      const { isSuccessful } = await services.addComment(
-        { title, comment: { author: 'Bob', message: 'new comment' } },
-        repository,
-      );
+      const { isSuccessful } = await services.addComment({
+        title,
+        comment: { author: 'Bob', message: 'new comment' },
+      });
 
       expect(isSuccessful).toEqual(true);
       expect(repository.lastStored).toEqual({
@@ -56,13 +57,10 @@ describe('Services', () => {
         talks: [Talk.createTestInstance()],
       });
 
-      const { isSuccessful } = await services.addComment(
-        {
-          title: 'non-existing-talk',
-          comment: { author: 'Bob', message: 'new comment' },
-        },
-        repository,
-      );
+      const { isSuccessful } = await services.addComment({
+        title: 'non-existing-talk',
+        comment: { author: 'Bob', message: 'new comment' },
+      });
 
       expect(isSuccessful).toEqual(false);
       expect(repository.lastStored).toBeUndefined();
@@ -76,7 +74,7 @@ describe('Services', () => {
         talks: [Talk.createTestInstance({ title })],
       });
 
-      await services.deleteTalk({ title }, repository);
+      await services.deleteTalk({ title });
 
       expect(repository.lastStored).toEqual({});
     });
@@ -84,7 +82,7 @@ describe('Services', () => {
     test('Ignores already removed talk', async () => {
       const { services, repository } = configure();
 
-      await services.deleteTalk({ title: 'Foobar' }, repository);
+      await services.deleteTalk({ title: 'Foobar' });
 
       expect(repository.lastStored).toEqual({});
     });
@@ -92,11 +90,11 @@ describe('Services', () => {
 
   describe('Talks', () => {
     test('Lists all talks', async () => {
-      const { services, repository } = configure({
+      const { services } = configure({
         talks: [Talk.createTestInstance()],
       });
 
-      const result = await services.getTalks(repository);
+      const result = await services.getTalks();
 
       expect(result).toEqual([Talk.createTestInstance()]);
     });
