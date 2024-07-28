@@ -1,11 +1,12 @@
 import { html } from 'lit-html';
 
+import { Services } from '../application/services.js';
 import { Container } from './components.js';
 
 class UserFieldComponent extends Container {
   connectedCallback() {
     super.connectedCallback();
-    this.services.loadUser();
+    Services.get().loadUser();
   }
 
   extractState(state) {
@@ -24,7 +25,7 @@ class UserFieldComponent extends Container {
             autocomplete="username"
             .value="${this.state}"
             @change=${(e) =>
-              this.services.changeUser({ username: e.target.value })}
+              Services.get().changeUser({ username: e.target.value })}
           />
         </li>
       </ul>

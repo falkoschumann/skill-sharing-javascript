@@ -1,23 +1,11 @@
 import { html, render } from 'lit-html';
 
-import { Services } from '../application/services.js';
-
 export class Component extends HTMLElement {
-  static #services = Services.create();
-
-  get services() {
-    return Component.#services;
-  }
-
   connectedCallback() {
     this.updateView();
   }
 
   updateView() {
-    if (!this.isConnected) {
-      return;
-    }
-
     render(this.getView(), this.getRenderTarget());
   }
 
@@ -31,6 +19,12 @@ export class Component extends HTMLElement {
 }
 
 export class Container extends Component {
+  static initStore(store) {
+    Container.#store = store;
+  }
+
+  static #store;
+
   #unsubscribeStore;
 
   constructor() {
@@ -39,7 +33,7 @@ export class Container extends Component {
   }
 
   connectedCallback() {
-    this.#unsubscribeStore = this.services.store.subscribe(() =>
+    this.#unsubscribeStore = Container.#store.subscribe(() =>
       this.updateView(),
     );
     super.connectedCallback();
@@ -49,17 +43,17 @@ export class Container extends Component {
     this.#unsubscribeStore();
   }
 
-  updateView({ force = false } = {}) {
-    this.state = this.extractState(this.services.store.getState());
-    if (!force && this.state === this.oldState) {
+  extractState(state) {
+    return state;
+  }
+
+  updateView() {
+    this.state = this.extractState(Container.#store.getState());
+    if (this.state === this.oldState) {
       return;
     }
 
     super.updateView();
     this.oldState = this.state;
-  }
-
-  extractState(state) {
-    return state;
   }
 }

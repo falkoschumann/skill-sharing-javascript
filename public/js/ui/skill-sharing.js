@@ -1,14 +1,20 @@
 import { html } from 'lit-html';
 
+import { Services } from '../application/services.js';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';
-import { Component } from './components.js';
+import { Component, Container } from './components.js';
 
 class SkillSharingComponent extends Component {
+  constructor() {
+    super();
+    Container.initStore(Services.get().store);
+  }
+
   connectedCallback() {
     super.connectedCallback();
-    this.services.connectTalks();
+    Services.get().connectTalks();
   }
 
   getView() {

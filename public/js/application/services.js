@@ -10,20 +10,18 @@ import { createStore } from '../util/store.js';
 // TODO handle errors
 
 export class Services {
-  static create() {
-    return new Services(
-      createStore(reducer),
-      Repository.create(),
-      Api.create(),
-    );
-  }
+  /** @type {Services} */ static #instance;
 
-  static createNull() {
-    return new Services(
-      createStore(reducer),
-      Repository.createNull(),
-      Api.createNull(),
-    );
+  static get() {
+    if (Services.#instance == null) {
+      Services.#instance = new Services(
+        createStore(reducer),
+        Repository.create(),
+        Api.create(),
+      );
+    }
+
+    return Services.#instance;
   }
 
   #store;

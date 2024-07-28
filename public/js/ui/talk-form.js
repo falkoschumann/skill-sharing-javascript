@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 
+import { Services } from '../application/services.js';
 import { Component } from './components.js';
 
 class TalkFormComponent extends Component {
@@ -44,7 +45,7 @@ class TalkFormComponent extends Component {
 
   #submitTalk(form) {
     const formData = new FormData(form);
-    this.services.submitTalk({
+    Services.get().submitTalk({
       title: formData.get('title'),
       summary: formData.get('summary'),
     });

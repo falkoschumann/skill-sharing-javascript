@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 
+import { Services } from '../application/services.js';
 import { Container } from './components.js';
 
 class TalksComponent extends Container {
@@ -17,7 +18,7 @@ class TalksComponent extends Container {
         <h2>
           ${talk.title}
           <button
-            @click=${() => this.services.deleteTalk({ title: talk.title })}
+            @click=${() => Services.get().deleteTalk({ title: talk.title })}
           >
             Delete
           </button>
@@ -73,7 +74,7 @@ class TalksComponent extends Container {
 
   #addComment(form) {
     const formData = new FormData(form);
-    this.services.addComment({
+    Services.get().addComment({
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
     });
