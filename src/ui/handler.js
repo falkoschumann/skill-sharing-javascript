@@ -1,5 +1,5 @@
 /**
- * @typedef {import('express').Response} Response
+ * @import { Response } from 'express'
  */
 
 export function runSafe(/** @type {Function} */ handler) {

@@ -1,11 +1,9 @@
 import * as handler from './handler.js';
 
 /**
- * @typedef {import('../application/services.js').Services} Services
- * @typedef {import('../util/health.js').HealthRegistry} HealthRegistry
- * @typedef {import('express').Express} Express
- * @typedef {import('express').Response} Response
- * @typedef {import('express').Request} Request
+ * @import { Services } from '../application/services.js'
+ * @import { HealthRegistry } from '../util/health.js'
+ * @import { Express, Response, Request } from 'express'
  */
 
 export class ActuatorController {

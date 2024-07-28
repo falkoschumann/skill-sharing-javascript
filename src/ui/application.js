@@ -7,7 +7,7 @@ import { TalksController } from './talks-controller.js';
 import { HealthRegistry } from '../util/health.js';
 
 /**
- * @typedef {import('node:http').Server} Server
+ * @import { Server } from 'node:http'
  */
 
 export class Application {

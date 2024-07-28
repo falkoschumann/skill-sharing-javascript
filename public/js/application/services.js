@@ -4,7 +4,7 @@ import { Repository } from '../infrastructure/repository.js';
 import { createStore } from '../util/store.js';
 
 /**
- * @typedef {import('../util/store.js').Store} Store
+ * @import { Store } from '../util/store.js'
  */
 
 // TODO handle errors

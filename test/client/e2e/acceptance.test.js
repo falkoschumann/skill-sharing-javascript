@@ -5,8 +5,7 @@ import { describe, expect, test } from '@jest/globals';
 import { Application } from '../../../src/ui/application.js';
 
 /**
- * @typedef {import('puppeteer').Browser} Browser
- * @typedef {import('puppeteer').Page} Page
+ * @import { Browser, Page } from 'puppeteer'
  */
 
 describe('User Acceptance Tests', () => {

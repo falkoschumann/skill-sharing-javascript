@@ -1,8 +1,7 @@
 import * as handler from '../ui/handler.js';
 
 /**
- * @typedef {import('express').Response} Response
- * @typedef {import('express').Request} Request
+ * @import { Request, Response } from 'express'
  */
 
 export class LongPolling {

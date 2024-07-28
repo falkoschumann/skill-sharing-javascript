@@ -3,10 +3,8 @@ import * as handler from './handler.js';
 import { LongPolling } from '../infrastructure/long-polling.js';
 
 /**
- * @typedef {import('../application/services.js').Services} Services
- * @typedef {import('express').Express} Express
- * @typedef {import('express').Response} Response
- * @typedef {import('express').Request} Request
+ * @import { Services } from '../application/services.js'
+ * @import { Express, Response, Request } from 'express'
  */
 
 export class TalksController {
