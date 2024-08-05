@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "express": "4.19.2",
-    "lit-html": "3.1.4"
+    "lit-html": "3.2.0"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
