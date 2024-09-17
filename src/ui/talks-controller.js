@@ -1,6 +1,7 @@
-import { SseEmitter } from '../infrastructure/sse-emitter.js';
+import { LongPolling } from '@muspellheim/utils/src/express/long-polling.js';
+import { SseEmitter } from '@muspellheim/utils/src/express/sse-emitter.js';
+
 import * as handler from './handler.js';
-import { LongPolling } from '../infrastructure/long-polling.js';
 
 /**
  * @import { Services } from '../application/services.js'

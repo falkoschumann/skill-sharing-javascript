@@ -1,10 +1,11 @@
 import path from 'node:path';
 import express from 'express';
 
+import { HealthRegistry } from '@muspellheim/utils';
+import { ActuatorController } from '@muspellheim/utils/src/express/actuator-controller.js';
+
 import { Services } from '../application/services.js';
-import { ActuatorController } from './actuator-controller.js';
 import { TalksController } from './talks-controller.js';
-import { HealthRegistry } from '../util/health.js';
 
 /**
  * @import { Server } from 'node:http'

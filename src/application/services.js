@@ -1,4 +1,4 @@
-import { HealthRegistry } from '../util/health.js';
+import { HealthRegistry } from '@muspellheim/utils';
 import { Repository } from '../infrastructure/repository.js';
 
 // TODO handle errors
