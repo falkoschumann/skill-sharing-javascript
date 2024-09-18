@@ -1,7 +1,8 @@
 import { html } from 'lit-html';
 
+import { Container } from '@muspellheim/browser-utils';
+
 import { Services } from '../application/services.js';
-import { Container } from './components.js';
 
 class TalksComponent extends Container {
   extractState(state) {

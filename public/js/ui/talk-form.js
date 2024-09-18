@@ -1,7 +1,8 @@
 import { html } from 'lit-html';
 
+import { Component } from '@muspellheim/browser-utils';
+
 import { Services } from '../application/services.js';
-import { Component } from './components.js';
 
 class TalkFormComponent extends Component {
   getView() {

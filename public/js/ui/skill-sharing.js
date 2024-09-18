@@ -1,10 +1,11 @@
 import { html } from 'lit-html';
 
+import { Component, Container } from '@muspellheim/browser-utils';
+
 import { Services } from '../application/services.js';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';
-import { Component, Container } from './components.js';
 
 class SkillSharingComponent extends Component {
   constructor() {

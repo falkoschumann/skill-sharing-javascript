@@ -1,6 +1,8 @@
+import { OutputTracker } from '@muspellheim/utils';
+
+import { LongPollingClient } from '@muspellheim/utils';
+
 import { Talk } from '../domain/talks.js';
-import { OutputTracker } from '../util/output-tracker.js';
-import { LongPollingClient } from './long-polling-client.js';
 
 const TALKS_UPDATED_EVENT = 'talks-updated';
 const TALK_PUT_EVENT = 'talk-put';

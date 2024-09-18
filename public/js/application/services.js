@@ -1,10 +1,11 @@
+import { createStore } from '@muspellheim/utils';
+
 import { reducer } from '../domain/reducer.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
-import { createStore } from '../util/store.js';
 
 /**
- * @import { Store } from '../util/store.js'
+ * @import { Store } from '@muspellheim/utils'
  */
 
 // TODO handle errors

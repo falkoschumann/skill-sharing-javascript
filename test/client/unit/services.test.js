@@ -1,11 +1,11 @@
 import { describe, expect, test } from '@jest/globals';
 
+import { createStore, LongPollingClient } from '@muspellheim/utils';
+
 import { Services } from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';
 import { Api } from '../../../public/js/infrastructure/api.js';
-import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
 import { Repository } from '../../../public/js/infrastructure/repository.js';
-import { createStore } from '../../../public/js/util/store.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 import { User } from '../../../public/js/domain/users.js';
 

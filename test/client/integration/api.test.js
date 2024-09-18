@@ -1,7 +1,8 @@
 import { describe, expect, test } from '@jest/globals';
 
+import { LongPollingClient } from '@muspellheim/utils';
+
 import { Api } from '../../../public/js/infrastructure/api.js';
-import { LongPollingClient } from '../../../public/js/infrastructure/long-polling-client.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 
 describe('API', () => {
