@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { LongPollingClient } from '@muspellheim/utils';
+import { LongPollingClient } from '@falkoschumann/shared';
 
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { Talk } from '../../../public/js/domain/talks.js';

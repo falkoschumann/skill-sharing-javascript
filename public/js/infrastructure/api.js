@@ -1,6 +1,6 @@
-import { OutputTracker } from '@muspellheim/utils';
+import { OutputTracker } from '@falkoschumann/shared';
 
-import { LongPollingClient } from '@muspellheim/utils';
+import { LongPollingClient } from '@falkoschumann/shared';
 
 import { Talk } from '../domain/talks.js';
 

@@ -8,7 +8,7 @@ import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
 import { Services } from '../../../src/application/services.js';
 import { Talk } from '../../../public/js/domain/talks.js';
-import { HealthRegistry } from '@muspellheim/utils';
+import { HealthRegistry } from '@falkoschumann/shared';
 
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 

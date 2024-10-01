@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { createStore, LongPollingClient } from '@muspellheim/utils';
+import { createStore, LongPollingClient } from '@falkoschumann/shared';
 
 import { Services } from '../../../public/js/application/services.js';
 import { reducer } from '../../../public/js/domain/reducer.js';

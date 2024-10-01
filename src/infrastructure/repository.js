@@ -2,7 +2,7 @@ import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 
 import { Talk } from '../../public/js/domain/talks.js';
-import { Health, Status } from '@muspellheim/utils';
+import { Health, Status } from '@falkoschumann/shared';
 
 export class Repository {
   static create({ fileName = './data/talks.json' } = {}) {
