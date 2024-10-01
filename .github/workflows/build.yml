@@ -16,5 +16,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@falkoschumann'
       - name: Build
         run: make
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
