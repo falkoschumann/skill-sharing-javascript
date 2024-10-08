@@ -16,7 +16,7 @@
   "dependencies": {
     "@muspellheim/shared": "falkoschumann/muspellheim-shared-javascript",
     "express": "4.21.0",
-    "lit-html": "3.2.0"
+    "lit-html": "3.2.1"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
