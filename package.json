@@ -14,7 +14,7 @@
     "build": "rollup -c"
   },
   "dependencies": {
-    "@falkoschumann/shared": "0.1.0-alpha.1",
+    "@muspellheim/shared": "falkoschumann/muspellheim-shared-javascript",
     "express": "4.21.0",
     "lit-html": "3.2.0"
   },

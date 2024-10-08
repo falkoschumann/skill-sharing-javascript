@@ -1,6 +1,4 @@
-import { OutputTracker } from '@falkoschumann/shared';
-
-import { LongPollingClient } from '@falkoschumann/shared';
+import { LongPollingClient, OutputTracker } from '@muspellheim/shared';
 
 import { Talk } from '../domain/talks.js';
 

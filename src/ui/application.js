@@ -1,8 +1,8 @@
 import path from 'node:path';
 import express from 'express';
 
-import { HealthRegistry } from '@falkoschumann/shared';
-import { ActuatorController } from '@falkoschumann/shared/src/express/actuator-controller.js';
+import { HealthRegistry } from '@muspellheim/shared';
+import { ActuatorController } from '@muspellheim/shared/lib/express/actuator-controller.js';
 
 import { Services } from '../application/services.js';
 import { TalksController } from './talks-controller.js';

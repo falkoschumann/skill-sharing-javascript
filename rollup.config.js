@@ -3,9 +3,9 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 export default {
   input: {
     'lit-html': './node_modules/lit-html/lit-html.js',
-    '@falkoschumann/shared': 'node_modules/@falkoschumann/shared/src/index.js',
+    '@muspellheim/shared': 'node_modules/@muspellheim/shared/lib/index.js',
     '@muspellheim/browser-utils':
-      'node_modules/@falkoschumann/shared/src/browser/index.js',
+      'node_modules/@muspellheim/shared/lib/browser/index.js',
   },
   output: {
     dir: 'public/vendor',

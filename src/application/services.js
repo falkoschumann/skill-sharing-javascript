@@ -1,4 +1,4 @@
-import { HealthRegistry } from '@falkoschumann/shared';
+import { HealthRegistry } from '@muspellheim/shared';
 import { Repository } from '../infrastructure/repository.js';
 
 // TODO handle errors
