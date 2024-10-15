@@ -50,11 +50,11 @@ async function startAndStop(fn) {
 
     await fn(browser);
   } finally {
-    await browser.close();
+    await browser?.close();
     // FIXME stop server safely
     // without await open handles are not closed
     // with await the test causes a timeout
-    application.stop();
+    application?.stop();
   }
 }
 
