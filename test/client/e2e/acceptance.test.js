@@ -46,9 +46,7 @@ async function startAndStop(fn) {
 
     application = Application.create();
     await application.start({ port: 3333 });
-    browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    browser = await puppeteer.launch();
 
     await fn(browser);
   } finally {
