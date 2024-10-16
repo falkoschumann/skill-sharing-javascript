@@ -10,5 +10,5 @@ export default {
     dir: 'public/vendor',
     format: 'esm',
   },
-  plugins: [nodeResolve()],
+  plugins: [nodeResolve({ browser: true })],
 };
