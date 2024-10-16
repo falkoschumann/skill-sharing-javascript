@@ -1,5 +1,4 @@
-import { LongPolling } from '@muspellheim/shared/lib/express/long-polling.js';
-import { SseEmitter } from '@muspellheim/shared/lib/express/sse-emitter.js';
+import { LongPolling, SseEmitter } from '@muspellheim/shared';
 
 import * as handler from './handler.js';
 

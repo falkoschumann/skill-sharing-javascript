@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 
-import { Component, Container } from '@muspellheim/browser-utils';
+import { Component, Container } from '@muspellheim/shared';
 
 import { Services } from '../application/services.js';
 import './talk-form.js';
