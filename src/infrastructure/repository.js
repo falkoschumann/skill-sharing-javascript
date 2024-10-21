@@ -1,7 +1,7 @@
 import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 
-import { Health, Status } from '@muspellheim/shared';
+import { Health } from '@muspellheim/shared';
 
 import { Talk } from '../../public/js/domain/talks.js';
 
@@ -107,10 +107,10 @@ export class Repository {
 
   health() {
     if (this.#error == null) {
-      return new Health(Status.UP);
+      return Health.up();
     }
 
-    return new Health(Status.DOWN, { error: this.#error });
+    return Health.down({ error: this.#error });
   }
 }
 

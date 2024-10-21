@@ -1,26 +1,31 @@
-import { HealthRegistry } from '@muspellheim/shared';
+import { HealthContributorRegistry } from '@muspellheim/shared';
 import { Repository } from '../infrastructure/repository.js';
 
 // TODO handle errors
 
 export class Services {
-  static create({ healthRegistry = HealthRegistry.create() } = {}) {
-    return new Services(Repository.create(), healthRegistry);
+  static create({
+    healthContributorRegistry = HealthContributorRegistry.getDefault(),
+  } = {}) {
+    return new Services(Repository.create(), healthContributorRegistry);
   }
 
   static createNull() {
-    return new Services(Repository.createNull(), HealthRegistry.create());
+    return new Services(
+      Repository.createNull(),
+      HealthContributorRegistry.create(),
+    );
   }
 
   #repository;
 
   constructor(
     /** @type {Repository} */ repository,
-    /** @type {HealthRegistry} */ healthRegistry,
+    /** @type {HealthContributorRegistry} */ healthContributorRegistry,
   ) {
     this.#repository = repository;
 
-    healthRegistry.register('repository', repository);
+    healthContributorRegistry.registerContributor('repository', repository);
   }
 
   async getTalks() {

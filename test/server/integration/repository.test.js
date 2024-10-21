@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test } from '@jest/globals';
 
 import { Talk } from '../../../public/js/domain/talks.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
+import { Status } from '@muspellheim/shared';
 
 // TODO Use testdata folder
 const testFile = new URL('../../../data/talks.test.json', import.meta.url)
@@ -29,7 +30,7 @@ describe('Repository', () => {
       const talks = await repository.findAll();
 
       expect(talks).toEqual([Talk.createTestInstance()]);
-      expect(repository.health()).toMatchObject({ status: 'UP' });
+      expect(repository.health()).toMatchObject({ status: Status.UP });
     });
 
     test('Returns empty list, if file does not exist', async () => {
@@ -38,7 +39,7 @@ describe('Repository', () => {
       const talks = await repository.findAll();
 
       expect(talks).toEqual([]);
-      expect(repository.health()).toMatchObject({ status: 'UP' });
+      expect(repository.health()).toMatchObject({ status: Status.UP });
     });
 
     test('Reports an error, if file is corrupt', async () => {
@@ -47,7 +48,7 @@ describe('Repository', () => {
       const talks = await repository.findAll();
 
       expect(talks).toEqual([]);
-      expect(repository.health()).toMatchObject({ status: 'DOWN' });
+      expect(repository.health()).toMatchObject({ status: Status.DOWN });
     });
   });
 
@@ -59,7 +60,7 @@ describe('Repository', () => {
       const actualTalk = await repository.findByTitle(expectedTalk.title);
 
       expect(actualTalk).toEqual(expectedTalk);
-      expect(repository.health()).toMatchObject({ status: 'UP' });
+      expect(repository.health()).toMatchObject({ status: Status.UP });
     });
 
     test('Returns undefined, if talk with title does not exist', async () => {
@@ -68,7 +69,7 @@ describe('Repository', () => {
       const talk = await repository.findByTitle('not a talk');
 
       expect(talk).toBeUndefined();
-      expect(repository.health()).toMatchObject({ status: 'UP' });
+      expect(repository.health()).toMatchObject({ status: Status.UP });
     });
 
     test('Returns undefined, if file does not exist', async () => {
@@ -77,7 +78,7 @@ describe('Repository', () => {
       const talks = await repository.findByTitle('Foobar');
 
       expect(talks).toBeUndefined();
-      expect(repository.health()).toMatchObject({ status: 'UP' });
+      expect(repository.health()).toMatchObject({ status: Status.UP });
     });
 
     test('Reports an error, if file is corrupt', async () => {
@@ -86,7 +87,7 @@ describe('Repository', () => {
       const talk = await repository.findByTitle('Foobar');
 
       expect(talk).toBeUndefined();
-      expect(repository.health()).toMatchObject({ status: 'DOWN' });
+      expect(repository.health()).toMatchObject({ status: Status.DOWN });
     });
   });
 
@@ -134,7 +135,7 @@ describe('Repository', () => {
       const talk = Talk.createTestInstance();
       await repository.add(talk);
 
-      expect(repository.health()).toMatchObject({ status: 'DOWN' });
+      expect(repository.health()).toMatchObject({ status: Status.DOWN });
     });
   });
 
@@ -163,7 +164,7 @@ describe('Repository', () => {
 
       await repository.remove('Foobar');
 
-      expect(repository.health()).toMatchObject({ status: 'DOWN' });
+      expect(repository.health()).toMatchObject({ status: Status.DOWN });
     });
   });
 });

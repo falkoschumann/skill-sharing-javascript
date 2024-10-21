@@ -1,9 +1,10 @@
 import path from 'node:path';
 import express from 'express';
 
-import { ActuatorController, HealthRegistry } from '@muspellheim/shared';
+import { HealthContributorRegistry } from '@muspellheim/shared';
 
 import { Services } from '../application/services.js';
+import { ActuatorController } from './actuator-controller.js';
 import { TalksController } from './talks-controller.js';
 
 /**
@@ -13,10 +14,10 @@ import { TalksController } from './talks-controller.js';
 export class Application {
   static create() {
     // TODO make repository file configurable for testing
-    const healthRegistry = HealthRegistry.create();
+    const healthContributorRegistry = HealthContributorRegistry.getDefault();
     return new Application(
-      Services.create({ healthRegistry }),
-      healthRegistry,
+      Services.create({ healthContributorRegistry }),
+      healthContributorRegistry,
       express(),
     );
   }
@@ -26,7 +27,7 @@ export class Application {
 
   constructor(
     /** @type {Services} */ services,
-    /** @type {HealthRegistry} */ healthRegistry,
+    /** @type {HealthContributorRegistry} */ healthContributorRegistry,
     /** @type {express.Express} */ app,
   ) {
     this.#app = app;
@@ -34,7 +35,7 @@ export class Application {
     app.use(express.json());
     app.use('/', express.static(path.join('./public')));
     new TalksController(services, app);
-    new ActuatorController(services, healthRegistry, app);
+    new ActuatorController(services, healthContributorRegistry, app);
   }
 
   start({ port = 3000 } = {}) {

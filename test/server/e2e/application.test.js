@@ -4,7 +4,7 @@ import request from 'supertest';
 import { rmSync } from 'node:fs';
 import { describe, expect, test } from '@jest/globals';
 
-import { HealthRegistry } from '@muspellheim/shared';
+import { HealthContributorRegistry } from '@muspellheim/shared';
 
 import { Application } from '../../../src/ui/application.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
@@ -366,9 +366,9 @@ function configure({ fileName = testFile } = {}) {
   rmSync(testFile, { force: true });
   const app = express();
   const repository = Repository.create({ fileName });
-  const healthRegistry = HealthRegistry.create();
-  const services = new Services(repository, healthRegistry);
-  const application = new Application(services, healthRegistry, app);
+  const healthContributorRegistry = new HealthContributorRegistry();
+  const services = new Services(repository, healthContributorRegistry);
+  const application = new Application(services, healthContributorRegistry, app);
   return { application, app };
 }
 

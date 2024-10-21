@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { HealthRegistry } from '@muspellheim/shared';
+import { HealthContributorRegistry } from '@muspellheim/shared';
 
 import { Services } from '../../../src/application/services.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
@@ -124,6 +124,6 @@ describe('Services', () => {
 
 function configure({ talks } = {}) {
   const repository = Repository.createNull({ talks });
-  const services = new Services(repository, HealthRegistry.create());
+  const services = new Services(repository, new HealthContributorRegistry());
   return { services, repository };
 }
