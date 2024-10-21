@@ -6,7 +6,6 @@
 import {
   HealthEndpoint,
   HttpCodeStatusMapper,
-  Status,
   StatusAggregator,
 } from '@muspellheim/shared';
 import * as handler from './handler.js';
