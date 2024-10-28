@@ -20,3 +20,12 @@ The `Makefile` runs the build as default task. Other tasks are
 -   `format`: format source code
 
 ## Credits
+
+## Open issues
+
+-   [ ] Migrate Makefile to Deno
+-   [ ] Replace Jest with Vitest
+-   [ ] Replace Prettier with `deno fmt`
+-   [ ] Replace ESLint with `deno lint`
+-   [ ] Add copyright header to all source files
+        `// Copyright (c) 2024 Falko Schumann. All rights reserved. MIT license.`
