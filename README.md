@@ -24,7 +24,7 @@ The `Makefile` runs the build as default task. Other tasks are
 ## Open issues
 
 -   [ ] Migrate Makefile to Deno
--   [ ] Replace Jest with Vitest
+-   [x] Replace Jest with Vitest
 -   [ ] Replace Prettier with `deno fmt`
 -   [ ] Replace ESLint with `deno lint`
 -   [ ] Add copyright header to all source files
