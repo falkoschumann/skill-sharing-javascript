@@ -2,7 +2,7 @@ import EventSource from 'eventsource';
 import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 
 import { HealthContributorRegistry } from '@muspellheim/shared';
 

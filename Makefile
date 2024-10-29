@@ -2,9 +2,7 @@ export PORT=3000
 export DEV_PORT=8080
 
 # TODO remove --experimental-global-customevent when Node.js 18 must not be supported anymore
-# TODO remove --experimental-vm-modules when Jest supports ESM
-export NODE_OPTIONS=--experimental-global-customevent --experimental-vm-modules
-export NPM_CONFIG_YES=true
+export NODE_OPTIONS=--experimental-global-customevent
 
 all: dist check
 
@@ -33,22 +31,22 @@ dev: build
 		"npx browser-sync 'http://localhost:$(PORT)' public -w --port $(DEV_PORT) --no-open"
 
 test: build
-	npm test
+	npx vitest run
 
 unit-tests: build
-	npx jest --testPathPattern=".*\/unit\/.*"
+	npx vitest run --testPathPattern=".*\/unit\/.*"
 
 integration-tests: build
-	npx jest --testPathPattern=".*\/integration\/.*"
+	npx vitest run --testPathPattern=".*\/integration\/.*"
 
 e2e-tests: build
-	npx jest --testPathPattern=".*\/e2e\/.*"
+	npx vitest run --testPathPattern=".*\/e2e\/.*"
 
 watch: build
-	npx jest --watch
+	npx vitest
 
 coverage: build
-	npx jest --coverage
+	npx vitest --coverage
 
 build: version
 	@if [ -n "$(CI)" ] ; then \

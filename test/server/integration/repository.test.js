@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import { beforeEach, describe, expect, test } from '@jest/globals';
+import { beforeEach, describe, expect, test } from 'vitest';
 
 import { Talk } from '../../../public/js/domain/talks.js';
 import { Repository } from '../../../lib/infrastructure/repository.js';

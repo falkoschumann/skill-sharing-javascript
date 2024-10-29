@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import puppeteer from 'puppeteer';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 
 import { Application } from '../../../lib/ui/application.js';
 
