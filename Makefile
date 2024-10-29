@@ -18,18 +18,18 @@ dist: build sea-pkg
 
 check: test
 	npx prettier . --check
-	npx eslint public/js src test
+	npx eslint public/js lib test
 
 format:
 	npx prettier . --write
-	npx eslint --fix public/js src test
+	npx eslint --fix public/js lib test
 
 start: build
 	npm start
 
 dev: build
 	npx concurrently \
-		"npx nodemon src/main.js" \
+		"npx nodemon lib/main.js" \
 		"npx browser-sync 'http://localhost:$(PORT)' public -w --port $(DEV_PORT) --no-open"
 
 test: build
@@ -71,7 +71,7 @@ bundle: build
 		--plugin 'node-resolve={preferBuiltins: true}' \
 		--file build/index.js \
 		--format cjs \
-		src/main.js
+		lib/main.js
 
 # SEA does not support cross-compilation
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
@@ -105,15 +105,15 @@ sea-pkg: bundle
 
 # Deno does not support embedded static files
 sea-deno: build
-	deno compile --target x86_64-unknown-linux-gnu --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-linux src/main.js
-	deno compile --target x86_64-apple-darwin --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-macos src/main.js
-	deno compile --target x86_64-pc-windows-msvc --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-windows src/main.js
+	deno compile --target x86_64-unknown-linux-gnu --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-linux lib/main.js
+	deno compile --target x86_64-apple-darwin --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-macos lib/main.js
+	deno compile --target x86_64-pc-windows-msvc --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-windows lib/main.js
 
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
 sea-bun: build
-	bun build src/main.js --compile --target=bun-linux-x64 --outfile dist/skillsharing-bun-linux
-	bun build src/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
-	bun build src/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
+	bun build lib/main.js --compile --target=bun-linux-x64 --outfile dist/skillsharing-bun-linux
+	bun build lib/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
+	bun build lib/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
 
 .PHONY: all clean distclean dist check format start \
 	dev test unit-tests integration-tests e2e-tests watch coverage \

@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import { beforeEach, describe, expect, test } from '@jest/globals';
 
 import { Talk } from '../../../public/js/domain/talks.js';
-import { Repository } from '../../../src/infrastructure/repository.js';
+import { Repository } from '../../../lib/infrastructure/repository.js';
 import { Status } from '@muspellheim/shared';
 
 // TODO Use testdata folder

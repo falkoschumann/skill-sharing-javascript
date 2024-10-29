@@ -2,8 +2,8 @@ import { describe, expect, test } from '@jest/globals';
 
 import { HealthContributorRegistry } from '@muspellheim/shared';
 
-import { Services } from '../../../src/application/services.js';
-import { Repository } from '../../../src/infrastructure/repository.js';
+import { Services } from '../../../lib/application/services.js';
+import { Repository } from '../../../lib/infrastructure/repository.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 
 describe('Services', () => {

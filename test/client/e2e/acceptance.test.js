@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import puppeteer from 'puppeteer';
 import { describe, expect, test } from '@jest/globals';
 
-import { Application } from '../../../src/ui/application.js';
+import { Application } from '../../../lib/ui/application.js';
 
 /**
  * @import { Browser, Page } from 'puppeteer'

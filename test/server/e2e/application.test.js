@@ -6,9 +6,9 @@ import { describe, expect, test } from '@jest/globals';
 
 import { HealthContributorRegistry } from '@muspellheim/shared';
 
-import { Application } from '../../../src/ui/application.js';
-import { Repository } from '../../../src/infrastructure/repository.js';
-import { Services } from '../../../src/application/services.js';
+import { Application } from '../../../lib/ui/application.js';
+import { Repository } from '../../../lib/infrastructure/repository.js';
+import { Services } from '../../../lib/application/services.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
