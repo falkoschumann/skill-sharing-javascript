@@ -1,42 +1,42 @@
-import fs from "node:fs/promises";
-import puppeteer from "puppeteer";
-import { describe, expect, test } from "vitest";
+import fs from 'node:fs/promises';
+import puppeteer from 'puppeteer';
+import { describe, expect, test } from 'vitest';
 
-import { Application } from "../../../lib/ui/application.js";
+import { Application } from '../../../lib/ui/application.js';
 
 /**
  * @import { Browser, Page } from 'puppeteer'
  */
 
-describe("User Acceptance Tests", () => {
-  test("Submit and comment a talk", async () => {
+describe('User Acceptance Tests', () => {
+  test('Submit and comment a talk', async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);
       await app.gotoSubmission();
       await app.setViewport({ width: 800, height: 1024 });
-      await app.saveScreenshot({ name: "01-app-started" });
+      await app.saveScreenshot({ name: '01-app-started' });
 
-      await app.submitTalk({ title: "Foobar", summary: "Lorem ipsum" });
-      await app.saveScreenshot({ name: "02-talk-submitted" });
-      await app.verifyTalkAdded({ title: "Foobar", summary: "Lorem ipsum" });
+      await app.submitTalk({ title: 'Foobar', summary: 'Lorem ipsum' });
+      await app.saveScreenshot({ name: '02-talk-submitted' });
+      await app.verifyTalkAdded({ title: 'Foobar', summary: 'Lorem ipsum' });
 
-      await app.changeUser({ name: "Bob" });
-      await app.commentOnTalk({ comment: "Amazing!" });
-      await app.saveScreenshot({ name: "03-talk-commented" });
-      await app.verifyCommentAdded({ author: "Bob", comment: "Amazing!" });
+      await app.changeUser({ name: 'Bob' });
+      await app.commentOnTalk({ comment: 'Amazing!' });
+      await app.saveScreenshot({ name: '03-talk-commented' });
+      await app.verifyCommentAdded({ author: 'Bob', comment: 'Amazing!' });
 
-      await app.changeUser({ name: "Anon" });
-      await app.commentOnTalk({ comment: "Thanks." });
-      await app.saveScreenshot({ name: "04-comment-answered" });
-      await app.verifyCommentAdded({ author: "Anon", comment: "Thanks." });
+      await app.changeUser({ name: 'Anon' });
+      await app.commentOnTalk({ comment: 'Thanks.' });
+      await app.saveScreenshot({ name: '04-comment-answered' });
+      await app.verifyCommentAdded({ author: 'Anon', comment: 'Thanks.' });
     });
   });
 });
 
 async function startAndStop(fn) {
-  const talksFile = new URL("../../../data/talks.json", import.meta.url)
+  const talksFile = new URL('../../../data/talks.json', import.meta.url)
     .pathname;
-  const screenshotsDir = new URL("../../../screenshots", import.meta.url)
+  const screenshotsDir = new URL('../../../screenshots', import.meta.url)
     .pathname;
   let application;
   let browser;
@@ -48,7 +48,7 @@ async function startAndStop(fn) {
     await application.start({ port: 3333 });
     // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
     browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     await fn(browser);
@@ -79,14 +79,14 @@ class SkillSharing {
 
   async gotoSubmission() {
     this.#page = await this.#browser.newPage();
-    await this.#page.goto("http://localhost:3333");
+    await this.#page.goto('http://localhost:3333');
   }
 
   async changeUser({ name }) {
     const usernameInput = await this.#page.waitForSelector(
       's-user-field input[name="username"]',
     );
-    await usernameInput.evaluate((node) => (node.value = ""));
+    await usernameInput.evaluate((node) => (node.value = ''));
     await usernameInput.type(name);
   }
 
@@ -121,14 +121,14 @@ class SkillSharing {
 
   async verifyTalkAdded({ title, summary }) {
     const lastTalkTitle = await this.#page.waitForSelector(
-      "s-talks section.talk:last-child h2",
+      's-talks section.talk:last-child h2',
     );
     expect(await lastTalkTitle.evaluate((node) => node.textContent)).toContain(
       title,
     );
 
     const lastTalkSummary = await this.#page.waitForSelector(
-      "s-talks section.talk:last-child p",
+      's-talks section.talk:last-child p',
     );
     expect(
       await lastTalkSummary.evaluate((node) => node.textContent),
@@ -137,7 +137,7 @@ class SkillSharing {
 
   async verifyCommentAdded({ author, comment }) {
     const lastTalksCommentElement = await this.#page.waitForSelector(
-      "s-talks section.talk:last-child .comment:last-child",
+      's-talks section.talk:last-child .comment:last-child',
     );
     const lastTalksComment = await lastTalksCommentElement.evaluate(
       (node) => node.textContent,
