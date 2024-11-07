@@ -4,8 +4,8 @@
     "presenter": "Talk test presenter",
     "summary": "Talk test summary.",
     "comments": [{
-      "author" : "Comment test author",
-      "message" : "Comment test message"
+      "author": "Comment test author",
+      "message": "Comment test message"
     }]
   }
 }
