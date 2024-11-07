@@ -5,20 +5,25 @@ import { LongPollingClient } from '@muspellheim/shared';
 import { Api } from '../../../public/js/infrastructure/api.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 
-describe.skip('API', () => {
+describe('API', () => {
   test('Gets talks', async () => {
-    const client = LongPollingClient.createNull();
+    const talk = Talk.createTestInstance();
+    const client = LongPollingClient.createNull({
+      fetchResponse: {
+        status: 200,
+        headers: { etag: '1' },
+        body: JSON.stringify([talk]),
+      },
+    });
     const api = new Api(client, null);
     const events = [];
+    const result = new Promise((resolve) =>
+      client.addEventListener('message', () => resolve()),
+    );
     api.addEventListener('talks-updated', (event) => events.push(event));
 
     await api.connectTalks();
-    const talk = Talk.createTestInstance();
-    await client.simulateResponse({
-      status: 200,
-      headers: { etag: '1' },
-      body: [talk],
-    });
+    await result;
 
     expect(events).toEqual([
       expect.objectContaining({

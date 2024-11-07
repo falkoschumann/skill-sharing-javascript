@@ -9,7 +9,7 @@ import { Repository } from '../../../public/js/infrastructure/repository.js';
 import { Talk } from '../../../public/js/domain/talks.js';
 import { User } from '../../../public/js/domain/users.js';
 
-describe.skip('Services', () => {
+describe('Services', () => {
   describe('Change user', () => {
     test('Updates user name', async () => {
       const { services, store, repository } = configure();
@@ -91,15 +91,20 @@ describe.skip('Services', () => {
 
   describe('Talks', () => {
     test('Lists all talks', async () => {
-      const { services, store, talksClient } = configure();
-      await services.connectTalks();
-
       const talk = Talk.createTestInstance();
-      await talksClient.simulateResponse({
-        status: 200,
-        headers: { etag: '1' },
-        body: [talk],
+      const { services, store, talksClient } = configure({
+        fetchResponse: {
+          status: 200,
+          headers: { etag: '1' },
+          body: JSON.stringify([talk]),
+        },
       });
+      const result = new Promise((resolve) =>
+        talksClient.addEventListener('message', () => resolve()),
+      );
+
+      await services.connectTalks();
+      await result;
 
       expect(store.getState().talks).toEqual([talk]);
       talksClient.close();
@@ -107,11 +112,11 @@ describe.skip('Services', () => {
   });
 });
 
-function configure({ settings } = {}) {
+function configure({ settings, fetchResponse } = {}) {
   const store = createStore(reducer);
   const repository = Repository.createNull(settings);
   const fetchStub = async () => {};
-  const talksClient = LongPollingClient.createNull();
+  const talksClient = LongPollingClient.createNull({ fetchResponse });
   const api = new Api(talksClient, fetchStub);
   const services = new Services(store, repository, api);
   return { services, store, repository, api, talksClient };
