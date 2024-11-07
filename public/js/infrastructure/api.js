@@ -1,3 +1,7 @@
+/**
+ * @import { MessageClient } from '@muspellheim/shared'
+ */
+
 import { LongPollingClient, OutputTracker } from '@muspellheim/shared';
 
 import { Talk } from '../domain/talks.js';
@@ -29,17 +33,23 @@ export class Api extends EventTarget {
   #talksClient;
   #fetch;
 
-  constructor(talksClient, /** @type {typeof globalThis.fetch} */ fetch) {
+  constructor(
+    /** @type {MessageClient} */ talksClient,
+    /** @type {typeof globalThis.fetch} */ fetch,
+  ) {
     super();
     this.#talksClient = talksClient;
     this.#fetch = fetch;
+
+    this.#talksClient.addEventListener('message', (event) => {
+      const dtos = JSON.parse(event.data);
+      const talks = dtos.map((dto) => Talk.create(dto));
+      this.dispatchEvent(new TalksUpdatedEvent(talks));
+    });
   }
 
   async connectTalks() {
-    await this.#talksClient.connect((event) => {
-      const talks = event.data.map((talk) => Talk.create(talk));
-      this.dispatchEvent(new TalksUpdatedEvent(talks));
-    });
+    await this.#talksClient.connect('/api/talks');
   }
 
   async putTalk({ title, presenter, summary }) {
