@@ -24,7 +24,8 @@ The `Makefile` runs the build as default task. Other tasks are
 ## Open issues
 
 -   [ ] Migrate Makefile to Deno
--   [x] Replace Jest with Vitest
+-   [ ] Use supertest with URL instead of Express.js app:
+        `request('http://localhost:3333');`
 -   [ ] Replace Prettier with `deno fmt`
 -   [ ] Replace ESLint with `deno lint`
 -   [ ] Add copyright header to all source files
