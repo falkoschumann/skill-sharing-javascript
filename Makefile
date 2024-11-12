@@ -1,5 +1,8 @@
-export PORT=3000
-export DEV_PORT=8080
+export PORT = 3000
+export DEV_PORT = 8080
+
+# Possible values: major, minor, patch or concrete version
+VERSION = minor
 
 # TODO remove --experimental-global-customevent when Node.js 18 must not be supported anymore
 export NODE_OPTIONS=--experimental-global-customevent
@@ -10,20 +13,26 @@ clean:
 	rm -rf build coverage public/vendor screenshots
 
 distclean: clean
-	rm -rf dist node_modules
+	rm -rf dist
+	rm -rf node_modules
 
 dist: build sea-pkg
 
-check: test
-	npx prettier . --check
-	npx eslint public/js lib test
-
-format:
-	npx prettier . --write
-	npx eslint --fix public/js lib test
+release: all
+	npm version $(VERSION) -m "chore: create release v%s"
+	git push
+	git push --tags
 
 start: build
 	npm start
+
+check: test
+	npx eslint lib public/js test
+	npx prettier . --check
+
+format:
+	npx eslint --fix lib public/js test
+	npx prettier . --write
 
 dev: build
 	npx concurrently \
@@ -43,19 +52,21 @@ e2e-tests: build
 	npx vitest run --testPathPattern=".*\/e2e\/.*"
 
 watch: build
-	npx vitest
+	npm test
 
 coverage: build
 	npx vitest --coverage
 
-build: version
+build: prepare
+	npm run build
+
+prepare: version
 	@if [ -n "$(CI)" ] ; then \
 		echo "CI detected, run npm ci"; \
 		npm ci; \
 	else \
 		npm install; \
 	fi
-	npm run build
 
 version:
 	@echo "Use Node.js $(shell node --version)"
@@ -113,7 +124,8 @@ sea-bun: build
 	bun build lib/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
 	bun build lib/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
 
-.PHONY: all clean distclean dist check format start \
+.PHONY: all clean distclean dist release start \
+	check format \
 	dev test unit-tests integration-tests e2e-tests watch coverage \
-	build version \
+	build prepare version \
 	bundle sea-linux sea-macos sea-windows sea-pkg sea-deno sea-bun
