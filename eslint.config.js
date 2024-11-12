@@ -1,9 +1,11 @@
 import js from '@eslint/js';
+import { configs } from 'eslint-plugin-lit';
 import globals from 'globals';
 
-/** @type { import("eslint").Linter.FlatConfig[] } */
+/** @type { import("eslint").Linter.Config[] } */
 export default [
   js.configs.recommended,
+  configs['flat/recommended'],
   {
     languageOptions: {
       ecmaVersion: 2022,
