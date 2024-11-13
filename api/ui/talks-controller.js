@@ -1,6 +1,6 @@
 import { LongPolling, SseEmitter } from '@muspellheim/shared/node';
 
-import * as handler from './handler.js';
+import { runSafe, reply } from '@muspellheim/shared/node';
 
 /**
  * @import { Services } from '../application/services.js'
@@ -15,19 +15,13 @@ export class TalksController {
     this.#services = services;
     this.#longPolling = new LongPolling(() => this.#services.getTalks());
 
-    app.get('/api/talks', handler.runSafe(this.#getTalks.bind(this)));
-    app.get(
-      '/api/talks/events',
-      handler.runSafe(this.#eventStreamTalks.bind(this)),
-    );
-    app.put('/api/talks/:title', handler.runSafe(this.#putTalk.bind(this)));
-    app.delete(
-      '/api/talks/:title',
-      handler.runSafe(this.#deleteTalk.bind(this)),
-    );
+    app.get('/api/talks', runSafe(this.#getTalks.bind(this)));
+    app.get('/api/talks/events', runSafe(this.#eventStreamTalks.bind(this)));
+    app.put('/api/talks/:title', runSafe(this.#putTalk.bind(this)));
+    app.delete('/api/talks/:title', runSafe(this.#deleteTalk.bind(this)));
     app.post(
       '/api/talks/:title/comments',
-      handler.runSafe(this.#postComment.bind(this)),
+      runSafe(this.#postComment.bind(this)),
     );
   }
 
@@ -59,11 +53,11 @@ export class TalksController {
   ) {
     const talk = parseTalk(request);
     if (talk == null) {
-      handler.reply(response, { status: 400, body: 'Bad talk data' });
+      reply(response, { status: 400, body: 'Bad talk data' });
     } else {
       await this.#services.submitTalk(talk);
       await this.#longPolling.send();
-      handler.reply(response, { status: 204 });
+      reply(response, { status: 204 });
     }
   }
 
@@ -74,7 +68,7 @@ export class TalksController {
     const title = parseTitle(request);
     await this.#services.deleteTalk({ title });
     await this.#longPolling.send();
-    handler.reply(response, { status: 204 });
+    reply(response, { status: 204 });
   }
 
   async #postComment(
@@ -83,10 +77,10 @@ export class TalksController {
   ) {
     const comment = parseComment(request);
     if (comment == null) {
-      handler.reply(response, { status: 400, body: 'Bad comment data' });
+      reply(response, { status: 400, body: 'Bad comment data' });
     } else {
       const responseData = await this.#tryAddComment(comment);
-      handler.reply(response, responseData);
+      reply(response, responseData);
     }
   }
 

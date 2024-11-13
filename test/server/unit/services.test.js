@@ -2,9 +2,9 @@ import { describe, expect, test } from 'vitest';
 
 import { HealthContributorRegistry } from '@muspellheim/shared';
 
-import { Services } from '../../../lib/application/services.js';
-import { Repository } from '../../../lib/infrastructure/repository.js';
-import { Talk } from '../../../public/js/domain/talks.js';
+import { Services } from '../../../api/application/services.js';
+import { Repository } from '../../../api/infrastructure/repository.js';
+import { Talk } from '../../../src/domain/talks.js';
 
 describe('Services', () => {
   describe('Submit talk', () => {

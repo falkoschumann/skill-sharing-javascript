@@ -1,3 +1,5 @@
+// TODO move to shared lib
+
 export class Talk {
   static create({ title, presenter, summary, comments }) {
     return new Talk(title, presenter, summary, comments);

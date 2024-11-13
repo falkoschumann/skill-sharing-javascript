@@ -10,7 +10,7 @@ export NODE_OPTIONS=--experimental-global-customevent
 all: dist check
 
 clean:
-	rm -rf build coverage public/vendor screenshots
+	rm -rf build coverage screenshots
 
 distclean: clean
 	rm -rf dist
@@ -27,17 +27,17 @@ start: build
 	npm start
 
 check: test
-	npx eslint lib public/js test
+	npx eslint api src test
 	npx prettier . --check
 
 format:
-	npx eslint --fix lib public/js test
+	npx eslint --fix api src test
 	npx prettier . --write
 
 dev: build
 	npx concurrently \
-		"npx nodemon lib/main.js" \
-		"npx browser-sync 'http://localhost:$(PORT)' public -w --port $(DEV_PORT) --no-open"
+		"npx nodemon api/main.js" \
+		"npx vite"
 
 test: build
 	npx vitest run
@@ -67,6 +67,7 @@ prepare: version
 	else \
 		npm install; \
 	fi
+	mkdir screenshots
 
 version:
 	@echo "Use Node.js $(shell node --version)"
@@ -80,7 +81,7 @@ bundle: build
 		--plugin 'node-resolve={preferBuiltins: true}' \
 		--file build/index.js \
 		--format cjs \
-		lib/main.js
+		api/main.js
 
 # SEA does not support cross-compilation
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
@@ -114,15 +115,15 @@ sea-pkg: bundle
 
 # Deno does not support embedded static files
 sea-deno: build
-	deno compile --target x86_64-unknown-linux-gnu --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-linux lib/main.js
-	deno compile --target x86_64-apple-darwin --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-macos lib/main.js
-	deno compile --target x86_64-pc-windows-msvc --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-windows lib/main.js
+	deno compile --target x86_64-unknown-linux-gnu --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-linux api/main.js
+	deno compile --target x86_64-apple-darwin --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-macos api/main.js
+	deno compile --target x86_64-pc-windows-msvc --allow-env --allow-net --allow-read --allow-write --output dist/skillsharing-deno-windows api/main.js
 
 # SEA supports embedded static files, but it needs special JavaScript API to import each file
 sea-bun: build
-	bun build lib/main.js --compile --target=bun-linux-x64 --outfile dist/skillsharing-bun-linux
-	bun build lib/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
-	bun build lib/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
+	bun build api/main.js --compile --target=bun-linux-x64 --outfile dist/skillsharing-bun-linux
+	bun build api/main.js --compile --target=bun-darwin-x64 --outfile dist/skillsharing-bun-macos
+	bun build api/main.js --compile --target=bun-windows-x64 --outfile dist/skillsharing-bun-windows
 
 .PHONY: all clean distclean dist release start \
 	check format \

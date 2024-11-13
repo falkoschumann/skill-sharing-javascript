@@ -1,7 +1,8 @@
 /* @vitest-environment jsdom */
 
 import { describe, expect, test } from 'vitest';
-import { Repository } from '../../../public/js/infrastructure/repository.js';
+
+import { Repository } from '../../../src/infrastructure/repository.js';
 
 describe('Repository', () => {
   test('Loads and store settings', async () => {

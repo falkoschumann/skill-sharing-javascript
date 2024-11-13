@@ -1,4 +1,5 @@
 import { HealthContributorRegistry } from '@muspellheim/shared';
+
 import { Repository } from '../infrastructure/repository.js';
 
 // TODO handle errors

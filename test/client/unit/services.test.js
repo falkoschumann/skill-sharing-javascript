@@ -2,12 +2,12 @@ import { describe, expect, test } from 'vitest';
 
 import { createStore, LongPollingClient } from '@muspellheim/shared';
 
-import { Services } from '../../../public/js/application/services.js';
-import { reducer } from '../../../public/js/domain/reducer.js';
-import { Api } from '../../../public/js/infrastructure/api.js';
-import { Repository } from '../../../public/js/infrastructure/repository.js';
-import { Talk } from '../../../public/js/domain/talks.js';
-import { User } from '../../../public/js/domain/users.js';
+import { Services } from '../../../src/application/services.js';
+import { reducer } from '../../../src/domain/reducer.js';
+import { Api } from '../../../src/infrastructure/api.js';
+import { Repository } from '../../../src/infrastructure/repository.js';
+import { Talk } from '../../../src/domain/talks.js';
+import { User } from '../../../src/domain/users.js';
 
 describe('Services', () => {
   describe('Change user', () => {

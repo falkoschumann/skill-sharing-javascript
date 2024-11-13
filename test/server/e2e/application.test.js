@@ -6,10 +6,10 @@ import { describe, expect, test } from 'vitest';
 
 import { HealthContributorRegistry } from '@muspellheim/shared';
 
-import { Application } from '../../../lib/ui/application.js';
-import { Repository } from '../../../lib/infrastructure/repository.js';
-import { Services } from '../../../lib/application/services.js';
-import { Talk } from '../../../public/js/domain/talks.js';
+import { Application } from '../../../api/ui/application.js';
+import { Repository } from '../../../api/infrastructure/repository.js';
+import { Services } from '../../../api/application/services.js';
+import { Talk } from '../../../src/domain/talks.js';
 
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 

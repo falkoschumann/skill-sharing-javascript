@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 
-import { Component } from '@muspellheim/shared';
+import { Component } from '@muspellheim/shared/browser';
 
 import { Services } from '../application/services.js';
 

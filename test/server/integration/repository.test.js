@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises';
+import { Status } from '@muspellheim/shared';
 import { beforeEach, describe, expect, test } from 'vitest';
 
-import { Talk } from '../../../public/js/domain/talks.js';
-import { Repository } from '../../../lib/infrastructure/repository.js';
-import { Status } from '@muspellheim/shared';
+import { Repository } from '../../../api/infrastructure/repository.js';
+import { Talk } from '../../../src/domain/talks.js';
 
 // TODO Use testdata folder
 const testFile = new URL('../../../data/talks.test.json', import.meta.url)

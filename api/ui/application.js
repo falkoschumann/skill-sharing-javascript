@@ -1,6 +1,5 @@
 import path from 'node:path';
 import express from 'express';
-
 import { HealthContributorRegistry } from '@muspellheim/shared';
 
 import { Services } from '../application/services.js';
@@ -33,7 +32,7 @@ export class Application {
     this.#app = app;
     app.set('x-powered-by', false);
     app.use(express.json());
-    app.use('/', express.static(path.join('./public')));
+    app.use('/', express.static(path.join('./dist')));
     new TalksController(services, app);
     ActuatorController.create({ services, healthContributorRegistry, app });
   }
