@@ -67,7 +67,7 @@ prepare: version
 	else \
 		npm install; \
 	fi
-	mkdir screenshots
+	mkdir -p screenshots
 
 version:
 	@echo "Use Node.js $(shell node --version)"

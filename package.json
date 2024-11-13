@@ -7,9 +7,9 @@
     "node": ">=18.7.0"
   },
   "type": "module",
-  "main": "lib/main.js",
+  "main": "api/main.js",
   "scripts": {
-    "start": "node lib/main.js",
+    "start": "node api/main.js",
     "test": "vitest",
     "dev": "vite",
     "build": "vite build",
@@ -41,7 +41,10 @@
   },
   "bin": "build/index.js",
   "pkg": {
-    "assets": "public/**/*",
+    "assets": [
+      "dist/**/*",
+      "public/**/*"
+    ],
     "targets": [
       "node18-linux-x64",
       "node18-macos-x64",

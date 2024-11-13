@@ -17,6 +17,6 @@ export default [
         //...globals['shared-node-browser'],
       },
     },
-    ignores: ['**/coverage/**', '**/data/**', '**/vendor/**'],
+    ignores: ['build/**', 'coverage/**', 'data/**', 'vendor/**'],
   },
 ];
