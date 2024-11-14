@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import { LongPolling, SseEmitter } from '@muspellheim/shared/node';
 
 import { runSafe, reply } from '@muspellheim/shared/node';

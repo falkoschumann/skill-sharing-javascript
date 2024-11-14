@@ -24,5 +24,3 @@ The `Makefile` runs the build as default task. Other tasks are
 ## Open issues
 
 -   [ ] Fix flaky tests
--   [ ] Add copyright header to all source files
-        `// Copyright (c) 2024 Falko Schumann. All rights reserved. MIT license.`

@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import fs from 'node:fs/promises';
 import { Status } from '@muspellheim/shared';
 import { beforeEach, describe, expect, test } from 'vitest';

@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import EventSource from 'eventsource';
 import express from 'express';
 import request from 'supertest';

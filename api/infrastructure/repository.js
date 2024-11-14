@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import fsPromise from 'node:fs/promises';
 import path from 'node:path';
 import { Health } from '@muspellheim/shared';

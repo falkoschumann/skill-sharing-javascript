@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 /**
  * @import { HealthContributorRegistry } from '../health.js'
  * @import * as express from 'express'

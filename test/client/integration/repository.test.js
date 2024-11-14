@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 /* @vitest-environment jsdom */
 
 import { describe, expect, test } from 'vitest';

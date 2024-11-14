@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import { HealthContributorRegistry } from '@muspellheim/shared';
 
 import { Repository } from '../infrastructure/repository.js';

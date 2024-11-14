@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import { User } from '../domain/users.js';
 
 const storageKey = 'skillSharing';

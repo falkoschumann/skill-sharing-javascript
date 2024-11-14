@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import fs from 'node:fs/promises';
 import puppeteer from 'puppeteer';
 import { describe, expect, test } from 'vitest';

@@ -1,3 +1,5 @@
+// Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
+
 import { describe, expect, test } from 'vitest';
 
 import { createStore, LongPollingClient } from '@muspellheim/shared';
