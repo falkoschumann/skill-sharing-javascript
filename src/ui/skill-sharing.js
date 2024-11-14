@@ -3,6 +3,9 @@ import { html } from 'lit-html';
 import { Component, Container } from '@muspellheim/shared/browser';
 
 import { Services } from '../application/services.js';
+import './reset.css';
+import './style.css';
+import './skill-sharing.css';
 import './talk-form.js';
 import './talks.js';
 import './user-field.js';

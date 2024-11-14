@@ -3,6 +3,7 @@ import { html } from 'lit-html';
 import { Container } from '@muspellheim/shared/browser';
 
 import { Services } from '../application/services.js';
+import './talks.css';
 
 class TalksComponent extends Container {
   extractState(state) {
