@@ -7,6 +7,11 @@ import { Container } from '@muspellheim/shared/browser';
 import { Services } from '../application/services.js';
 
 class UserFieldComponent extends Container {
+  constructor() {
+    super();
+    this.state = '';
+  }
+
   connectedCallback() {
     super.connectedCallback();
     Services.get().loadUser();

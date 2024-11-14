@@ -1,11 +1,13 @@
-import js from '@eslint/js';
-import { configs } from 'eslint-plugin-lit';
 import globals from 'globals';
+import js from '@eslint/js';
+import lit from 'eslint-plugin-lit';
+import wc from 'eslint-plugin-wc';
 
 /** @type { import("eslint").Linter.Config[] } */
 export default [
   js.configs.recommended,
-  configs['flat/recommended'],
+  lit.configs['flat/recommended'],
+  wc.configs['flat/recommended'],
   {
     languageOptions: {
       ecmaVersion: 2022,

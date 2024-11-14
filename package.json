@@ -32,6 +32,7 @@
     "@vitest/coverage-v8": "2.1.4",
     "eslint": "9.14.0",
     "eslint-plugin-lit": "1.15.0",
+    "eslint-plugin-wc": "2.2.0",
     "eventsource": "2.0.2",
     "jsdom": "25.0.1",
     "nodemon": "3.1.7",
