@@ -11,7 +11,9 @@
   "scripts": {
     "start": "node api/main.js",
     "test": "vitest",
-    "dev": "vite",
+    "dev": "npm run \"dev:api\" & npm run \"dev:vite\"",
+    "dev:api": "nodemon api/main.ts",
+    "dev:vite": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -35,9 +35,7 @@ format:
 	npx prettier . --write
 
 dev: build
-	npx concurrently \
-		"npx nodemon api/main.js" \
-		"npx vite"
+	npm run dev
 
 test: build
 	npx vitest run
