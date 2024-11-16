@@ -6,7 +6,7 @@ import { describe, expect, test } from 'vitest';
 
 import { Application } from '../../api/ui/application.js';
 
-// TODO move up aside to client and server
+// TODO Use testdata folder
 
 /**
  * @import { Browser, Page } from 'puppeteer'

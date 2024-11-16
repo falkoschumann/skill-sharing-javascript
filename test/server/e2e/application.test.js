@@ -13,6 +13,10 @@ import { Repository } from '../../../api/infrastructure/repository.js';
 import { Services } from '../../../api/application/services.js';
 import { Talk } from '../../../src/domain/talks.js';
 
+const testFile = new URL(
+  '../../../testdata/e2e.application.json',
+  import.meta.url,
+).pathname;
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 
 describe('Application', () => {
@@ -411,10 +415,6 @@ describe('Application', () => {
     });
   });
 });
-
-// TODO Use testdata folder
-const testFile = new URL('../../../data/talks.test.json', import.meta.url)
-  .pathname;
 
 async function startAndStop({
   fileName = testFile,

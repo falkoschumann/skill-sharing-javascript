@@ -7,14 +7,13 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { Repository } from '../../../api/infrastructure/repository.js';
 import { Talk } from '../../../src/domain/talks.js';
 
-// TODO Use testdata folder
-const testFile = new URL('../../../data/talks.test.json', import.meta.url)
-  .pathname;
-const exampleFile = new URL('../data/example.json', import.meta.url).pathname;
-const nonExistingFile = new URL(
-  '../../../data/non-existent.json',
+const testFile = new URL(
+  '../../../testdata/integration.repository.json',
   import.meta.url,
 ).pathname;
+const exampleFile = new URL('../data/example.json', import.meta.url).pathname;
+const nonExistingFile = new URL('../data/non-existent.json', import.meta.url)
+  .pathname;
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 
 // TODO replace beforeEach and afterEach with test function

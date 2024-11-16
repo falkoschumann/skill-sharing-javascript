@@ -1,11 +1,10 @@
 # see also https://gitignore.io
 
-build/
 /data/
-dist/
 /screenshots/
+/testdata/
+dist/
 tmp/
-vendor/
 
 # Gradle
 .gradle/
