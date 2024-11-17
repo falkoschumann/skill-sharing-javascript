@@ -5,7 +5,7 @@ import { Status } from '@muspellheim/shared';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { Repository } from '../../../api/infrastructure/repository.js';
-import { Talk } from '../../../src/domain/talks.js';
+import { Talk } from '../../../shared/talks.js';
 
 const testFile = new URL(
   '../../../testdata/integration.repository.json',

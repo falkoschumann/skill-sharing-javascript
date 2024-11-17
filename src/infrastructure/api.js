@@ -6,7 +6,7 @@
 
 import { LongPollingClient, OutputTracker } from '@muspellheim/shared';
 
-import { Talk } from '../domain/talks.js';
+import { Talk } from '../../shared/talks.js';
 
 const TALKS_UPDATED_EVENT = 'talks-updated';
 const TALK_PUT_EVENT = 'talk-put';

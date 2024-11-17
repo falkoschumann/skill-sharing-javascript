@@ -5,7 +5,7 @@ import { describe, expect, test } from 'vitest';
 import { LongPollingClient } from '@muspellheim/shared';
 
 import { Api } from '../../../src/infrastructure/api.js';
-import { Talk } from '../../../src/domain/talks.js';
+import { Talk } from '../../../shared/talks.js';
 
 describe('API', () => {
   test('Gets talks', async () => {

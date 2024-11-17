@@ -11,7 +11,7 @@ import { HealthContributorRegistry } from '@muspellheim/shared';
 import { Application } from '../../../api/ui/application.js';
 import { Repository } from '../../../api/infrastructure/repository.js';
 import { Services } from '../../../api/application/services.js';
-import { Talk } from '../../../src/domain/talks.js';
+import { Talk } from '../../../shared/talks.js';
 
 const testFile = new URL(
   '../../../testdata/e2e.application.json',

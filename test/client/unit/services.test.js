@@ -8,7 +8,7 @@ import { Services } from '../../../src/application/services.js';
 import { reducer } from '../../../src/domain/reducer.js';
 import { Api } from '../../../src/infrastructure/api.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
-import { Talk } from '../../../src/domain/talks.js';
+import { Talk } from '../../../shared/talks.js';
 import { User } from '../../../src/domain/users.js';
 
 describe('Services', () => {

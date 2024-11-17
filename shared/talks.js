@@ -1,7 +1,5 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-// TODO move to shared lib
-
 export class Talk {
   static create({ title, presenter, summary, comments }) {
     return new Talk(title, presenter, summary, comments);
@@ -16,7 +14,12 @@ export class Talk {
     return new Talk(title, presenter, summary, comments);
   }
 
-  constructor(title, presenter, summary, comments) {
+  constructor(
+    /** @type {string} */ title,
+    /** @type {string} */ presenter,
+    /** @type {string} */ summary,
+    /** @type {Comment[]} */ comments,
+  ) {
     this.title = title;
     this.presenter = presenter;
     this.summary = summary;
@@ -36,7 +39,7 @@ export class Comment {
     return new Comment(author, message);
   }
 
-  constructor(author, message) {
+  constructor(/** @type {string} */ author, /** @type {string} */ message) {
     this.author = author;
     this.message = message;
   }
