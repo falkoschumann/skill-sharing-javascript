@@ -2,57 +2,68 @@
 
 import { describe, expect, test } from 'vitest';
 
-import { HealthContributorRegistry } from '@muspellheim/shared';
-
+import {
+  CommandStatus,
+  DeleteTalkCommand,
+  SubmitTalkCommand,
+  TalksQueryResult,
+} from '../../../shared/messages.js';
+import { Comment, Talk } from '../../../shared/talks.js';
 import { Services } from '../../../api/application/services.js';
 import { Repository } from '../../../api/infrastructure/repository.js';
-import { Talk } from '../../../shared/talks.js';
 
 describe('Services', () => {
   describe('Submit talk', () => {
     test('Adds talk to list', async () => {
-      const { services, repository } = configure({ talks: [] });
+      const { services, repository } = configure();
 
-      await services.submitTalk({
-        title: 'Foobar',
-        presenter: 'Alice',
-        summary: 'Lorem ipsum',
-      });
+      const status = await services.submitTalk(
+        SubmitTalkCommand.create({
+          title: 'Talk test title',
+          presenter: 'Talk test presenter',
+          summary: 'Talk test summary.',
+        }),
+      );
 
-      expect(repository.lastStored).toEqual({
-        Foobar: {
-          title: 'Foobar',
-          presenter: 'Alice',
-          summary: 'Lorem ipsum',
+      expect(status).toEqual(CommandStatus.success());
+      const talks = await repository.findAll();
+      expect(talks).toEqual([
+        Talk.create({
+          title: 'Talk test title',
+          presenter: 'Talk test presenter',
+          summary: 'Talk test summary.',
           comments: [],
-        },
-      });
+        }),
+      ]);
     });
   });
 
   describe('Add comment', () => {
     test('Adds comment to an existing talk', async () => {
-      const title = 'Title 1';
-      const talk = Talk.createTestInstance({ title });
       const { services, repository } = configure({
-        talks: [talk],
+        talks: [
+          Talk.create({
+            title: 'Foobar',
+            presenter: 'Talk test presenter',
+            summary: 'Talk test summary.',
+            comments: [],
+          }),
+        ],
       });
 
-      const { isSuccessful } = await services.addComment({
-        title,
-        comment: { author: 'Bob', message: 'new comment' },
+      const status = await services.addComment({
+        title: 'Foobar',
+        comment: Comment.createTestInstance(),
       });
 
-      expect(isSuccessful).toEqual(true);
-      expect(repository.lastStored).toEqual({
-        [title]: {
-          ...talk,
-          comments: [
-            ...talk.comments,
-            { author: 'Bob', message: 'new comment' },
-          ],
-        },
-      });
+      expect(status).toEqual(CommandStatus.success());
+      const talks = await repository.findAll();
+      expect(talks).toEqual([
+        Talk.createTestInstance({
+          title: 'Foobar',
+          comments: [Comment.createTestInstance()],
+        }),
+      ]);
     });
 
     test('Reports an error if talk does not exists', async () => {
@@ -60,72 +71,58 @@ describe('Services', () => {
         talks: [Talk.createTestInstance()],
       });
 
-      const { isSuccessful } = await services.addComment({
+      const status = await services.addComment({
         title: 'non-existing-talk',
-        comment: { author: 'Bob', message: 'new comment' },
+        comment: Comment.createTestInstance({ message: 'Foobar' }),
       });
 
-      expect(isSuccessful).toEqual(false);
-      expect(repository.lastStored).toBeUndefined();
+      expect(status).toEqual(CommandStatus.failure('Talk not found.'));
+      const talks = await repository.findAll();
+      expect(talks).toEqual([Talk.createTestInstance()]);
     });
   });
 
   describe('Delete talk', () => {
     test('Removes talk from list', async () => {
-      const title = 'Title 1';
       const { services, repository } = configure({
-        talks: [Talk.createTestInstance({ title })],
+        talks: [Talk.createTestInstance({ title: 'Foobar' })],
       });
 
-      await services.deleteTalk({ title });
+      const status = await services.deleteTalk(
+        DeleteTalkCommand.create({ title: 'Foobar' }),
+      );
 
-      expect(repository.lastStored).toEqual({});
+      expect(status).toEqual(CommandStatus.success());
+      const talks = await repository.findAll();
+      expect(talks).toEqual([]);
     });
 
     test('Ignores already removed talk', async () => {
       const { services, repository } = configure();
 
-      await services.deleteTalk({ title: 'Foobar' });
+      const status = await services.deleteTalk({ title: 'Foobar' });
 
-      expect(repository.lastStored).toEqual({});
+      expect(status).toEqual(CommandStatus.success());
+      const talks = await repository.findAll();
+      expect(talks).toEqual([]);
     });
   });
 
   describe('Talks', () => {
     test('Lists all talks', async () => {
-      const { services } = configure({
-        talks: [Talk.createTestInstance()],
-      });
+      const { services } = configure({ talks: [Talk.createTestInstance()] });
 
       const result = await services.getTalks();
 
-      expect(result).toEqual([Talk.createTestInstance()]);
-    });
-  });
-
-  describe('Metrics', () => {
-    test('Counts talks, presenter and comments', async () => {
-      const { services } = configure({
-        talks: [
-          Talk.createTestInstance({ title: 'Talk 1', presenter: 'Alice' }),
-          Talk.createTestInstance({ title: 'Talk 2', presenter: 'Bob' }),
-          Talk.createTestInstance({ title: 'Talk 3', presenter: 'Alice' }),
-        ],
-      });
-
-      const metrics = await services.getMetrics();
-
-      expect(metrics).toEqual({
-        talksCount: 3,
-        presentersCount: 2,
-        commentsCount: 3,
-      });
+      expect(result).toEqual(
+        TalksQueryResult.create({ talks: [Talk.createTestInstance()] }),
+      );
     });
   });
 });
 
 function configure({ talks } = {}) {
-  const repository = Repository.createNull({ talks });
-  const services = new Services(repository, new HealthContributorRegistry());
+  const repository = Repository.createMemory({ talks });
+  const services = new Services(repository);
   return { services, repository };
 }

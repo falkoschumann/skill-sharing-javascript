@@ -1,71 +1,48 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-import { HealthContributorRegistry } from '@muspellheim/shared';
+/**
+ * @import { AddCommentCommand, DeleteTalkCommand, SubmitTalkCommand } from '../../shared/messages.js'
+ */
 
+import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
+import { Talk } from '../../shared/talks.js';
 import { Repository } from '../infrastructure/repository.js';
 
-// TODO handle errors
-
 export class Services {
-  static create({
-    healthContributorRegistry = HealthContributorRegistry.getDefault(),
-  } = {}) {
-    return new Services(Repository.create(), healthContributorRegistry);
-  }
-
-  static createNull() {
-    return new Services(
-      Repository.createNull(),
-      HealthContributorRegistry.create(),
-    );
+  static create() {
+    return new Services(Repository.create());
   }
 
   #repository;
 
-  constructor(
-    /** @type {Repository} */ repository,
-    /** @type {HealthContributorRegistry} */ healthContributorRegistry,
-  ) {
+  constructor(/** @type {Repository} */ repository) {
     this.#repository = repository;
-
-    healthContributorRegistry.registerContributor('repository', repository);
   }
 
   async getTalks() {
-    return await this.#repository.findAll();
+    const talks = await this.#repository.findAll();
+    return TalksQueryResult.create({ talks });
   }
 
-  async submitTalk({ title, presenter, summary }) {
-    const talk = { title, presenter, summary, comments: [] };
+  async submitTalk(/** @type {SubmitTalkCommand} */ command) {
+    const talk = Talk.create(command);
     await this.#repository.add(talk);
+    return CommandStatus.success();
   }
 
-  async deleteTalk({ title }) {
-    await this.#repository.remove(title);
+  async deleteTalk(/** @type {DeleteTalkCommand} */ command) {
+    await this.#repository.remove(command.title);
+    return CommandStatus.success();
   }
 
-  async addComment({ title, comment: { author, message } }) {
-    const talk = await this.#repository.findByTitle(title);
+  async addComment(/** @type {AddCommentCommand} */ command) {
+    const talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
-      return { isSuccessful: false };
+      return CommandStatus.failure('Talk not found.');
     }
 
-    talk.comments.push({ author, message });
+    talk.comments.push(command.comment);
     await this.#repository.add(talk);
-    return { isSuccessful: true };
-  }
-
-  async getMetrics() {
-    let talksCount = 0;
-    let commentsCount = 0;
-    const presenters = new Set();
-
-    for (const talk of await this.#repository.findAll()) {
-      talksCount++;
-      presenters.add(talk.presenter);
-      commentsCount += talk.comments.length;
-    }
-
-    return { talksCount, presentersCount: presenters.size, commentsCount };
+    return CommandStatus.success();
   }
 }
