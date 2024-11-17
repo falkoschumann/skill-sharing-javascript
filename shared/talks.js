@@ -1,7 +1,7 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 export class Talk {
-  static create({ title, presenter, summary, comments }) {
+  static create({ title, presenter, summary, comments = [] } = {}) {
     return new Talk(title, presenter, summary, comments);
   }
 
