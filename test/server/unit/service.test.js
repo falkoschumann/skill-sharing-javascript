@@ -9,15 +9,15 @@ import {
   TalksQueryResult,
 } from '../../../shared/messages.js';
 import { Comment, Talk } from '../../../shared/talks.js';
-import { Services } from '../../../api/application/services.js';
+import { Service } from '../../../api/application/service.js';
 import { Repository } from '../../../api/infrastructure/repository.js';
 
-describe('Services', () => {
+describe('Service', () => {
   describe('Submit talk', () => {
     test('Adds talk to list', async () => {
-      const { services, repository } = configure();
+      const { service, repository } = configure();
 
-      const status = await services.submitTalk(
+      const status = await service.submitTalk(
         SubmitTalkCommand.create({
           title: 'Talk test title',
           presenter: 'Talk test presenter',
@@ -40,7 +40,7 @@ describe('Services', () => {
 
   describe('Add comment', () => {
     test('Adds comment to an existing talk', async () => {
-      const { services, repository } = configure({
+      const { service, repository } = configure({
         talks: [
           Talk.create({
             title: 'Foobar',
@@ -51,7 +51,7 @@ describe('Services', () => {
         ],
       });
 
-      const status = await services.addComment({
+      const status = await service.addComment({
         title: 'Foobar',
         comment: Comment.createTestInstance(),
       });
@@ -67,11 +67,11 @@ describe('Services', () => {
     });
 
     test('Reports an error if talk does not exists', async () => {
-      const { services, repository } = configure({
+      const { service, repository } = configure({
         talks: [Talk.createTestInstance()],
       });
 
-      const status = await services.addComment({
+      const status = await service.addComment({
         title: 'non-existing-talk',
         comment: Comment.createTestInstance({ message: 'Foobar' }),
       });
@@ -84,11 +84,11 @@ describe('Services', () => {
 
   describe('Delete talk', () => {
     test('Removes talk from list', async () => {
-      const { services, repository } = configure({
+      const { service, repository } = configure({
         talks: [Talk.createTestInstance({ title: 'Foobar' })],
       });
 
-      const status = await services.deleteTalk(
+      const status = await service.deleteTalk(
         DeleteTalkCommand.create({ title: 'Foobar' }),
       );
 
@@ -98,9 +98,9 @@ describe('Services', () => {
     });
 
     test('Ignores already removed talk', async () => {
-      const { services, repository } = configure();
+      const { service, repository } = configure();
 
-      const status = await services.deleteTalk({ title: 'Foobar' });
+      const status = await service.deleteTalk({ title: 'Foobar' });
 
       expect(status).toEqual(CommandStatus.success());
       const talks = await repository.findAll();
@@ -110,9 +110,9 @@ describe('Services', () => {
 
   describe('Talks', () => {
     test('Lists all talks', async () => {
-      const { services } = configure({ talks: [Talk.createTestInstance()] });
+      const { service } = configure({ talks: [Talk.createTestInstance()] });
 
-      const result = await services.getTalks();
+      const result = await service.getTalks();
 
       expect(result).toEqual(
         TalksQueryResult.create({ talks: [Talk.createTestInstance()] }),
@@ -123,6 +123,6 @@ describe('Services', () => {
 
 function configure({ talks } = {}) {
   const repository = Repository.createMemory({ talks });
-  const services = new Services(repository);
-  return { services, repository };
+  const service = new Service(repository);
+  return { service, repository };
 }

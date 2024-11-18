@@ -2,10 +2,9 @@
 
 import path from 'node:path';
 import express from 'express';
-import { HealthContributorRegistry } from '@muspellheim/shared';
+import { ConfigurationProperties } from '@muspellheim/shared/node';
 
-import { Services } from '../application/services.js';
-import { ActuatorController } from './actuator-controller.js';
+import { Service } from '../application/service.js';
 import { TalksController } from './talks-controller.js';
 
 /**
@@ -14,33 +13,32 @@ import { TalksController } from './talks-controller.js';
 
 export class Application {
   static create() {
-    // TODO make repository file configurable for testing
-    const healthContributorRegistry = HealthContributorRegistry.getDefault();
-    return new Application(
-      Services.create({ healthContributorRegistry }),
-      healthContributorRegistry,
-      express(),
-    );
+    return new Application(Service.create());
   }
+
+  /** @type {string=} */ configName;
+  /** @type {string[]=} */ configLocation;
 
   #app;
   /** @type {Server} */ #server;
 
-  constructor(
-    /** @type {Services} */ services,
-    /** @type {HealthContributorRegistry} */ healthContributorRegistry,
-    /** @type {express.Express} */ app,
-  ) {
-    this.#app = app;
-    app.set('x-powered-by', false);
-    app.use(express.json());
-    app.use('/', express.static(path.join('./dist')));
-    new TalksController(services, app);
-    ActuatorController.create({ services, healthContributorRegistry, app });
+  constructor(/** @type {Service} */ services) {
+    this.#app = express();
+    this.#app.set('x-powered-by', false);
+    this.#app.use(express.json());
+    this.#app.use('/', express.static(path.join('./dist')));
+    new TalksController(services, this.#app);
   }
 
-  start({ port = 3000 } = {}) {
+  async start() {
+    // TODO make repository file configurable for testing
     console.log('Starting server...');
+    const configuration = ConfigurationProperties.create({
+      name: this.configName,
+      location: this.configLocation,
+      defaults: { port: 3000 },
+    });
+    const { port } = await configuration.get();
     return new Promise((resolve) => {
       this.#server = this.#app.listen(port, () => {
         console.log(`Server is listening on port ${port}.`);
@@ -49,7 +47,7 @@ export class Application {
     });
   }
 
-  stop() {
+  async stop() {
     return new Promise((resolve) => {
       this.#server.on('close', () => {
         console.log('Server stopped.');

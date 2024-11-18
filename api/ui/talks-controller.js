@@ -5,7 +5,7 @@ import { LongPolling, SseEmitter } from '@muspellheim/shared/node';
 import { runSafe, reply } from '@muspellheim/shared/node';
 
 /**
- * @import { Services } from '../application/services.js'
+ * @import { Service } from '../application/service.js'
  * @import { Express, Response, Request } from 'express'
  */
 
@@ -13,7 +13,7 @@ export class TalksController {
   #services;
   #longPolling;
 
-  constructor(/** @type {Services} */ services, /** @type {Express} */ app) {
+  constructor(/** @type {Service} */ services, /** @type {Express} */ app) {
     this.#services = services;
     this.#longPolling = new LongPolling(() => this.#services.getTalks());
 

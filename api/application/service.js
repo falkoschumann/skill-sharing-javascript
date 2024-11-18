@@ -8,9 +8,9 @@ import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
 import { Talk } from '../../shared/talks.js';
 import { Repository } from '../infrastructure/repository.js';
 
-export class Services {
+export class Service {
   static create() {
-    return new Services(Repository.create());
+    return new Service(Repository.create());
   }
 
   #repository;

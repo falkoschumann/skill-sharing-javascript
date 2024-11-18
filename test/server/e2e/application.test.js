@@ -1,16 +1,13 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import EventSource from 'eventsource';
-import express from 'express';
 import request from 'supertest';
 import { rmSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-import { HealthContributorRegistry } from '@muspellheim/shared';
-
 import { Application } from '../../../api/ui/application.js';
 import { Repository } from '../../../api/infrastructure/repository.js';
-import { Services } from '../../../api/application/services.js';
+import { Service } from '../../../api/application/service.js';
 import { Talk } from '../../../shared/talks.js';
 
 const testFile = new URL(
@@ -421,13 +418,12 @@ async function startAndStop({
   run = async () => {},
 } = {}) {
   rmSync(testFile, { force: true });
-  const app = express();
   const repository = Repository.create({ fileName });
-  const healthContributorRegistry = new HealthContributorRegistry();
-  const services = new Services(repository, healthContributorRegistry);
-  const application = new Application(services, healthContributorRegistry, app);
-  await application.start({ port: 3030 });
-  const url = 'http://localhost:3030';
+  const services = new Service(repository);
+  const application = new Application(services);
+  application.configLocation = [new URL('.', import.meta.url).pathname];
+  await application.start();
+  const url = 'http://localhost:3333';
   const source = new EventSource(`${url}/api/talks`);
   try {
     await run({ url, source });
