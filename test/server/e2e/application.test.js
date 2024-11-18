@@ -16,6 +16,8 @@ const testFile = new URL(
 ).pathname;
 const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
 
+// TODO Review tests
+
 describe('Application', () => {
   test('Starts and stops the app', async () => {
     await startAndStop();
@@ -32,15 +34,14 @@ describe('Application', () => {
 
           expect(response.status).toEqual(204);
 
-          response = await request(url).get('/api/talks').send();
-          expect(response.body).toEqual([
-            {
-              title: 'Foobar',
-              presenter: 'Anon',
-              summary: 'Lorem ipsum',
-              comments: [],
-            },
-          ]);
+          response = await request(url).get('/api/talks/Foobar').send();
+          expect(response.status).toBe(200);
+          expect(response.body).toEqual({
+            title: 'Foobar',
+            presenter: 'Anon',
+            summary: 'Lorem ipsum',
+            comments: [],
+          });
         },
       });
     });
@@ -81,6 +82,38 @@ describe('Application', () => {
   });
 
   describe('Get talks', () => {
+    test('Response with a single talk, when client asks for a specific talk', async () => {
+      await startAndStop({
+        run: async ({ url }) => {
+          await submitTalk(url, Talk.createTestInstance({ title: 'Foobar' }));
+
+          const response = await request(url)
+            .get('/api/talks/Foobar')
+            .set('Accept', 'application/json');
+
+          expect(response.status).toEqual(200);
+          expect(response.get('Content-Type')).toMatch(/application\/json/);
+          expect(response.body).toEqual(
+            Talk.createTestInstance({ title: 'Foobar', comments: [] }),
+          );
+        },
+      });
+    });
+
+    test('Response an error, when client asks for a specific talk that does not exist', async () => {
+      await startAndStop({
+        run: async ({ url }) => {
+          const response = await request(url)
+            .get('/api/talks/Foobar')
+            .set('Accept', 'application/json');
+
+          expect(response.status).toEqual(404);
+          expect(response.get('Content-Type')).toMatch(/text\/plain/);
+          expect(response.text).toEqual('Talk not found: "Foobar".');
+        },
+      });
+    });
+
     test('Replies with talks, if client asks for the first time', async () => {
       await startAndStop({
         run: async ({ url }) => {

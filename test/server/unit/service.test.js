@@ -6,6 +6,7 @@ import {
   CommandStatus,
   DeleteTalkCommand,
   SubmitTalkCommand,
+  TalksQuery,
   TalksQueryResult,
 } from '../../../shared/messages.js';
 import { Comment, Talk } from '../../../shared/talks.js';
@@ -118,6 +119,25 @@ describe('Service', () => {
 
       expect(result).toEqual(
         TalksQueryResult.create({ talks: [Talk.createTestInstance()] }),
+      );
+    });
+
+    test('Finds talk by title', async () => {
+      const { service } = configure({
+        talks: [
+          Talk.createTestInstance({ title: 'Foo' }),
+          Talk.createTestInstance({ title: 'Bar' }),
+        ],
+      });
+
+      const result = await service.getTalks(
+        TalksQuery.create({ title: 'Foo' }),
+      );
+
+      expect(result).toEqual(
+        TalksQueryResult.create({
+          talks: [Talk.createTestInstance({ title: 'Foo' })],
+        }),
       );
     });
   });

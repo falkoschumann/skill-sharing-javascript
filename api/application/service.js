@@ -1,7 +1,7 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 /**
- * @import { AddCommentCommand, DeleteTalkCommand, SubmitTalkCommand } from '../../shared/messages.js'
+ * @import { AddCommentCommand, DeleteTalkCommand, SubmitTalkCommand, TalksQuery } from '../../shared/messages.js'
  */
 
 import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
@@ -19,7 +19,12 @@ export class Service {
     this.#repository = repository;
   }
 
-  async getTalks() {
+  async getTalks(/** @type {TalksQuery=} */ query) {
+    if (query?.title != null) {
+      const talk = await this.#repository.findByTitle(query.title);
+      return TalksQueryResult.create({ talks: talk ? [talk] : [] });
+    }
+
     const talks = await this.#repository.findAll();
     return TalksQueryResult.create({ talks });
   }

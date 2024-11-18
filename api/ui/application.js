@@ -26,6 +26,7 @@ export class Application {
     this.#app = express();
     this.#app.set('x-powered-by', false);
     this.#app.use(express.json());
+    // TODO Extract StaticFilesController
     // TODO Configure directory for static files
     this.#app.use('/', express.static(path.join('./dist')));
     new TalksController(services, this.#app);

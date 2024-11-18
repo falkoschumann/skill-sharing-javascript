@@ -1,13 +1,18 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-import { LongPolling, SseEmitter } from '@muspellheim/shared/node';
-
-import { runSafe, reply } from '@muspellheim/shared/node';
-
 /**
  * @import { Service } from '../application/service.js'
  * @import { Express, Response, Request } from 'express'
  */
+
+import {
+  LongPolling,
+  runSafe,
+  reply,
+  SseEmitter,
+} from '@muspellheim/shared/node';
+
+// TODO Review code
 
 export class TalksController {
   #services;
@@ -21,6 +26,7 @@ export class TalksController {
     });
 
     app.get('/api/talks', runSafe(this.#getTalks.bind(this)));
+    app.get('/api/talks/:title', runSafe(this.#getTalks.bind(this)));
     app.get('/api/talks/events', runSafe(this.#eventStreamTalks.bind(this)));
     app.put('/api/talks/:title', runSafe(this.#putTalk.bind(this)));
     app.delete('/api/talks/:title', runSafe(this.#deleteTalk.bind(this)));
@@ -34,7 +40,19 @@ export class TalksController {
     /** @type {Request} */ request,
     /** @type {Response} */ response,
   ) {
-    if (request.headers.accept == 'text/event-stream') {
+    const title = parseTitle(request);
+    if (title != null) {
+      const result = await this.#services.getTalks({ title });
+      if (result.talks.length > 0) {
+        reply(response, {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(result.talks[0]),
+        });
+      } else {
+        reply(response, { status: 404, body: `Talk not found: "${title}".` });
+      }
+    } else if (request.headers.accept == 'text/event-stream') {
       this.#eventStreamTalks(request, response);
     } else {
       this.#longPolling.poll(request, response);
@@ -101,6 +119,10 @@ export class TalksController {
 }
 
 function parseTitle(/** @type {Request} */ request) {
+  if (request.params.title == null) {
+    return null;
+  }
+
   return decodeURIComponent(request.params.title);
 }
 

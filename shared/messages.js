@@ -59,6 +59,16 @@ export class CommandStatus {
   }
 }
 
+export class TalksQuery {
+  static create({ title } = {}) {
+    return new TalksQuery(title);
+  }
+
+  constructor(/** @type {string} */ title) {
+    this.title = title;
+  }
+}
+
 export class TalksQueryResult {
   static create({ talks } = {}) {
     return new TalksQueryResult(talks);
