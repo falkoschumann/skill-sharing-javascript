@@ -76,7 +76,9 @@ describe('Service', () => {
         comment: Comment.createTestInstance({ message: 'Foobar' }),
       });
 
-      expect(status).toEqual(CommandStatus.failure('Talk not found.'));
+      expect(status).toEqual(
+        CommandStatus.failure('Talk not found: "non-existing-talk".'),
+      );
       const talks = await repository.findAll();
       expect(talks).toEqual([Talk.createTestInstance()]);
     });

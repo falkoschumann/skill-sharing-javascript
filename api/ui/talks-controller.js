@@ -15,7 +15,10 @@ export class TalksController {
 
   constructor(/** @type {Service} */ services, /** @type {Express} */ app) {
     this.#services = services;
-    this.#longPolling = new LongPolling(() => this.#services.getTalks());
+    this.#longPolling = new LongPolling(async () => {
+      const result = await this.#services.getTalks();
+      return result.talks;
+    });
 
     app.get('/api/talks', runSafe(this.#getTalks.bind(this)));
     app.get('/api/talks/events', runSafe(this.#eventStreamTalks.bind(this)));
@@ -45,8 +48,8 @@ export class TalksController {
     // TODO send talks to client, when updated
     const emitter = new SseEmitter();
     emitter.extendResponse(response);
-    const talks = await this.#services.getTalks();
-    emitter.send(talks);
+    const result = await this.#services.getTalks();
+    emitter.send(result.talks);
   }
 
   async #putTalk(
@@ -87,15 +90,12 @@ export class TalksController {
   }
 
   async #tryAddComment({ title, comment }) {
-    const { isSuccessful } = await this.#services.addComment({
-      title,
-      comment,
-    });
-    if (isSuccessful) {
+    const status = await this.#services.addComment({ title, comment });
+    if (status.isSuccess) {
       await this.#longPolling.send();
       return { status: 204 };
     } else {
-      return { status: 404, body: `No talk '${title}' found` };
+      return { status: 404, body: status.errorMessage };
     }
   }
 }

@@ -51,10 +51,10 @@ export class CommandStatus {
   }
 
   constructor(
-    /** @type {boolean} */ success,
+    /** @type {boolean} */ isSuccess,
     /** @type {string} */ errorMessage,
   ) {
-    this.success = success;
+    this.isSuccess = isSuccess;
     this.errorMessage = errorMessage;
   }
 }

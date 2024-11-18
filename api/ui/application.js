@@ -26,22 +26,18 @@ export class Application {
     this.#app = express();
     this.#app.set('x-powered-by', false);
     this.#app.use(express.json());
+    // TODO Configure directory for static files
     this.#app.use('/', express.static(path.join('./dist')));
     new TalksController(services, this.#app);
   }
 
   async start() {
-    // TODO make repository file configurable for testing
-    console.log('Starting server...');
-    const configuration = ConfigurationProperties.create({
-      name: this.configName,
-      location: this.configLocation,
-      defaults: { port: 3000 },
-    });
-    const { port } = await configuration.get();
+    // TODO Use logger instead of console
+    console.info('Starting server...');
+    const { port } = await this.#loadConfiguration();
     return new Promise((resolve) => {
       this.#server = this.#app.listen(port, () => {
-        console.log(`Server is listening on port ${port}.`);
+        console.info(`Server is listening on port ${port}.`);
         resolve();
       });
     });
@@ -50,11 +46,20 @@ export class Application {
   async stop() {
     return new Promise((resolve) => {
       this.#server.on('close', () => {
-        console.log('Server stopped.');
+        console.info('Server stopped.');
         resolve();
       });
       this.#server.close();
-      console.log('Stopping server...');
+      console.info('Stopping server...');
     });
+  }
+
+  async #loadConfiguration() {
+    const configuration = ConfigurationProperties.create({
+      name: this.configName,
+      location: this.configLocation,
+      defaults: { port: 3000 },
+    });
+    return await configuration.get();
   }
 }

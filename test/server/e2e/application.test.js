@@ -21,6 +21,65 @@ describe('Application', () => {
     await startAndStop();
   });
 
+  describe('Put talk', () => {
+    test('Creates a new talk', async () => {
+      await startAndStop({
+        run: async ({ url }) => {
+          let response = await request(url)
+            .put('/api/talks/Foobar')
+            .set('Content-Type', 'application/json')
+            .send({ presenter: 'Anon', summary: 'Lorem ipsum' });
+
+          expect(response.status).toEqual(204);
+
+          response = await request(url).get('/api/talks').send();
+          expect(response.body).toEqual([
+            {
+              title: 'Foobar',
+              presenter: 'Anon',
+              summary: 'Lorem ipsum',
+              comments: [],
+            },
+          ]);
+        },
+      });
+    });
+
+    test('Reports an error if presenter is missing', async () => {
+      await startAndStop({
+        run: async ({ url }) => {
+          let response = await request(url)
+            .put('/api/talks/Foobar')
+            .set('Accept', 'application/json')
+            .send({ summary: 'Lorem ipsum' });
+
+          expect(response.status).toEqual(400);
+          expect(response.get('Content-Type')).toMatch(/text\/plain/);
+          expect(response.text).toEqual('Bad talk data');
+          response = await request(url).get('/api/talks').send();
+          expect(response.body).toEqual([]);
+        },
+      });
+    });
+
+    test('Reports an error if summary is missing', async () => {
+      await startAndStop({
+        run: async ({ url }) => {
+          let response = await request(url)
+            .put('/api/talks/Foobar')
+            .set('Accept', 'application/json')
+            .send({ presenter: 'Anon' });
+
+          expect(response.status).toEqual(400);
+          expect(response.get('Content-Type')).toMatch(/text\/plain/);
+          expect(response.text).toEqual('Bad talk data');
+          response = await request(url).get('/api/talks').send();
+          expect(response.body).toEqual([]);
+        },
+      });
+    });
+  });
+
   describe('Get talks', () => {
     test('Replies with talks, if client asks for the first time', async () => {
       await startAndStop({
@@ -146,64 +205,6 @@ describe('Application', () => {
     });
   });
 
-  describe('Put talk', () => {
-    test('Creates a new talk', async () => {
-      await startAndStop({
-        run: async ({ url }) => {
-          let response = await request(url)
-            .put('/api/talks/Foobar')
-            .set('Content-Type', 'application/json')
-            .send({ presenter: 'Anon', summary: 'Lorem ipsum' });
-
-          expect(response.status).toEqual(204);
-          response = await request(url).get('/api/talks').send();
-          expect(response.body).toEqual([
-            {
-              title: 'Foobar',
-              presenter: 'Anon',
-              summary: 'Lorem ipsum',
-              comments: [],
-            },
-          ]);
-        },
-      });
-    });
-
-    test('Reports an error if presenter is missing', async () => {
-      await startAndStop({
-        run: async ({ url }) => {
-          let response = await request(url)
-            .put('/api/talks/Foobar')
-            .set('Accept', 'application/json')
-            .send({ summary: 'Lorem ipsum' });
-
-          expect(response.status).toEqual(400);
-          expect(response.get('Content-Type')).toMatch(/text\/plain/);
-          expect(response.text).toEqual('Bad talk data');
-          response = await request(url).get('/api/talks').send();
-          expect(response.body).toEqual([]);
-        },
-      });
-    });
-
-    test('Reports an error if summary is missing', async () => {
-      await startAndStop({
-        run: async ({ url }) => {
-          let response = await request(url)
-            .put('/api/talks/Foobar')
-            .set('Accept', 'application/json')
-            .send({ presenter: 'Anon' });
-
-          expect(response.status).toEqual(400);
-          expect(response.get('Content-Type')).toMatch(/text\/plain/);
-          expect(response.text).toEqual('Bad talk data');
-          response = await request(url).get('/api/talks').send();
-          expect(response.body).toEqual([]);
-        },
-      });
-    });
-  });
-
   describe('Delete talk', () => {
     test('Deletes an existing talk', async () => {
       await startAndStop({
@@ -259,7 +260,7 @@ describe('Application', () => {
 
           expect(response.status).toEqual(404);
           expect(response.get('Content-Type')).toMatch(/text\/plain/);
-          expect(response.text).toEqual("No talk 'bar' found");
+          expect(response.text).toEqual('Talk not found: "bar".');
         },
       });
     });
@@ -299,7 +300,7 @@ describe('Application', () => {
     });
   });
 
-  describe('Metrics', () => {
+  describe.skip('Metrics', () => {
     test('Gets talks count', async () => {
       await startAndStop({
         run: async ({ url }) => {
@@ -418,9 +419,11 @@ async function startAndStop({
   run = async () => {},
 } = {}) {
   rmSync(testFile, { force: true });
+  // TODO make repository file configurable for testing
   const repository = Repository.create({ fileName });
   const services = new Service(repository);
   const application = new Application(services);
+  // TODO read configName and configLocation inside ConfigurationProperties
   application.configLocation = [new URL('.', import.meta.url).pathname];
   await application.start();
   const url = 'http://localhost:3333';

@@ -38,7 +38,7 @@ export class Service {
   async addComment(/** @type {AddCommentCommand} */ command) {
     const talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
-      return CommandStatus.failure('Talk not found.');
+      return CommandStatus.failure(`Talk not found: "${command.title}".`);
     }
 
     talk.comments.push(command.comment);
