@@ -1,6 +1,3 @@
-export PORT = 3000
-export DEV_PORT = 8080
-
 # Possible values: major, minor, patch or concrete version
 VERSION = minor
 

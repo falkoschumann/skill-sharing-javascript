@@ -459,6 +459,7 @@ async function startAndStop({
   // TODO read configName and configLocation inside ConfigurationProperties
   application.configLocation = [new URL('.', import.meta.url).pathname];
   await application.start();
+  // TODO Use port from configuration
   const url = 'http://localhost:3333';
   const source = new EventSource(`${url}/api/talks`);
   try {

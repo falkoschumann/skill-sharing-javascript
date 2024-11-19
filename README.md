@@ -19,6 +19,11 @@ The `Makefile` runs the build as default task. Other tasks are
 -   `test`: run all tests,
 -   `format`: format source code
 
+To set ports for development set environmemt varialbles `DEV_PORT=8080` for web
+app und `PORT=3000` for API:
+
+    PORT=3001 DEV_PORT=8081 make dev
+
 ## Credits
 
 ## Open issues
