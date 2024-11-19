@@ -38,7 +38,7 @@
     "nodemon": "3.1.7",
     "prettier": "3.3.3",
     "puppeteer": "23.7.1",
-    "rollup": "4.25.0",
+    "rollup": "4.27.3",
     "supertest": "7.0.0",
     "vitest": "2.1.4"
   },
