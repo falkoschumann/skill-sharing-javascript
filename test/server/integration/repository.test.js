@@ -161,7 +161,7 @@ describe('Repository', () => {
 
   describe('Memory repository', () => {
     it('Creates empty', async () => {
-      const repository = Repository.createMemory();
+      const repository = Repository.createNull();
 
       const talks = await repository.findAll();
 
@@ -169,7 +169,7 @@ describe('Repository', () => {
     });
 
     it('Initializes talks', async () => {
-      const repository = Repository.createMemory({
+      const repository = Repository.createNull({
         talks: [Talk.createTestInstance()],
       });
 
@@ -179,7 +179,7 @@ describe('Repository', () => {
     });
 
     it('Writes and reads talks', async () => {
-      const repository = Repository.createMemory();
+      const repository = Repository.createNull();
 
       await repository.addOrUpdate(Talk.createTestInstance());
       const talks = await repository.findAll();

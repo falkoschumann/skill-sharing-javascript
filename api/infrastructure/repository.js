@@ -10,7 +10,7 @@ export class Repository {
     return new Repository(fileName, fsPromise);
   }
 
-  static createMemory(/** @type {{talks: Talk[]}} */ { talks } = {}) {
+  static createNull(/** @type {{talks: Talk[]}} */ { talks } = {}) {
     return new Repository('null-repository.json', new FsStub(talks));
   }
 
