@@ -293,7 +293,9 @@ describe('Application', () => {
 
           expect(response.status).toEqual(404);
           expect(response.get('Content-Type')).toMatch(/text\/plain/);
-          expect(response.text).toEqual('Talk not found: "bar".');
+          expect(response.text).toEqual(
+            'The comment cannot be added because the talk "bar" does not exist.',
+          );
         },
       });
     });

@@ -19,19 +19,22 @@ export class Service {
     this.#repository = repository;
   }
 
-  async getTalks(/** @type {TalksQuery=} */ query) {
-    if (query?.title != null) {
-      const talk = await this.#repository.findByTitle(query.title);
-      return TalksQueryResult.create({ talks: talk ? [talk] : [] });
-    }
-
-    const talks = await this.#repository.findAll();
-    return TalksQueryResult.create({ talks });
-  }
-
   async submitTalk(/** @type {SubmitTalkCommand} */ command) {
     const talk = Talk.create(command);
-    await this.#repository.add(talk);
+    await this.#repository.addOrUpdate(talk);
+    return CommandStatus.success();
+  }
+
+  async addComment(/** @type {AddCommentCommand} */ command) {
+    const talk = await this.#repository.findByTitle(command.title);
+    if (talk == null) {
+      return CommandStatus.failure(
+        `The comment cannot be added because the talk "${command.title}" does not exist.`,
+      );
+    }
+
+    talk.comments.push(command.comment);
+    await this.#repository.addOrUpdate(talk);
     return CommandStatus.success();
   }
 
@@ -40,14 +43,13 @@ export class Service {
     return CommandStatus.success();
   }
 
-  async addComment(/** @type {AddCommentCommand} */ command) {
-    const talk = await this.#repository.findByTitle(command.title);
-    if (talk == null) {
-      return CommandStatus.failure(`Talk not found: "${command.title}".`);
+  async getTalks(/** @type {TalksQuery=} */ query) {
+    if (query?.title != null) {
+      const talk = await this.#repository.findByTitle(query.title);
+      return TalksQueryResult.create({ talks: talk ? [talk] : [] });
     }
 
-    talk.comments.push(command.comment);
-    await this.#repository.add(talk);
-    return CommandStatus.success();
+    const talks = await this.#repository.findAll();
+    return TalksQueryResult.create({ talks });
   }
 }

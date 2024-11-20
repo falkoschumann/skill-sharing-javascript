@@ -3,7 +3,9 @@
  */
 
 export class SubmitTalkCommand {
-  static create({ title, presenter, summary } = {}) {
+  static create(
+    /** @type {SubmitTalkCommand} */ { title, presenter, summary } = {},
+  ) {
     return new SubmitTalkCommand(title, presenter, summary);
   }
 
@@ -19,7 +21,7 @@ export class SubmitTalkCommand {
 }
 
 export class AddCommentCommand {
-  static create({ title, comment } = {}) {
+  static create(/** @type {AddCommentCommand} */ { title, comment } = {}) {
     return new AddCommentCommand(title, comment);
   }
 
@@ -30,7 +32,7 @@ export class AddCommentCommand {
 }
 
 export class DeleteTalkCommand {
-  static create({ title } = {}) {
+  static create(/** @type {DeleteTalkCommand} */ { title } = {}) {
     return new DeleteTalkCommand(title);
   }
 
@@ -60,7 +62,7 @@ export class CommandStatus {
 }
 
 export class TalksQuery {
-  static create({ title } = {}) {
+  static create(/** @type {TalksQuery} */ { title } = {}) {
     return new TalksQuery(title);
   }
 
@@ -70,7 +72,7 @@ export class TalksQuery {
 }
 
 export class TalksQueryResult {
-  static create({ talks } = {}) {
+  static create(/** @type {TalksQueryResult} */ { talks } = {}) {
     return new TalksQueryResult(talks);
   }
 

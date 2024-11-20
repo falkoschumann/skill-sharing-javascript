@@ -78,7 +78,9 @@ describe('Service', () => {
       });
 
       expect(status).toEqual(
-        CommandStatus.failure('Talk not found: "non-existing-talk".'),
+        CommandStatus.failure(
+          'The comment cannot be added because the talk "non-existing-talk" does not exist.',
+        ),
       );
       const talks = await repository.findAll();
       expect(talks).toEqual([Talk.createTestInstance()]);

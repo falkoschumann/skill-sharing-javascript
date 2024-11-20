@@ -10,7 +10,7 @@ export class Repository {
     return new Repository(fileName, fsPromise);
   }
 
-  static createMemory({ talks } = {}) {
+  static createMemory(/** @type {{talks: Talk[]}} */ { talks } = {}) {
     return new Repository('null-repository.json', new FsStub(talks));
   }
 
@@ -40,7 +40,7 @@ export class Repository {
     return Talk.create(talk);
   }
 
-  async add(talk) {
+  async addOrUpdate(talk) {
     const talks = await this.#load();
     talks[talk.title] = talk;
     await this.#store(talks);
