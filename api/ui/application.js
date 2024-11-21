@@ -59,7 +59,7 @@ export class Application {
     const app = express();
     app.set('x-powered-by', false);
     app.use(express.json());
-    new StaticFilesController(app);
+    new StaticFilesController(app, './dist');
     const service = new Service(Repository.create(configuration));
     new TalksController(service, app);
     return app;

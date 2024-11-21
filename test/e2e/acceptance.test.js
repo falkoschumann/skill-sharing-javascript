@@ -38,18 +38,17 @@ describe('User Acceptance Tests', () => {
 });
 
 async function startAndStop(fn) {
-  const talksFile = new URL('../../../data/talks.json', import.meta.url)
-    .pathname;
-  const screenshotsDir = new URL('../../../screenshots', import.meta.url)
-    .pathname;
+  const talksFile = new URL('../../data/talks.json', import.meta.url).pathname;
+  const screenshotsDir = new URL('../../screenshots', import.meta.url).pathname;
   let application;
   let browser;
   try {
     await fs.mkdir(screenshotsDir, { recursive: true });
     await fs.rm(talksFile, { force: true });
 
-    application = Application.create();
-    await application.start({ port: 3333 });
+    application = new Application();
+    application.configLocation = [new URL('.', import.meta.url).pathname];
+    await application.start();
     // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
     browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -83,7 +82,8 @@ class SkillSharing {
 
   async gotoSubmission() {
     this.#page = await this.#browser.newPage();
-    await this.#page.goto('http://localhost:3333');
+    // TODO Use port from configuration
+    await this.#page.goto('http://localhost:4444');
   }
 
   async changeUser({ name }) {
