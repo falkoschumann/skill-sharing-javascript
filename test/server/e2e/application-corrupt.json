@@ -4,6 +4,6 @@
     "port": 3333
   },
   "repository": {
-    "fileName": "./testdata/e2e.application.json"
+    "fileName": "./test/server/data/corrupt.json"
   }
 }

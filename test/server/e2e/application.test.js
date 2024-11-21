@@ -1,24 +1,24 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
+import fs from 'node:fs/promises';
 import EventSource from 'eventsource';
 import request from 'supertest';
-import { rmSync } from 'node:fs';
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
-import { Application } from '../../../api/ui/application.js';
-import { Repository } from '../../../api/infrastructure/repository.js';
-import { Service } from '../../../api/application/service.js';
 import { Talk } from '../../../shared/talks.js';
-
-const testFile = new URL(
-  '../../../testdata/e2e.application.json',
-  import.meta.url,
-).pathname;
-const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
+import { Application } from '../../../api/ui/application.js';
 
 // TODO Review tests
 
 describe('Application', () => {
+  beforeEach(async () => {
+    const testFile = new URL(
+      '../../../testdata/e2e.application.json',
+      import.meta.url,
+    ).pathname;
+    await fs.rm(testFile, { force: true });
+  });
+
   test('Starts and stops the app', async () => {
     await startAndStop();
   });
@@ -415,7 +415,7 @@ describe('Application', () => {
 
       test('Gets down', async () => {
         await startAndStop({
-          fileName: corruptedFile,
+          configName: 'application.corrupt.json',
           run: async ({ url }) => {
             await submitTalk(url);
 
@@ -449,17 +449,10 @@ describe('Application', () => {
   });
 });
 
-async function startAndStop({
-  fileName = testFile,
-  run = async () => {},
-} = {}) {
-  rmSync(testFile, { force: true });
-  // TODO make repository file configurable for testing
-  const repository = Repository.create({ fileName });
-  const services = new Service(repository);
-  const application = new Application(services);
-  // TODO read configName and configLocation inside ConfigurationProperties
+async function startAndStop({ configName, run = async () => {} } = {}) {
+  const application = new Application();
   application.configLocation = [new URL('.', import.meta.url).pathname];
+  application.configName = configName;
   await application.start();
   // TODO Use port from configuration
   const url = 'http://localhost:3333';

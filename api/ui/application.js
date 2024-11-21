@@ -1,66 +1,84 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-import path from 'node:path';
+/**
+ * @import http from 'node:http'
+ * @import { Express } from 'express'
+ * @import { ServerConfiguration } from '../application/configuration.js';
+ * @import { RepositoryConfiguration } from '../infrastructure/repository.js';
+ */
+
 import express from 'express';
 import { ConfigurationProperties } from '@muspellheim/shared/node';
 
+import { Configuration } from '../application/configuration.js';
 import { Service } from '../application/service.js';
+import { StaticFilesController } from './static-files-controller.js';
 import { TalksController } from './talks-controller.js';
-
-/**
- * @import { Server } from 'node:http'
- */
+import { Repository } from '../infrastructure/repository.js';
 
 export class Application {
-  static create() {
-    return new Application(Service.create());
-  }
-
   /** @type {string=} */ configName;
   /** @type {string[]=} */ configLocation;
 
-  #app;
-  /** @type {Server} */ #server;
-
-  constructor(/** @type {Service} */ services) {
-    this.#app = express();
-    this.#app.set('x-powered-by', false);
-    this.#app.use(express.json());
-    // TODO Extract StaticFilesController
-    // TODO Configure directory for static files
-    this.#app.use('/', express.static(path.join('./dist')));
-    new TalksController(services, this.#app);
-  }
+  /** @type {http.Server} */ #server;
 
   async start() {
     // TODO Use logger instead of console
     console.info('Starting server...');
-    const { port } = await this.#loadConfiguration();
-    return new Promise((resolve) => {
-      this.#server = this.#app.listen(port, () => {
-        console.info(`Server is listening on port ${port}.`);
-        resolve();
-      });
-    });
+    const { server, repository } = await this.#loadConfiguration();
+    const app = this.#createApp(repository);
+    await this.#startServer(app, server);
+    console.info(`Server is listening on ${server.host}:${server.port}.`);
   }
 
   async stop() {
-    return new Promise((resolve) => {
-      this.#server.on('close', () => {
-        console.info('Server stopped.');
-        resolve();
-      });
-      this.#server.close();
-      console.info('Stopping server...');
-    });
+    console.info('Stopping server...');
+    await this.#stopServer();
+    console.info('Server stopped.');
   }
 
+  /**
+   * @returns {Promise<Configuration>}
+   */
   async #loadConfiguration() {
+    // TODO read configName and configLocation inside ConfigurationProperties
+    // TODO Use template for defaults and return with get()
+    // TODO Cache loaded configuration
     const configuration = ConfigurationProperties.create({
       name: this.configName,
       location: this.configLocation,
-      defaults: { port: 3000 },
+      defaults: Configuration.create(),
     });
     return await configuration.get();
+  }
+
+  /**
+   * @param {RepositoryConfiguration} configuration
+   */
+  #createApp(configuration) {
+    const app = express();
+    app.set('x-powered-by', false);
+    app.use(express.json());
+    new StaticFilesController(app);
+    const service = new Service(Repository.create(configuration));
+    new TalksController(service, app);
+    return app;
+  }
+
+  /**
+   * @param {Express} app
+   * @param {ServerConfiguration} configuration
+   */
+  async #startServer(app, { host, port }) {
+    await new Promise((resolve) => {
+      this.#server = app.listen(port, host, () => resolve());
+    });
+  }
+
+  async #stopServer() {
+    await new Promise((resolve) => {
+      this.#server.on('close', () => resolve());
+      this.#server.close();
+    });
   }
 }

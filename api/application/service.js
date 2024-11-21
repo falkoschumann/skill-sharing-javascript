@@ -2,17 +2,13 @@
 
 /**
  * @import { AddCommentCommand, DeleteTalkCommand, SubmitTalkCommand, TalksQuery } from '../../shared/messages.js'
+ * @import { Repository } from '../infrastructure/repository.js'
  */
 
 import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
 import { Talk } from '../../shared/talks.js';
-import { Repository } from '../infrastructure/repository.js';
 
 export class Service {
-  static create() {
-    return new Service(Repository.create());
-  }
-
   #repository;
 
   constructor(/** @type {Repository} */ repository) {

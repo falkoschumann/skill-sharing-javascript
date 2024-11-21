@@ -2,5 +2,5 @@
 
 import { Application } from './ui/application.js';
 
-const application = Application.create();
+const application = new Application();
 application.start();

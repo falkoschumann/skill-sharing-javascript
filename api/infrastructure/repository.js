@@ -5,23 +5,42 @@ import path from 'node:path';
 
 import { Talk } from '../../shared/talks.js';
 
-export class Repository {
+export class RepositoryConfiguration {
+  /**
+   * @param {Partial<RepositoryConfiguration>} [configuration]
+   */
   static create({ fileName = './data/talks.json' } = {}) {
-    return new Repository(fileName, fsPromise);
+    return new RepositoryConfiguration(fileName);
+  }
+
+  /**
+   * @param {string} fileName
+   */
+  constructor(fileName) {
+    this.fileName = fileName;
+  }
+}
+
+export class Repository {
+  static create(configuration = RepositoryConfiguration.create()) {
+    return new Repository(configuration, fsPromise);
   }
 
   static createNull(/** @type {{talks: Talk[]}} */ { talks } = {}) {
-    return new Repository('null-repository.json', new FsStub(talks));
+    return new Repository(
+      RepositoryConfiguration.create({ fileName: 'null-repository.json' }),
+      new FsStub(talks),
+    );
   }
 
-  #fileName;
+  #configuration;
   #fs;
 
   constructor(
-    /** @type {string} */ fileName,
+    /** @type {RepositoryConfiguration} */ configuration,
     /** @type {typeof fsPromise} */ fs,
   ) {
-    this.#fileName = fileName;
+    this.#configuration = configuration;
     this.#fs = fs;
   }
 
@@ -54,7 +73,10 @@ export class Repository {
 
   async #load() {
     try {
-      const json = await this.#fs.readFile(this.#fileName, 'utf-8');
+      const json = await this.#fs.readFile(
+        this.#configuration.fileName,
+        'utf-8',
+      );
       return JSON.parse(json);
     } catch (error) {
       if (error.code === 'ENOENT') {
@@ -67,11 +89,11 @@ export class Repository {
   }
 
   async #store(talksMap) {
-    const dirName = path.dirname(this.#fileName);
+    const dirName = path.dirname(this.#configuration.fileName);
     await this.#fs.mkdir(dirName, { recursive: true });
 
     const json = JSON.stringify(talksMap);
-    await this.#fs.writeFile(this.#fileName, json, 'utf-8');
+    await this.#fs.writeFile(this.#configuration.fileName, json, 'utf-8');
   }
 }
 
