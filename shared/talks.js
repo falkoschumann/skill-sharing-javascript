@@ -1,10 +1,16 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 export class Talk {
+  /**
+   * @param {Talk} talk
+   */
   static create({ title, presenter, summary, comments = [] } = {}) {
     return new Talk(title, presenter, summary, comments);
   }
 
+  /**
+   * @param {Talk} talk
+   */
   static createTestInstance({
     title = 'Talk test title',
     presenter = 'Talk test presenter',
@@ -14,12 +20,13 @@ export class Talk {
     return new Talk(title, presenter, summary, comments);
   }
 
-  constructor(
-    /** @type {string} */ title,
-    /** @type {string} */ presenter,
-    /** @type {string} */ summary,
-    /** @type {Comment[]} */ comments,
-  ) {
+  /**
+   * @param {string} title
+   * @param {string} presenter
+   * @param {string} summary
+   * @param {Comment[]} comments
+   */
+  constructor(title, presenter, summary, comments) {
     this.title = title;
     this.presenter = presenter;
     this.summary = summary;
@@ -28,10 +35,16 @@ export class Talk {
 }
 
 export class Comment {
-  static create({ author, message }) {
+  /**
+   * @param {Comment} param0
+   */
+  static create({ author, message } = {}) {
     return new Comment(author, message);
   }
 
+  /**
+   * @param {Comment} talk
+   */
   static createTestInstance({
     author = 'Comment test author',
     message = 'Comment test message',
@@ -39,7 +52,11 @@ export class Comment {
     return new Comment(author, message);
   }
 
-  constructor(/** @type {string} */ author, /** @type {string} */ message) {
+  /**
+   * @param {string} author
+   * @param {string} message
+   */
+  constructor(author, message) {
     this.author = author;
     this.message = message;
   }

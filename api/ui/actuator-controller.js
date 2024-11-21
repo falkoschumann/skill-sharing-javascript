@@ -32,12 +32,19 @@ export class ActuatorController {
   #services;
   #healthContributorRegistry;
 
+  /**
+   * @param {string}  packageJson
+   * @param {*} services
+   * @param {HealthContributorRegistry} healthContributorRegistry
+   * @param {express.Express} app
+   */
   constructor(
-    /** @type {string} */ packageJson,
+    packageJson,
     services, // FIXME Services is not defined in library
-    /** @type {HealthContributorRegistry} */ healthContributorRegistry,
-    /** @type {express.Express} */ app,
+    healthContributorRegistry,
+    app,
   ) {
+    // FIXME Services is not defined in library
     this.#packageJson = packageJson;
     this.#services = services;
     this.#healthContributorRegistry = healthContributorRegistry;
@@ -49,10 +56,11 @@ export class ActuatorController {
     app.get('/actuator/prometheus', runSafe(this.#getMetrics.bind(this)));
   }
 
-  async #getActuator(
-    /** @type {express.Request} */ request,
-    /** @type {express.Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #getActuator(request, response) {
     let requestedUrl =
       request.protocol + '://' + request.get('host') + request.originalUrl;
     if (!requestedUrl.endsWith('/')) {
@@ -69,10 +77,11 @@ export class ActuatorController {
     });
   }
 
-  async #getActuatorInfo(
-    /** @type {express.Request} */ request,
-    /** @type {express.Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #getActuatorInfo(request, response) {
     const json = await fs.readFile(this.#packageJson, 'utf8');
     const { name, version } = JSON.parse(json);
     const info = {};
@@ -80,10 +89,11 @@ export class ActuatorController {
     response.status(200).json(info);
   }
 
-  async #getActuatorMetrics(
-    /** @type {express.Request} */ request,
-    /** @type {express.Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #getActuatorMetrics(request, response) {
     response.status(200).json({
       cpu: process.cpuUsage(),
       mem: process.memoryUsage(),
@@ -91,10 +101,11 @@ export class ActuatorController {
     });
   }
 
-  #getActuatorHealth(
-    /** @type {express.Request} */ request,
-    /** @type {express.Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  #getActuatorHealth(request, response) {
     const endpoint = new HealthEndpoint(this.#healthContributorRegistry, {
       primary: {
         statusAggregator: StatusAggregator.getDefault(),
@@ -105,10 +116,11 @@ export class ActuatorController {
     response.status(status).json(body);
   }
 
-  async #getMetrics(
-    /** @type {express.Request} */ request,
-    /** @type {express.Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #getMetrics(request, response) {
     // TODO count warnings and errors
     // TODO create class MeterRegistry
 

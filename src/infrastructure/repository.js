@@ -16,7 +16,10 @@ export class Repository {
   #storage;
   #lastUser;
 
-  constructor(/** @type {Storage} */ storage) {
+  /**
+   * @oaram {Storage} storage
+   */
+  constructor(storage) {
     this.#storage = storage;
   }
 

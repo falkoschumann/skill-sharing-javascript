@@ -4,7 +4,7 @@ import { RepositoryConfiguration } from '../infrastructure/repository.js';
 
 export class Configuration {
   /**
-   * @param {Partial<Configuration>} [configuration]
+   * @param {Configuration} [configuration]
    */
   static create({
     server = ServerConfiguration.create(),
@@ -25,7 +25,7 @@ export class Configuration {
 
 export class ServerConfiguration {
   /**
-   * @param {Partial<ServerConfiguration>} [configuration]
+   * @param {ServerConfiguration} [configuration]
    */
   static create({ host = 'localhost', port = 3000 } = {}) {
     return new ServerConfiguration(host, port);

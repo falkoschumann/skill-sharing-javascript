@@ -3,17 +3,19 @@
  */
 
 export class SubmitTalkCommand {
-  static create(
-    /** @type {SubmitTalkCommand} */ { title, presenter, summary } = {},
-  ) {
+  /**
+   * @param {SubmitTalkCommand} command
+   */
+  static create({ title, presenter, summary } = {}) {
     return new SubmitTalkCommand(title, presenter, summary);
   }
 
-  constructor(
-    /** @type {string} */ title,
-    /** @type {string} */ presenter,
-    /** @type {string} */ summary,
-  ) {
+  /**
+   * @param {string} title
+   * @param {string} presenter
+   * @param {string} summary
+   */
+  constructor(title, presenter, summary) {
     this.title = title;
     this.presenter = presenter;
     this.summary = summary;
@@ -21,22 +23,35 @@ export class SubmitTalkCommand {
 }
 
 export class AddCommentCommand {
-  static create(/** @type {AddCommentCommand} */ { title, comment } = {}) {
+  /**
+   * @param {AddCommentCommand} command
+   */
+  static create({ title, comment } = {}) {
     return new AddCommentCommand(title, comment);
   }
 
-  constructor(/** @type {string} */ title, /** @type {Comment} */ comment) {
+  /**
+   * @param {string} title
+   * @param {Comment} comment
+   */
+  constructor(title, comment) {
     this.title = title;
     this.comment = comment;
   }
 }
 
 export class DeleteTalkCommand {
-  static create(/** @type {DeleteTalkCommand} */ { title } = {}) {
+  /**
+   * @param {DeleteTalkCommand}
+   */
+  static create({ title } = {}) {
     return new DeleteTalkCommand(title);
   }
 
-  constructor(/** @type {string} */ title) {
+  /**
+   * @param {string} title
+   */
+  constructor(title) {
     this.title = title;
   }
 }
@@ -48,35 +63,51 @@ export class CommandStatus {
     return new CommandStatus(true);
   }
 
-  static failure(/** @type {string} */ errorMessage) {
+  /**
+   * @param {string} errorMessage
+   */
+  static failure(errorMessage) {
     return new CommandStatus(false, errorMessage);
   }
 
-  constructor(
-    /** @type {boolean} */ isSuccess,
-    /** @type {string} */ errorMessage,
-  ) {
+  /**
+   * @param {boolean} isSuccess
+   * @param {string} errorMessage
+   */
+  constructor(isSuccess, errorMessage) {
     this.isSuccess = isSuccess;
     this.errorMessage = errorMessage;
   }
 }
 
 export class TalksQuery {
-  static create(/** @type {TalksQuery} */ { title } = {}) {
+  /**
+   * @param {TalksQuery} query
+   */
+  static create({ title } = {}) {
     return new TalksQuery(title);
   }
 
-  constructor(/** @type {string} */ title) {
+  /**
+   * @param {string} title
+   */
+  constructor(title) {
     this.title = title;
   }
 }
 
 export class TalksQueryResult {
-  static create(/** @type {TalksQueryResult} */ { talks } = {}) {
+  /**
+   * @param {TalksQueryResult} result
+   */
+  static create({ talks } = {}) {
     return new TalksQueryResult(talks);
   }
 
-  constructor(/** @type {Talk[]} */ talks) {
+  /**
+   * @param {Talk[]} talks
+   */
+  constructor(talks) {
     this.talks = talks;
   }
 }

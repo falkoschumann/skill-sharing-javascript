@@ -35,10 +35,11 @@ export class Api extends EventTarget {
   #talksClient;
   #fetch;
 
-  constructor(
-    /** @type {MessageClient} */ talksClient,
-    /** @type {typeof globalThis.fetch} */ fetch,
-  ) {
+  /**
+   * @param {MessageClient} talksClient
+   * @param {typeof globalThis.fetch} fetch
+   */
+  constructor(talksClient, fetch) {
     super();
     this.#talksClient = talksClient;
     this.#fetch = fetch;

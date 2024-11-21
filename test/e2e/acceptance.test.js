@@ -68,7 +68,10 @@ class SkillSharing {
   #browser;
   /** @type {Page} */ #page;
 
-  constructor(/** @type {Browser} */ browser) {
+  /**
+   * @param {Browser} browser
+   */
+  constructor(browser) {
     this.#browser = browser;
   }
 

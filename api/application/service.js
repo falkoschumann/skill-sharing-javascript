@@ -11,17 +11,26 @@ import { Talk } from '../../shared/talks.js';
 export class Service {
   #repository;
 
-  constructor(/** @type {Repository} */ repository) {
+  /**
+   * @param {Repository} repository
+   */
+  constructor(repository) {
     this.#repository = repository;
   }
 
-  async submitTalk(/** @type {SubmitTalkCommand} */ command) {
+  /**
+   * @param {SubmitTalkCommand} command
+   */
+  async submitTalk(command) {
     const talk = Talk.create(command);
     await this.#repository.addOrUpdate(talk);
     return CommandStatus.success();
   }
 
-  async addComment(/** @type {AddCommentCommand} */ command) {
+  /**
+   * @param {AddCommentCommand} command
+   */
+  async addComment(command) {
     const talk = await this.#repository.findByTitle(command.title);
     if (talk == null) {
       return CommandStatus.failure(
@@ -34,12 +43,18 @@ export class Service {
     return CommandStatus.success();
   }
 
-  async deleteTalk(/** @type {DeleteTalkCommand} */ command) {
+  /**
+   * @param {DeleteTalkCommand} command
+   */
+  async deleteTalk(command) {
     await this.#repository.remove(command.title);
     return CommandStatus.success();
   }
 
-  async getTalks(/** @type {TalksQuery=} */ query) {
+  /**
+   * @param {TalksQuery=} query
+   */
+  async getTalks(query) {
     if (query?.title != null) {
       const talk = await this.#repository.findByTitle(query.title);
       return TalksQueryResult.create({ talks: talk ? [talk] : [] });

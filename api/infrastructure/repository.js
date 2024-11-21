@@ -7,7 +7,7 @@ import { Talk } from '../../shared/talks.js';
 
 export class RepositoryConfiguration {
   /**
-   * @param {Partial<RepositoryConfiguration>} [configuration]
+   * @param {RepositoryConfiguration} [configuration]
    */
   static create({ fileName = './data/talks.json' } = {}) {
     return new RepositoryConfiguration(fileName);
@@ -26,7 +26,10 @@ export class Repository {
     return new Repository(configuration, fsPromise);
   }
 
-  static createNull(/** @type {{talks: Talk[]}} */ { talks } = {}) {
+  /**
+   * @param {{talks?: Talk[]}} options
+   */
+  static createNull({ talks } = {}) {
     return new Repository(
       RepositoryConfiguration.create({ fileName: 'null-repository.json' }),
       new FsStub(talks),
@@ -36,10 +39,11 @@ export class Repository {
   #configuration;
   #fs;
 
-  constructor(
-    /** @type {RepositoryConfiguration} */ configuration,
-    /** @type {typeof fsPromise} */ fs,
-  ) {
+  /**
+   * @param {RepositoryConfiguration} configuration
+   * @param {typeof fsPromise} fs
+   */
+  constructor(configuration, fs) {
     this.#configuration = configuration;
     this.#fs = fs;
   }
@@ -49,6 +53,9 @@ export class Repository {
     return Object.values(talks).map((talk) => Talk.create(talk));
   }
 
+  /**
+   * @param {string} title
+   */
   async findByTitle(title) {
     const talks = await this.#load();
     const talk = talks[title];
@@ -59,12 +66,18 @@ export class Repository {
     return Talk.create(talk);
   }
 
+  /**
+   * @param {string} title
+   */
   async addOrUpdate(talk) {
     const talks = await this.#load();
     talks[talk.title] = talk;
     await this.#store(talks);
   }
 
+  /**
+   * @param {string} title
+   */
   async remove(title) {
     const talks = await this.#load();
     delete talks[title];

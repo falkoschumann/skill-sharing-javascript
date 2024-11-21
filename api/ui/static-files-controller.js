@@ -12,8 +12,8 @@ import express from 'express';
 export class StaticFilesController {
   /**
    * @param {Express} app
-   * @param {string} [route=/]
    * @param {string} [directory=./public]
+   * @param {string} [route=/]
    */
   constructor(app, directory = './public', route = '/') {
     app.use(route, express.static(path.join(directory)));

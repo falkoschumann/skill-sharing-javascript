@@ -18,7 +18,11 @@ export class TalksController {
   #services;
   #longPolling;
 
-  constructor(/** @type {Service} */ services, /** @type {Express} */ app) {
+  /**
+   * @param {Service} services
+   * @param {Express}  app
+   */
+  constructor(services, app) {
     this.#services = services;
     this.#longPolling = new LongPolling(async () => {
       const result = await this.#services.getTalks();
@@ -36,10 +40,11 @@ export class TalksController {
     );
   }
 
-  async #getTalks(
-    /** @type {Request} */ request,
-    /** @type {Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #getTalks(request, response) {
     const title = parseTitle(request);
     if (title != null) {
       const result = await this.#services.getTalks({ title });
@@ -59,10 +64,11 @@ export class TalksController {
     }
   }
 
-  async #eventStreamTalks(
-    /** @type {Request} */ request,
-    /** @type {Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #eventStreamTalks(request, response) {
     // TODO send talks to client, when updated
     const emitter = new SseEmitter();
     emitter.extendResponse(response);
@@ -70,10 +76,11 @@ export class TalksController {
     emitter.send(result.talks);
   }
 
-  async #putTalk(
-    /** @type {Request} */ request,
-    /** @type {Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #putTalk(request, response) {
     const talk = parseTalk(request);
     if (talk == null) {
       reply(response, { status: 400, body: 'Bad talk data' });
@@ -84,20 +91,22 @@ export class TalksController {
     }
   }
 
-  async #deleteTalk(
-    /** @type {Request} */ request,
-    /** @type {Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #deleteTalk(request, response) {
     const title = parseTitle(request);
     await this.#services.deleteTalk({ title });
     await this.#longPolling.send();
     reply(response, { status: 204 });
   }
 
-  async #postComment(
-    /** @type {Request} */ request,
-    /** @type {Response} */ response,
-  ) {
+  /**
+   * @param {Request} request
+   * @param {Response} response
+   */
+  async #postComment(request, response) {
     const comment = parseComment(request);
     if (comment == null) {
       reply(response, { status: 400, body: 'Bad comment data' });
@@ -118,7 +127,10 @@ export class TalksController {
   }
 }
 
-function parseTitle(/** @type {Request} */ request) {
+/**
+ * @param {Request} request
+ */
+function parseTitle(request) {
   if (request.params.title == null) {
     return null;
   }
@@ -126,7 +138,10 @@ function parseTitle(/** @type {Request} */ request) {
   return decodeURIComponent(request.params.title);
 }
 
-function parseTalk(/** @type {Request} */ request) {
+/**
+ * @param {Request} request
+ */
+function parseTalk(request) {
   const title = parseTitle(request);
   const { presenter, summary } = request.body;
 
@@ -137,7 +152,10 @@ function parseTalk(/** @type {Request} */ request) {
   return null;
 }
 
-function parseComment(/** @type {Request} */ request) {
+/**
+ * @param {Request} request
+ */
+function parseComment(request) {
   const title = parseTitle(request);
   const { author, message } = request.body;
 
