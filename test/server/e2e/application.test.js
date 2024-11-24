@@ -17,8 +17,6 @@ import {
 import { Comment, Talk } from '../../../shared/talks.js';
 import { Application } from '../../../api/ui/application.js';
 
-// TODO Review tests
-
 const testFile = path.join(
   import.meta.dirname,
   '../../../testdata/e2e.application.json',

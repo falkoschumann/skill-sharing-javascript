@@ -25,7 +25,3 @@ app und `PORT=3000` for API:
     PORT=3001 DEV_PORT=8081 make dev
 
 ## Credits
-
-## Open issues
-
--   [ ] Fix flaky tests

@@ -18,8 +18,6 @@ import {
   TalksQuery,
 } from '../../shared/messages.js';
 
-// TODO Review code
-
 export class TalksController {
   #services;
   #longPolling;

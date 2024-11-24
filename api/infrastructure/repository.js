@@ -32,6 +32,7 @@ export class Repository {
   static createNull({ talks } = {}) {
     return new Repository(
       RepositoryConfiguration.create({ fileName: 'null-repository.json' }),
+      // @ts-ignore
       new FsStub(talks),
     );
   }
@@ -147,10 +148,10 @@ class FsStub {
 }
 
 /**
- * @param {Talks[]} talks
- * @returns {Record<string, Talk>}
+ * @param {Talk[]} talks
  */
 function mapTalks(talks) {
+  /** @type {Record<string, Talk>} */
   const mappedTalks = {};
   for (const talk of talks) {
     mappedTalks[talk.title] = talk;
@@ -158,6 +159,9 @@ function mapTalks(talks) {
   return mappedTalks;
 }
 
+/**
+ * @param {Record<string, Talk>} talksMap
+ */
 function unmapTalks(talksMap) {
   return Object.values(talksMap).map((talk) => Talk.create(talk));
 }
