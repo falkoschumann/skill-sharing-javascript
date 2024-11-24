@@ -49,8 +49,8 @@ export class Repository {
   }
 
   async findAll() {
-    const talks = await this.#load();
-    return Object.values(talks).map((talk) => Talk.create(talk));
+    const mappedTalks = await this.#load();
+    return unmapTalks(mappedTalks);
   }
 
   /**
@@ -67,7 +67,7 @@ export class Repository {
   }
 
   /**
-   * @param {string} title
+   * @param {Talk} talk
    */
   async addOrUpdate(talk) {
     const talks = await this.#load();
@@ -84,6 +84,9 @@ export class Repository {
     await this.#store(talks);
   }
 
+  /**
+   * @returns {Promise<Record<string, Talk>>}
+   */
   async #load() {
     try {
       const json = await this.#fs.readFile(
@@ -101,6 +104,9 @@ export class Repository {
     }
   }
 
+  /**
+   * @param {Record<string, Talk>} talksMap
+   */
   async #store(talksMap) {
     const dirName = path.dirname(this.#configuration.fileName);
     await this.#fs.mkdir(dirName, { recursive: true });
@@ -113,20 +119,18 @@ export class Repository {
 class FsStub {
   #fileContent;
 
+  /**
+   * @param {Talk[]} [talks=]
+   */
   constructor(talks) {
-    if (talks == null) {
-      return;
+    if (talks != null) {
+      const mappedTalks = mapTalks(talks);
+      this.#fileContent = JSON.stringify(mappedTalks);
     }
-
-    const mappedTalks = {};
-    for (const talk of talks) {
-      mappedTalks[talk.title] = talk;
-    }
-    this.#fileContent = JSON.stringify(mappedTalks);
   }
 
   readFile() {
-    if (this.#fileContent === undefined) {
+    if (this.#fileContent == null) {
       const err = new Error('No such file or directory');
       err.code = 'ENOENT';
       throw err;
@@ -140,4 +144,20 @@ class FsStub {
   }
 
   mkdir() {}
+}
+
+/**
+ * @param {Talks[]} talks
+ * @returns {Record<string, Talk>}
+ */
+function mapTalks(talks) {
+  const mappedTalks = {};
+  for (const talk of talks) {
+    mappedTalks[talk.title] = talk;
+  }
+  return mappedTalks;
+}
+
+function unmapTalks(talksMap) {
+  return Object.values(talksMap).map((talk) => Talk.create(talk));
 }

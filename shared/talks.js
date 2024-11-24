@@ -15,6 +15,18 @@ export class Talk {
     title = 'Talk test title',
     presenter = 'Talk test presenter',
     summary = 'Talk test summary.',
+    comments = [],
+  } = {}) {
+    return new Talk(title, presenter, summary, comments);
+  }
+
+  /**
+   * @param {Talk} talk
+   */
+  static createTestInstanceWithComment({
+    title = 'Talk test title',
+    presenter = 'Talk test presenter',
+    summary = 'Talk test summary.',
     comments = [Comment.createTestInstance()],
   } = {}) {
     return new Talk(title, presenter, summary, comments);
@@ -36,7 +48,7 @@ export class Talk {
 
 export class Comment {
   /**
-   * @param {Comment} param0
+   * @param {Comment} comment
    */
   static create({ author, message } = {}) {
     return new Comment(author, message);

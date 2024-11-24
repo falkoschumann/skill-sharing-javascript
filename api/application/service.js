@@ -8,6 +8,11 @@
 import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
 import { Talk } from '../../shared/talks.js';
 
+// TODO Handle errors
+// TODO Add logging
+// TODO Add validation
+// TODO Add metrics
+
 export class Service {
   #repository;
 
@@ -56,8 +61,8 @@ export class Service {
    */
   async getTalks(query) {
     if (query?.title != null) {
-      const talk = await this.#repository.findByTitle(query.title);
-      return TalksQueryResult.create({ talks: talk ? [talk] : [] });
+      const talks = await this.#repository.findByTitle(query.title);
+      return TalksQueryResult.create({ talks });
     }
 
     const talks = await this.#repository.findAll();

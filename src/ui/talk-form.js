@@ -4,7 +4,7 @@ import { html } from 'lit-html';
 
 import { Component } from '@muspellheim/shared/browser';
 
-import { Services } from '../application/services.js';
+import { Service } from '../application/service.js';
 
 class TalkFormComponent extends Component {
   getView() {
@@ -48,7 +48,7 @@ class TalkFormComponent extends Component {
 
   #submitTalk(form) {
     const formData = new FormData(form);
-    Services.get().submitTalk({
+    Service.get().submitTalk({
       title: formData.get('title'),
       summary: formData.get('summary'),
     });

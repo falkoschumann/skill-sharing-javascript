@@ -2,9 +2,8 @@
 
 /**
  * @import http from 'node:http'
- * @import { Express } from 'express'
- * @import { ServerConfiguration } from '../application/configuration.js';
- * @import { RepositoryConfiguration } from '../infrastructure/repository.js';
+ * @import { ServerConfiguration } from '../application/configuration.js'
+ * @import { RepositoryConfiguration } from '../infrastructure/repository.js'
  */
 
 import express from 'express';
@@ -66,7 +65,7 @@ export class Application {
   }
 
   /**
-   * @param {Express} app
+   * @param {express.Express} app
    * @param {ServerConfiguration} configuration
    */
   async #startServer(app, { host, port }) {

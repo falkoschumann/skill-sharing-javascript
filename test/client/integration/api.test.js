@@ -1,6 +1,6 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { LongPollingClient } from '@muspellheim/shared';
 
@@ -8,7 +8,7 @@ import { Api } from '../../../src/infrastructure/api.js';
 import { Talk } from '../../../shared/talks.js';
 
 describe('API', () => {
-  test('Gets talks', async () => {
+  it('Gets talks', async () => {
     const talk = Talk.createTestInstance();
     const client = LongPollingClient.createNull({
       fetchResponse: {
@@ -35,7 +35,7 @@ describe('API', () => {
     client.close();
   });
 
-  test('Puts talk', async () => {
+  it('Puts talk', async () => {
     const api = Api.createNull();
     const talksPut = api.trackTalksPut();
 
@@ -50,7 +50,7 @@ describe('API', () => {
     ]);
   });
 
-  test('Deletes talk', async () => {
+  it('Deletes talk', async () => {
     const api = Api.createNull();
     const talksDeleted = api.trackTalksDeleted();
 
@@ -59,7 +59,7 @@ describe('API', () => {
     expect(talksDeleted.data).toEqual([{ title: 'title-1' }]);
   });
 
-  test('Posts comment', async () => {
+  it('Posts comment', async () => {
     const api = Api.createNull();
     const commentsPosted = api.trackCommentsPosted();
 

@@ -4,7 +4,7 @@ import { html } from 'lit-html';
 
 import { Container } from '@muspellheim/shared/browser';
 
-import { Services } from '../application/services.js';
+import { Service } from '../application/service.js';
 
 class UserFieldComponent extends Container {
   constructor() {
@@ -14,7 +14,7 @@ class UserFieldComponent extends Container {
 
   connectedCallback() {
     super.connectedCallback();
-    Services.get().loadUser();
+    Service.get().loadUser();
   }
 
   extractState(state) {
@@ -33,7 +33,7 @@ class UserFieldComponent extends Container {
             autocomplete="username"
             .value="${this.state}"
             @change=${(e) =>
-              Services.get().changeUser({ username: e.target.value })}
+              Service.get().changeUser({ username: e.target.value })}
           />
         </li>
       </ul>

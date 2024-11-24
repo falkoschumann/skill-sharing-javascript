@@ -10,21 +10,24 @@ import { reducer } from '../domain/reducer.js';
 import { Api } from '../infrastructure/api.js';
 import { Repository } from '../infrastructure/repository.js';
 
-// TODO handle errors
+// TODO Handle errors
+// TODO Add logging
+// TODO Add validation
+// TODO Add metrics
 
-export class Services {
-  /** @type {Services} */ static #instance;
+export class Service {
+  /** @type {Service} */ static #instance;
 
   static get() {
-    if (Services.#instance == null) {
-      Services.#instance = new Services(
+    if (Service.#instance == null) {
+      Service.#instance = new Service(
         createStore(reducer),
         Repository.create(),
         Api.create(),
       );
     }
 
-    return Services.#instance;
+    return Service.#instance;
   }
 
   #store;

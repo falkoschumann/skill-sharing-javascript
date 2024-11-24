@@ -4,7 +4,7 @@ import { html } from 'lit-html';
 
 import { Component, Container } from '@muspellheim/shared/browser';
 
-import { Services } from '../application/services.js';
+import { Service } from '../application/service.js';
 import './reset.css';
 import './style.css';
 import './skill-sharing.css';
@@ -15,12 +15,12 @@ import './user-field.js';
 class SkillSharingComponent extends Component {
   constructor() {
     super();
-    Container.initStore(Services.get().store);
+    Container.initStore(Service.get().store);
   }
 
   connectedCallback() {
     super.connectedCallback();
-    Services.get().connectTalks();
+    Service.get().connectTalks();
   }
 
   getView() {

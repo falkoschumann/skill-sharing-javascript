@@ -2,7 +2,7 @@
 
 /**
  * @import { Service } from '../application/service.js'
- * @import { Express, Response, Request } from 'express'
+ * @import express from 'express'
  */
 
 import {
@@ -11,6 +11,12 @@ import {
   reply,
   SseEmitter,
 } from '@muspellheim/shared/node';
+import {
+  AddCommentCommand,
+  DeleteTalkCommand,
+  SubmitTalkCommand,
+  TalksQuery,
+} from '../../shared/messages.js';
 
 // TODO Review code
 
@@ -20,10 +26,11 @@ export class TalksController {
 
   /**
    * @param {Service} services
-   * @param {Express}  app
+   * @param {express.Express}  app
    */
   constructor(services, app) {
     this.#services = services;
+    // TODO Align long polling with SSE emitter
     this.#longPolling = new LongPolling(async () => {
       const result = await this.#services.getTalks();
       return result.talks;
@@ -41,13 +48,13 @@ export class TalksController {
   }
 
   /**
-   * @param {Request} request
-   * @param {Response} response
+   * @param {express.Request} request
+   * @param {express.Response} response
    */
   async #getTalks(request, response) {
-    const title = parseTitle(request);
-    if (title != null) {
-      const result = await this.#services.getTalks({ title });
+    const query = parseTalksQuery(request);
+    if (query.title != null) {
+      const result = await this.#services.getTalks(query);
       if (result.talks.length > 0) {
         reply(response, {
           status: 200,
@@ -55,7 +62,10 @@ export class TalksController {
           body: JSON.stringify(result.talks[0]),
         });
       } else {
-        reply(response, { status: 404, body: `Talk not found: "${title}".` });
+        reply(response, {
+          status: 404,
+          body: `Talk not found: "${query.title}".`,
+        });
       }
     } else if (request.headers.accept == 'text/event-stream') {
       this.#eventStreamTalks(request, response);
@@ -65,11 +75,11 @@ export class TalksController {
   }
 
   /**
-   * @param {Request} request
-   * @param {Response} response
+   * @param {express.Request} request
+   * @param {express.Response} response
    */
   async #eventStreamTalks(request, response) {
-    // TODO send talks to client, when updated
+    // TODO send talks to client when updated
     const emitter = new SseEmitter();
     emitter.extendResponse(response);
     const result = await this.#services.getTalks();
@@ -77,90 +87,92 @@ export class TalksController {
   }
 
   /**
-   * @param {Request} request
-   * @param {Response} response
+   * @param {express.Request} request
+   * @param {express.Response} response
    */
   async #putTalk(request, response) {
-    const talk = parseTalk(request);
-    if (talk == null) {
-      reply(response, { status: 400, body: 'Bad talk data' });
-    } else {
-      await this.#services.submitTalk(talk);
+    const command = parseSubmitTalkCommand(request);
+    if (command != null) {
+      await this.#services.submitTalk(command);
       await this.#longPolling.send();
       reply(response, { status: 204 });
+    } else {
+      reply(response, { status: 400, body: 'Bad submit talk command.' });
     }
   }
 
   /**
-   * @param {Request} request
-   * @param {Response} response
+   * @param {express.Request} request
+   * @param {express.Response} response
    */
   async #deleteTalk(request, response) {
-    const title = parseTitle(request);
-    await this.#services.deleteTalk({ title });
+    const command = parseDeleteTalkCommand(request);
+    await this.#services.deleteTalk(command);
     await this.#longPolling.send();
     reply(response, { status: 204 });
   }
 
   /**
-   * @param {Request} request
-   * @param {Response} response
+   * @param {express.Request} request
+   * @param {express.Response} response
    */
   async #postComment(request, response) {
-    const comment = parseComment(request);
-    if (comment == null) {
-      reply(response, { status: 400, body: 'Bad comment data' });
+    const command = parseAddCommentCommand(request);
+    if (command != null) {
+      const status = await this.#services.addComment(command);
+      if (status.isSuccess) {
+        await this.#longPolling.send();
+        reply(response, { status: 204 });
+      } else {
+        reply(response, { status: 404, body: status.errorMessage });
+      }
     } else {
-      const responseData = await this.#tryAddComment(comment);
-      reply(response, responseData);
-    }
-  }
-
-  async #tryAddComment({ title, comment }) {
-    const status = await this.#services.addComment({ title, comment });
-    if (status.isSuccess) {
-      await this.#longPolling.send();
-      return { status: 204 };
-    } else {
-      return { status: 404, body: status.errorMessage };
+      reply(response, { status: 400, body: 'Bad add comment command.' });
     }
   }
 }
 
 /**
- * @param {Request} request
+ * @param {express.Request} request
  */
-function parseTitle(request) {
+function parseTalksQuery(request) {
   if (request.params.title == null) {
-    return null;
+    return TalksQuery.create();
   }
 
-  return decodeURIComponent(request.params.title);
+  const title = decodeURIComponent(request.params.title);
+  return TalksQuery.create({ title });
 }
 
 /**
- * @param {Request} request
+ * @param {express.Request} request
  */
-function parseTalk(request) {
-  const title = parseTitle(request);
+function parseSubmitTalkCommand(request) {
+  const title = decodeURIComponent(request.params.title);
   const { presenter, summary } = request.body;
-
   if (typeof presenter == 'string' && typeof summary == 'string') {
-    return { title, presenter, summary };
+    return SubmitTalkCommand.create({ title, presenter, summary });
   }
 
   return null;
 }
 
 /**
- * @param {Request} request
+ * @param {express.Request} request
  */
-function parseComment(request) {
-  const title = parseTitle(request);
-  const { author, message } = request.body;
+function parseDeleteTalkCommand(request) {
+  const title = decodeURIComponent(request.params.title);
+  return DeleteTalkCommand.create({ title });
+}
 
+/**
+ * @param {express.Request} request
+ */
+function parseAddCommentCommand(request) {
+  const title = decodeURIComponent(request.params.title);
+  const { author, message } = request.body;
   if (typeof author == 'string' && typeof message == 'string') {
-    return { title, comment: { author, message } };
+    return AddCommentCommand.create({ title, comment: { author, message } });
   }
 
   return null;

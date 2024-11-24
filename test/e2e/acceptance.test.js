@@ -2,7 +2,7 @@
 
 import fs from 'node:fs/promises';
 import puppeteer from 'puppeteer';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { Application } from '../../api/ui/application.js';
 
@@ -13,7 +13,7 @@ import { Application } from '../../api/ui/application.js';
  */
 
 describe('User Acceptance Tests', () => {
-  test('Submit and comment a talk', async () => {
+  it('Submit and comment a talk', async () => {
     await startAndStop(async (browser) => {
       const app = new SkillSharing(browser);
       await app.gotoSubmission();

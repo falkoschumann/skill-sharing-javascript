@@ -1,9 +1,5 @@
 // Copyright (c) 2024 Falko Schumann. All rights reserved. MIT license.
 
-/**
- * @import { Express } from 'express'
- */
-
 import path from 'node:path';
 import express from 'express';
 
@@ -11,7 +7,7 @@ import express from 'express';
 
 export class StaticFilesController {
   /**
-   * @param {Express} app
+   * @param {express.Express} app
    * @param {string} [directory=./public]
    * @param {string} [route=/]
    */

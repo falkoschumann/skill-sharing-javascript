@@ -4,7 +4,7 @@ import { html } from 'lit-html';
 
 import { Container } from '@muspellheim/shared/browser';
 
-import { Services } from '../application/services.js';
+import { Service } from '../application/service.js';
 import './talks.css';
 
 class TalksComponent extends Container {
@@ -22,7 +22,7 @@ class TalksComponent extends Container {
         <h2>
           ${talk.title}
           <button
-            @click=${() => Services.get().deleteTalk({ title: talk.title })}
+            @click=${() => Service.get().deleteTalk({ title: talk.title })}
           >
             Delete
           </button>
@@ -78,7 +78,7 @@ class TalksComponent extends Container {
 
   #addComment(form) {
     const formData = new FormData(form);
-    Services.get().addComment({
+    Service.get().addComment({
       title: formData.get('talkTitle'),
       comment: formData.get('comment'),
     });

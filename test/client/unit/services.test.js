@@ -1,10 +1,10 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { createStore, LongPollingClient } from '@muspellheim/shared';
 
-import { Services } from '../../../src/application/services.js';
+import { Service } from '../../../src/application/service.js';
 import { reducer } from '../../../src/domain/reducer.js';
 import { Api } from '../../../src/infrastructure/api.js';
 import { Repository } from '../../../src/infrastructure/repository.js';
@@ -13,7 +13,7 @@ import { User } from '../../../src/domain/users.js';
 
 describe('Services', () => {
   describe('Change user', () => {
-    test('Updates user name', async () => {
+    it('Updates user name', async () => {
       const { services, store, repository } = configure();
 
       const user = User.createTestInstance();
@@ -25,7 +25,7 @@ describe('Services', () => {
   });
 
   describe('User', () => {
-    test('Anon is the default user', async () => {
+    it('Anon is the default user', async () => {
       const { services, store } = configure();
 
       await services.loadUser();
@@ -33,7 +33,7 @@ describe('Services', () => {
       expect(store.getState().user).toEqual('Anon');
     });
 
-    test('Is stored user', async () => {
+    it('Is stored user', async () => {
       const user = User.createTestInstance();
       const { services, store } = configure({ settings: user });
 
@@ -44,7 +44,7 @@ describe('Services', () => {
   });
 
   describe('Submit talk', () => {
-    test('Adds talk to list', async () => {
+    it('Adds talk to list', async () => {
       const { services, api } = configure();
       const talksPut = api.trackTalksPut();
 
@@ -57,7 +57,7 @@ describe('Services', () => {
   });
 
   describe('Adds comment', () => {
-    test('Adds comment to an existing talk', async () => {
+    it('Adds comment to an existing talk', async () => {
       const { services, api } = configure();
       const commentsPosted = api.trackCommentsPosted();
 
@@ -68,11 +68,11 @@ describe('Services', () => {
       ]);
     });
 
-    test.todo('Reports an error if talk does not exists');
+    it.todo('Reports an error when talk does not exists');
   });
 
   describe('Delete talk', () => {
-    test('Removes talk from list', async () => {
+    it('Removes talk from list', async () => {
       const { services, api } = configure();
       const talksDeleted = api.trackTalksDeleted();
 
@@ -81,7 +81,7 @@ describe('Services', () => {
       expect(talksDeleted.data).toEqual([{ title: 'Foobar' }]);
     });
 
-    test('Ignores already removed talk', async () => {
+    it('Ignores already removed talk', async () => {
       const { services, api } = configure();
       const talksDeleted = api.trackTalksDeleted();
 
@@ -92,7 +92,7 @@ describe('Services', () => {
   });
 
   describe('Talks', () => {
-    test('Lists all talks', async () => {
+    it('Lists all talks', async () => {
       const talk = Talk.createTestInstance();
       const { services, store, talksClient } = configure({
         fetchResponse: {
@@ -120,6 +120,6 @@ function configure({ settings, fetchResponse } = {}) {
   const fetchStub = async () => {};
   const talksClient = LongPollingClient.createNull({ fetchResponse });
   const api = new Api(talksClient, fetchStub);
-  const services = new Services(store, repository, api);
+  const services = new Service(store, repository, api);
   return { services, store, repository, api, talksClient };
 }

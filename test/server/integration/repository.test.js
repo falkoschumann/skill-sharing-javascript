@@ -1,20 +1,23 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { Talk } from '../../../shared/talks.js';
 import { Repository } from '../../../api/infrastructure/repository.js';
 
-const testFile = new URL(
+const testFile = path.join(
+  import.meta.dirname,
   '../../../testdata/integration.repository.json',
-  import.meta.url,
-).pathname;
+);
 
-const nonExistingFile = new URL('../data/non-existent.json', import.meta.url)
-  .pathname;
-const exampleFile = new URL('../data/example.json', import.meta.url).pathname;
-const corruptedFile = new URL('../data/corrupt.json', import.meta.url).pathname;
+const nonExistingFile = path.join(
+  import.meta.dirname,
+  '../data/non-existent.json',
+);
+const exampleFile = path.join(import.meta.dirname, '../data/example.json');
+const corruptedFile = path.join(import.meta.dirname, '../data/corrupt.json');
 
 describe('Repository', () => {
   beforeEach(async () => {
@@ -22,15 +25,15 @@ describe('Repository', () => {
   });
 
   describe('Find all', () => {
-    it('Returns list of talks', async () => {
+    it('Returns list of all talks', async () => {
       const repository = Repository.create({ fileName: exampleFile });
 
       const talks = await repository.findAll();
 
-      expect(talks).toEqual([Talk.createTestInstance()]);
+      expect(talks).toEqual([Talk.createTestInstanceWithComment()]);
     });
 
-    it('Returns empty list, when file does not exist', async () => {
+    it('Returns empty list when file does not exist', async () => {
       const repository = Repository.create({ fileName: nonExistingFile });
 
       const talks = await repository.findAll();
@@ -38,7 +41,7 @@ describe('Repository', () => {
       expect(talks).toEqual([]);
     });
 
-    it('Reports an error, when file is corrupt', async () => {
+    it('Reports an error when file is corrupt', async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
       const result = repository.findAll();
@@ -50,40 +53,40 @@ describe('Repository', () => {
   describe('Find by title', () => {
     it('Returns talk with title', async () => {
       const repository = Repository.create({ fileName: exampleFile });
-      const expectedTalk = Talk.createTestInstance();
+      const expectedTalk = Talk.createTestInstanceWithComment();
 
       const actualTalk = await repository.findByTitle(expectedTalk.title);
 
       expect(actualTalk).toEqual(expectedTalk);
     });
 
-    it('Returns undefined, when talk with title does not exist', async () => {
+    it('Returns undefined when talk with title does not exist', async () => {
       const repository = Repository.create({ fileName: exampleFile });
 
-      const talk = await repository.findByTitle('not a talk');
+      const talk = await repository.findByTitle('Non existing title');
 
       expect(talk).toBeUndefined();
     });
 
-    it('Returns undefined, when file does not exist', async () => {
+    it('Returns undefined when file does not exist', async () => {
       const repository = Repository.create({ fileName: nonExistingFile });
 
-      const talks = await repository.findByTitle('Foobar');
+      const talks = await repository.findByTitle('Any title');
 
       expect(talks).toBeUndefined();
     });
 
-    it('Reports an error, when file is corrupt', async () => {
+    it('Reports an error when file is corrupt', async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
-      const result = repository.findByTitle('Foobar');
+      const result = repository.findByTitle('Any title');
 
       expect(result).rejects.toThrow(SyntaxError);
     });
   });
 
   describe('Add or update', () => {
-    it('Creates file, when file does not exist', async () => {
+    it('Creates file when file does not exist', async () => {
       const repository = Repository.create({ fileName: testFile });
 
       const talk = Talk.createTestInstance();
@@ -93,7 +96,7 @@ describe('Repository', () => {
       expect(talks).toEqual([talk]);
     });
 
-    it('Adds talk, when file exists', async () => {
+    it('Adds talk when file exists', async () => {
       const repository = Repository.create({ fileName: testFile });
       const talk1 = Talk.createTestInstance({ title: 'Foo' });
       await repository.addOrUpdate(talk1);
@@ -105,22 +108,21 @@ describe('Repository', () => {
       expect(talks).toEqual([talk1, talk2]);
     });
 
-    it('Updates talk, when talk exists', async () => {
+    it('Updates talk when talk exists', async () => {
       const repository = Repository.create({ fileName: testFile });
-      const talk1 = Talk.createTestInstance({
-        title: 'Foo',
+      const talk = Talk.createTestInstance({
         presenter: 'Alice',
       });
-      await repository.addOrUpdate(talk1);
+      await repository.addOrUpdate(talk);
 
-      const talk2 = Talk.createTestInstance({ title: 'Foo', presenter: 'Bob' });
-      await repository.addOrUpdate(talk2);
+      const updatedTalk = Talk.createTestInstance({ presenter: 'Bob' });
+      await repository.addOrUpdate(updatedTalk);
 
       const talks = await repository.findAll();
-      expect(talks).toEqual([talk2]);
+      expect(talks).toEqual([updatedTalk]);
     });
 
-    it('Reports an error, when file is corrupt', async () => {
+    it('Reports an error when file is corrupt', async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
       const talk = Talk.createTestInstance();
@@ -131,7 +133,7 @@ describe('Repository', () => {
   });
 
   describe('Remove', () => {
-    it('Removes talk from file', async () => {
+    it('Removes talk', async () => {
       const repository = Repository.create({ fileName: testFile });
       const talk = Talk.createTestInstance();
       await repository.addOrUpdate(talk);
@@ -142,18 +144,18 @@ describe('Repository', () => {
       expect(talks).toEqual([]);
     });
 
-    it('Does nothing, when file does not exist', async () => {
+    it('Does not reports an error when file does not exist', async () => {
       const repository = Repository.create({ fileName: testFile });
 
-      const talks = await repository.remove('Foobar');
+      const talks = await repository.remove('Any title');
 
       expect(talks).toBeUndefined();
     });
 
-    it('Reports an error, when file is corrupt', async () => {
+    it('Reports an error when file is corrupt', async () => {
       const repository = Repository.create({ fileName: corruptedFile });
 
-      const result = repository.remove('Foobar');
+      const result = repository.remove('Any title');
 
       expect(result).rejects.toThrow(SyntaxError);
     });
@@ -168,7 +170,7 @@ describe('Repository', () => {
       expect(talks).toEqual([]);
     });
 
-    it('Initializes talks', async () => {
+    it('Initializes with talks', async () => {
       const repository = Repository.createNull({
         talks: [Talk.createTestInstance()],
       });
