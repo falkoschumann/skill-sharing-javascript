@@ -37,7 +37,7 @@
     "jsdom": "25.0.1",
     "nodemon": "3.1.7",
     "prettier": "3.3.3",
-    "puppeteer": "23.8.0",
+    "puppeteer": "23.9.0",
     "rollup": "4.27.3",
     "supertest": "7.0.0",
     "vitest": "2.1.4"
