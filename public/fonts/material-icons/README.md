@@ -48,28 +48,28 @@ automatically updated and published using GitHub Actions. Note: Google does
 
 ### [material-symbols](https://github.com/marella/material-symbols/tree/main/material-symbols#readme) [![npm](https://img.shields.io/npm/v/material-symbols)](https://www.npmjs.com/package/material-symbols) [![install size](https://packagephobia.com/badge?p=material-symbols)](https://packagephobia.com/result?p=material-symbols)
 
--   Only WOFF2 variable fonts and CSS for Material Symbols
--   Includes outlined, rounded, and sharp icons and all variations of fill,
-    weight, grade, and optical size
--   Supports Sass
+- Only WOFF2 variable fonts and CSS for Material Symbols
+- Includes outlined, rounded, and sharp icons and all variations of fill,
+  weight, grade, and optical size
+- Supports Sass
 
 ### [material-icons](https://github.com/marella/material-icons#readme) [![npm](https://img.shields.io/npm/v/material-icons)](https://www.npmjs.com/package/material-icons) [![install size](https://packagephobia.com/badge?p=material-icons)](https://packagephobia.com/result?p=material-icons) [![Downloads](https://img.shields.io/npm/dm/material-icons)](https://www.npmjs.com/package/material-icons)
 
--   Only WOFF2, WOFF fonts and CSS
--   Includes outlined, round, sharp and two-tone icons
--   Supports Sass
+- Only WOFF2, WOFF fonts and CSS
+- Includes outlined, round, sharp and two-tone icons
+- Supports Sass
 
 ### [@material-design-icons/font](https://github.com/marella/material-design-icons/tree/main/font#readme) [![npm (scoped)](https://img.shields.io/npm/v/@material-design-icons/font)](https://www.npmjs.com/package/@material-design-icons/font) [![install size](https://packagephobia.com/badge?p=@material-design-icons/font)](https://packagephobia.com/result?p=@material-design-icons/font)
 
--   Only WOFF2 fonts and CSS
--   Lighter version of `material-icons` package
--   Doesn't support [older browsers](https://caniuse.com/woff2) such as Internet
-    Explorer because of dropping WOFF (v1)
+- Only WOFF2 fonts and CSS
+- Lighter version of `material-icons` package
+- Doesn't support [older browsers](https://caniuse.com/woff2) such as Internet
+  Explorer because of dropping WOFF (v1)
 
 ### [@material-design-icons/svg](https://github.com/marella/material-design-icons/tree/main/svg#readme) [![npm (scoped)](https://img.shields.io/npm/v/@material-design-icons/svg)](https://www.npmjs.com/package/@material-design-icons/svg) [![install size](https://packagephobia.com/badge?p=@material-design-icons/svg)](https://packagephobia.com/result?p=@material-design-icons/svg)
 
--   Only SVGs
--   Optimizes SVGs using SVGO
+- Only SVGs
+- Optimizes SVGs using SVGO
 
 ## Material Icons
 
@@ -78,28 +78,28 @@ https://fonts.google.com/icons?icon.set=Material+Icons
 
 These classic icons are available in five distinct styles:
 
--   Outlined
--   Filled (the font version is just called Material Icons, as this is the
-    oldest style)
--   Rounded
--   Sharp
--   Two tone
+- Outlined
+- Filled (the font version is just called Material Icons, as this is the oldest
+  style)
+- Rounded
+- Sharp
+- Two tone
 
 The following directories in this repo contain specifically Material Icons (not
 Material Symbols) content:
 
--   android
--   font
--   ios
--   png
--   js
+- android
+- font
+- ios
+- png
+- js
 
 What is currently _not_ available in Material Icons?
 
--   variable fonts
--   weights other than Regular
--   grades other than Regular
--   a means to animate Fill transitions
+- variable fonts
+- weights other than Regular
+- grades other than Regular
+- a means to animate Fill transitions
 
 ## Material Symbols
 
@@ -112,54 +112,53 @@ designs from Material Icons). There are three separate Material Symbols variable
 fonts, which also have static icons available (but those do not have all the
 variations available, as that would be hundreds of styles):
 
--   Outlined
--   Rounded
--   Sharp
--   Note that although there is no separate Filled font, the Fill axis allows
-    access to filled styles—in all three fonts.
+- Outlined
+- Rounded
+- Sharp
+- Note that although there is no separate Filled font, the Fill axis allows
+  access to filled styles—in all three fonts.
 
 Each of the fonts has these design axes, which can be varied in CSS, or in many
 more modern design apps:
 
--   Optical Size (opsz) from 20 to 48 px. The default is 24.
--   Weight from 100 (Thin) to 700 (Bold). Regular is 400.
--   Grade from -50 to 200. The default is 0 (zero).
--   Fill from 0 to 100. The default is 0 (zero).
+- Optical Size (opsz) from 20 to 48 px. The default is 24.
+- Weight from 100 (Thin) to 700 (Bold). Regular is 400.
+- Grade from -50 to 200. The default is 0 (zero).
+- Fill from 0 to 100. The default is 0 (zero).
 
 The following directories in this repo contain specifically Material Symbols
 (not Material Icons) content:
 
--   symbols
--   variablefont
+- symbols
+- variablefont
 
 What is currently _not_ available in Material Symbols?
 
--   only the 20 and 24 px versions are designed with perfect pixel-grid
-    alignment
--   the only pre-made fonts are the variable fonts
--   there are no two-tone icons
+- only the 20 and 24 px versions are designed with perfect pixel-grid alignment
+- the only pre-made fonts are the variable fonts
+- there are no two-tone icons
 
 ## Material Icons update history
 
 ### 4.0.0 Update
 
--   2020 Aug 31
--   Restructured repository, updated assets.
+- 2020 Aug 31
+- Restructured repository, updated assets.
 
 ### 3.0.1 Update
 
--   2016 Sep 01
--   Changed license in package.json.
--   Added missing device symbol sprites.
+- 2016 Sep 01
+- Changed license in package.json.
+- Added missing device symbol sprites.
 
 ### 3.0.0 Update
 
--   2016 Aug 25
--   License change to Apache 2.0!
+- 2016 Aug 25
+- License change to Apache 2.0!
 
 ### 2.0
 
--   2016 May 28
+- 2016 May 28
 
 ## Getting Started
 
