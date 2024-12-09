@@ -37,8 +37,29 @@
 
 ## Users
 
-![Uses](./users.png)
+```mermaid
+classDiagram
+    class User {
+        username: String
+    }
+```
 
 ## Talks
 
-![Talks](./talks.png)
+```mermaid
+classDiagram
+    direction LR
+
+    class Talk {
+        title: String
+        presenter: String
+        summary: String
+    }
+
+    class Comment {
+        author: String
+        message: String
+    }
+
+    Talk *-- Comment: comments
+```
