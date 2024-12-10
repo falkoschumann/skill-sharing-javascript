@@ -33,7 +33,7 @@
     "eslint": "9.16.0",
     "eslint-plugin-lit": "1.15.0",
     "eslint-plugin-wc": "2.2.0",
-    "eventsource": "2.0.2",
+    "eventsource": "3.0.1",
     "jsdom": "25.0.1",
     "nodemon": "3.1.7",
     "prettier": "3.4.1",
