@@ -1,18 +1,19 @@
+@startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 LAYOUT_LEFT_RIGHT()
 
 title "Container Diagram for Skill Sharing System"
 
-Person(presenter, "Presenter")
-Person(user, "User")
+Person(presenter, "Presenter", "Would like to give a talk.")
+Person(user, "User", "Would like to discuss a talk.")
 
 System_Boundary(skillSharing, "Skill Sharing") {
-  Container(gui, "GUI")
-  Container(api, "API")
+  Container(gui, "GUI", "A web application for users to submit talks and discuss them.")
+  Container(api, "API", "A RESTful API for the GUI to manage talks.")
 }
 
-SystemDb_Ext(fileSystem, "File System")
+SystemDb_Ext(fileSystem, "File System", "Stores talks.")
 
 Rel(presenter, gui, "Submit talk")
 Rel(user, gui, "Add comment")
@@ -20,3 +21,4 @@ Rel(user, gui, "Add comment")
 Rel(gui, api, "Send and receive talks", "HTTP, REST, SSE")
 
 Rel(api, fileSystem, "Load and store talks", "JSON")
+@enduml
