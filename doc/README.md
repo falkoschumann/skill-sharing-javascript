@@ -79,4 +79,4 @@ classDiagram
 
 ## Architecture
 
-![Container Diagram for Skill Sharing System](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/falkoschumann/skill-sharing-javascript/main/doc/container.puml)
+![Container Diagram for Skill Sharing System](./container.png)
