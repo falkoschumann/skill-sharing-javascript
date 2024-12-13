@@ -6,12 +6,12 @@
 
 ### Change user
 
-- Updates user name
+- Updates username
 
 ### User
 
 - Anon is the default user
-- Is stored user
+- Gets stored user
 
 ### Submit talk
 
@@ -35,7 +35,9 @@
 
 - Count talks and presenters
 
-## Users
+## Aggregates
+
+### Users
 
 ```mermaid
 classDiagram
@@ -44,7 +46,7 @@ classDiagram
     }
 ```
 
-## Talks
+### Talks
 
 ```mermaid
 classDiagram
@@ -61,5 +63,20 @@ classDiagram
         message: String
     }
 
-    Talk *-- Comment: comments
+    Talk *--> Comment: comments
 ```
+
+### Metrics
+
+```mermaid
+classDiagram
+    class Talk {
+        talksCount: Integer
+        presentersCount: Integer
+        commentsCount: Integer
+    }
+```
+
+## Architecture
+
+![Container Diagram for Skill Sharing System](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.github.com/falkoschumann/skill-sharing-javascript/main/doc/container.puml)
