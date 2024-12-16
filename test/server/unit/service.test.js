@@ -1,10 +1,10 @@
 // Copyright (c) 2023-2024 Falko Schumann. All rights reserved. MIT license.
 
+import { CommandStatus } from '@muspellheim/shared';
 import { describe, expect, it } from 'vitest';
 
 import {
   AddCommentCommand,
-  CommandStatus,
   DeleteTalkCommand,
   SubmitTalkCommand,
   TalksQuery,

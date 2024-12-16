@@ -2,13 +2,13 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { CommandStatus } from '@muspellheim/shared';
 //import EventSource from 'eventsource';
 import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import {
   AddCommentCommand,
-  CommandStatus,
   DeleteTalkCommand,
   SubmitTalkCommand,
   TalksQuery,
@@ -446,8 +446,10 @@ describe('Application', () => {
  */
 async function startAndStop({ configName, run = async () => {} } = {}) {
   const application = new Application();
-  application.configLocation = [import.meta.dirname];
-  application.configName = configName;
+  process.env.CONFIG_LOCATION = import.meta.dirname;
+  if (configName) {
+    process.env.CONFIG_NAME = configName;
+  }
   await application.start();
   // TODO Use port from configuration
   const url = 'http://localhost:3333';

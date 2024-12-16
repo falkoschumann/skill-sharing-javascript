@@ -7,11 +7,13 @@
  */
 
 import express from 'express';
-import { ConfigurationProperties } from '@muspellheim/shared/node';
+import {
+  ConfigurationProperties,
+  StaticFilesController,
+} from '@muspellheim/shared/node';
 
 import { Configuration } from '../application/configuration.js';
 import { Service } from '../application/service.js';
-import { StaticFilesController } from './static-files-controller.js';
 import { TalksController } from './talks-controller.js';
 import { Repository } from '../infrastructure/repository.js';
 
@@ -36,17 +38,9 @@ export class Application {
     console.info('Server stopped.');
   }
 
-  /**
-   * @returns {Promise<Configuration>}
-   */
   async #loadConfiguration() {
-    // TODO read configName and configLocation inside ConfigurationProperties
-    // TODO Use template for defaults and return with get()
-    // TODO Cache loaded configuration
     const configuration = ConfigurationProperties.create({
-      name: this.configName,
-      location: this.configLocation,
-      defaults: Configuration.create(),
+      defaultProperties: Configuration.create(),
     });
     return await configuration.get();
   }

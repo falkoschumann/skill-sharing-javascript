@@ -133,6 +133,7 @@ class FsStub {
   readFile() {
     if (this.#fileContent == null) {
       const err = new Error('No such file or directory');
+      // @ts-ignore NodeJS error code
       err.code = 'ENOENT';
       throw err;
     }
@@ -140,8 +141,8 @@ class FsStub {
     return this.#fileContent;
   }
 
-  writeFile(_file, fileContent) {
-    this.#fileContent = fileContent;
+  writeFile(_file, data) {
+    this.#fileContent = data;
   }
 
   mkdir() {}

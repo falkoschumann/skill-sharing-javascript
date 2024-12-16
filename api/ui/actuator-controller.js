@@ -33,7 +33,7 @@ export class ActuatorController {
   #healthContributorRegistry;
 
   /**
-   * @param {string}  packageJson
+   * @param {string} packageJson
    * @param {*} services
    * @param {HealthContributorRegistry} healthContributorRegistry
    * @param {express.Express} app

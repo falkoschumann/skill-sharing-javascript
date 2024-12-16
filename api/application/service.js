@@ -5,7 +5,9 @@
  * @import { Repository } from '../infrastructure/repository.js'
  */
 
-import { CommandStatus, TalksQueryResult } from '../../shared/messages.js';
+import { CommandStatus } from '@muspellheim/shared';
+
+import { TalksQueryResult } from '../../shared/messages.js';
 import { Talk } from '../../shared/talks.js';
 
 // TODO Handle errors

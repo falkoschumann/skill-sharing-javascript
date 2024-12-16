@@ -47,7 +47,7 @@ async function startAndStop(fn) {
     await fs.rm(talksFile, { force: true });
 
     application = new Application();
-    application.configLocation = [new URL('.', import.meta.url).pathname];
+    process.env.CONFIG_LOCATION = new URL('.', import.meta.url).pathname;
     await application.start();
     // FIXME https://pptr.dev/troubleshooting#setting-up-chrome-linux-sandbox
     browser = await puppeteer.launch({
