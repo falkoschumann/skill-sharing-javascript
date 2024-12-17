@@ -28,6 +28,7 @@ bin/
 # IntelliJ IDEA
 .idea/
 out/
+*.iml
 
 # VS Code
 .vscode/
