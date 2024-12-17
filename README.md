@@ -1,4 +1,4 @@
-[![Build](https://github.com/falkoschumann/skill-sharing-javascript/actions/workflows/build.yml/badge.svg)](https://github.com/falkoschumann/skill-sharing-javascript/actions/workflows/build.yml)
+[![Build](https://github.com/falkoschumann/skill-sharing-js/actions/workflows/build.yml/badge.svg)](https://github.com/falkoschumann/skill-sharing-js/actions/workflows/build.yml)
 
 # Skill Sharing
 
